@@ -1,5 +1,6 @@
-![alt tag][logo] |  SARA • SteamAccountRoboticAssistant
-:--:|:--------------------------------------------------:
+<img src="./images/icon-48x48.png" alt="SteamAccountRoboticAssistantr" width="auto" height="30">  SARA • Steam Account Robotic Assistant
+===================
+
 Chrome-Extension for enhancing and automating your Steam-Experience.
 
 This extension is pretty much Alpha-State, so you have to expect bugs and missing features. 
