@@ -1,7 +1,7 @@
 <img src="./images/icon-48x48.png" alt="SteamAccountRoboticAssistantr" width="auto" height="30">  SARA • Steam Account Robotic Assistant
 ===================
 
-Chrome-Extension for enhancing and automating your Steam-Experience.
+Chrome-Extension for enhancing and automating your Steam-Experience with focus on managing multiple Steam-Accounts. SARA may have the same features as other Chrome-Extensions for Steam but uses other approaches. This said, SARA isn't a copy of any other Project and was created from scratch.
 
 This extension is pretty much Alpha-State, so you have to expect bugs and missing features. 
 The use of this extension is on your own risk and I'm not responsible for any damage that 
