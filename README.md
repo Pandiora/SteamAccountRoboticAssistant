@@ -36,7 +36,7 @@ currency and if you want to activate some features. You don't need more at this 
 # Known Bugs
 
 - Buttons in your Inventory will only show up if you change the URL and reload (URL has to be specific appid)
-- some Scripts like getting your Community-Badge or iterating over Discovery-Queue can break due to wrong URL after logout (you will have to set your, skips if needed, then again and start the process again until they completely finish)
+- some Scripts like getting your Community-Badge or iterating over Discovery-Queue can break due to wrong URL after logout (you will have to set your skips [if needed] then again and restart the process until the action completely finishes)
 - Edits on the Frontend-Grids for your Databases doesn't apply changes
 - You need an API to use the Booster-Calculator which I don't want to provide currently due to to much to be expected load and also because the server has to be set up to limit requests
 - there is more stuff to be fixed for sure
