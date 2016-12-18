@@ -1,0 +1,107 @@
+<div class='settings-33'>
+	<div class='settings-header' data-i18n='settings_header_settings'></div>
+	<!-- ToDo: Remove this steamid asap -->
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_steamid'></label>
+		<input pattern="[0-9]{17}" class='settings-row-input' placeholder='Input ...' name='steamid' required/>
+	</div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_json_host'></label>
+		<input class='settings-row-input' placeholder='http://...' name='json_host' />
+	</div>
+	<!-- ToDo: Remove this api-key asap -->
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_apikey'></label>
+		<input pattern=".{32}" class='settings-row-input' placeholder='API-Key' name='api_key' required/>
+	</div>
+	<!-- not needed anymore
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_phpfile'></label>
+		<input class='settings-row-input' placeholder='https recommended' name='php_file' />
+	</div>
+	-->
+	<!--<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_lang'></label>
+		<select class='settings-row-select' id='select-language' name='language'>
+			<option>Deutsch</option>
+			<option>English</option>
+		</select>
+		<div class='select-arrow'></div>
+	</div>-->
+	<!-- ToDo: Should be removed soon too -->
+	<div class='settings-row'>
+		<label class='settings-row-label' name='currency' data-i18n='settings_input_currency'></label>
+		<div class='settings-radio-button'>
+			<div class='outer-circle'>
+				<div class='inner-circle'></div>
+			</div>
+		</div>
+		<div class='settings-radio-text'>EUR</div>
+		<div class='settings-radio-button'>
+			<div class='outer-circle'>
+				<div class='inner-circle'></div>
+			</div>
+		</div>
+		<div class='settings-radio-text'>USD</div>
+	</div>
+</div>
+<!-- 
+We don't need tokens anymore since we are injecting needed scripts with this extension
+before these were use in combination with tampermonkey scripts
+<div class='settings-33'>
+	<div class='settings-header' data-i18n='settings_header_tokens'></div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_token1'></label>
+		<input class='settings-row-input' placeholder='Input ...' name='token1' />
+	</div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_token2'></label>
+		<input class='settings-row-input' placeholder='Input ...' name='token2' />
+	</div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_token3'></label>
+		<input class='settings-row-input' placeholder='Input ...' name='token3' />
+	</div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n='settings_input_token4'></label>
+		<input class='settings-row-input' placeholder='Input ...' name='token4' />
+	</div>
+	<div class='settings-row'>
+		<label class='settings-row-label' data-i18n=''>Accounts JSON</label>
+		<input type='file' class='files' id='accounts-json' accept='.json' name='file'/>
+	</div>
+</div> 
+-->
+<div class='settings-33'>
+	<div class='settings-header' data-i18n='settings_header_options'></div>
+	<div class='settings-row settings-row-nobg'>
+		<label class='settings-row-label' data-i18n='settings_switch_oneclick'></label>
+		<div class="onoffswitch">
+			<input type="checkbox" name="oneclick" class="onoffswitch-checkbox" id="autologin_switch">
+			<label class="onoffswitch-label" for="autologin_switch">
+				<span class="onoffswitch-inner"></span>
+				<span class="onoffswitch-switch"></span>
+			</label>
+		</div>
+	</div>
+	<div class='settings-row settings-row-nobg'>
+		<label class='settings-row-label' data-i18n='settings_switch_vis_debug'></label>
+		<div class="onoffswitch">
+			<input type="checkbox" name="debug" class="onoffswitch-checkbox" id="debug_switch">
+			<label class="onoffswitch-label" for="debug_switch">
+				<span class="onoffswitch-inner"></span>
+				<span class="onoffswitch-switch"></span>
+			</label>
+		</div>
+	</div>
+	<div class='settings-row settings-row-nobg'>
+		<label class='settings-row-label' data-i18n='settings_switch_confirmation'></label>
+		<div class="onoffswitch">
+			<input type="checkbox" name="confirmation" class="onoffswitch-checkbox" id="confirmation_switch">
+			<label class="onoffswitch-label" for="confirmation_switch">
+				<span class="onoffswitch-inner"></span>
+				<span class="onoffswitch-switch"></span>
+			</label>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+
+	<!-- Meta -->
+	<title>SteamBoard</title>
+	<meta charset="utf-8"/>
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=3" />
+
+	<!-- Standard -->
+	<link rel='stylesheet' href='css/style.css'/>
+	<script type='text/javascript' src='js/jquery-2.1.4.min.js'></script>
+	<script type='text/javascript' src='js/jquery.waitUntilExists.min.js'></script>
+	<script type='text/javascript' src='js/Dexie.min.js'></script>
+	<script type='text/javascript' src='js/moment.min.js'></script>
+	<script type='text/javascript' src='js/jquery.animateNumber.min.js'></script>
+	<script type='text/javascript' src='js/jquery.circleProgress.min.js'></script>
+	<script type='text/javascript' src='js/mobileAuth.js'></script>
+	<script type='text/javascript' src='js/database.js'></script>
+	<script type='text/javascript' src='js/functions.js'></script>
+
+	<!-- Syncfusion Grid Sources -->
+	<link rel='stylesheet' href='syncfusion/ej.web.all.min.css'/>
+	<script src="syncfusion/ej.widget.all.min.js"></script>
+	<script src="syncfusion/jquery.globalize.min.js"></script>
+	<script src="syncfusion/jquery.validate.min.js"></script>
+	<script src="syncfusion/jquery.validate.unobtrusive.min.js"></script>
+	<script src="syncfusion/jquery.easing.1.3.min.js"></script>
+	<script src="syncfusion/jsrender.min.js"></script>
+
+</head>
+<body>
+	<div id='main'>
+		<div id='top'>
+			<div id='settings' class='top-items'><span></span></div>
+			<div id='overview' class='top-items' data-i18n='menu_item_overview'></div>
+			<div id='database' class='top-items top-dropdown' data-i18n='menu_item_database'>
+				<ul class='dropdown-container'>
+					<li id='accounts' class='top-items dropdown-item' data-i18n='menu_item_accounts'></li>
+					<li id='games' class='top-items dropdown-item' data-i18n='menu_item_games'></li>
+					<li id='serials' class='top-items dropdown-item' data-i18n='menu_item_serials'></li>
+				</ul>
+			</div>
+			<div id='calculator' class='top-items top-dropdown' data-i18n='menu_item_calc'>
+				<ul class='dropdown-container'>
+					<li id='booster' class='top-items dropdown-item' data-i18n='menu_item_booster_calc'></li>
+					<li id='freebies' class='top-items dropdown-item' data-i18n='menu_item_game_calc'></li>
+				</ul>
+			</div>
+			<div id='freekeys' class='top-items' data-i18n='menu_item_free'></div>
+			<div id='chat' class='top-items' data-i18n='menu_item_chat'></div>
+			<div id='top-logo'></div>
+			<div id='top-notifications' data-content='0'>
+				<div id='notifications-container'>
+					<div id="notifications-toolbar">
+						<div id="noti-market" class="notifications-menu-items notifications-menu-active" data-content='0'><span data-i18n="notification_market"></span></div>
+						<div id="noti-trades" class="notifications-menu-items" data-content='0'><span data-i18n="notification_trade"></span></div>
+						<div id="noti-gifts" class="notifications-menu-items" data-content='0'><span>Gifts</span></div>
+						<div id="noti-news" class="notifications-menu-items" data-content='0'><span>News</span></div>
+						<div id='toolbar-actions-wrapper'>
+							<div class='notifications-toolbar-actions confirm' data-i18n="notification_accept_all"></div>
+							<div class='notifications-toolbar-actions decline' data-i18n="notification_cancel_all"></div>
+						</div>
+					</div>
+					<div id="notifications-scroller"></div>
+				</div>
+			</div>
+		</div>
+		<div id='content'>
+			<div id='settings-content' class='content' style='display:none;'></div>
+			<div id='overview-content' class='content' style='display:none;'></div>
+			<div id='accounts-content' class='content' style='display:none;'>
+				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
+				<div id='acontent' data-table='steam_users' style='height:100%;width:100%;'></div>
+			</div>
+			<div id='games-content' class='content' style='display:none;'>
+				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
+				<div id='gcontent' data-table='users_games' style='height:100%;width:100%;'></div>
+			</div>
+			<div id='booster-content' class='content' style='display:none;'></div>
+			<div id='serials-content' class='content' style='display:none;'></div>
+		</div>
+	</div>
+	<div id='dialog'></div>
+</body>
+</html>

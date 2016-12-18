@@ -1,0 +1,187 @@
+/*
+	Just hide the replacement of this box by
+	setting font-color just for _this_ box to
+	transparent. Currently theres no other way
+	to inject the script before the element gets
+	loaded, but we can add the css-properties and
+	they will execute when the dom-element is
+	available.
+*/
+.loginbox > .loginbox_right:nth-child(3){
+	color: transparent;
+}
+
+.mainLoginRightPanel {
+	padding: 0 !important;
+	height: 300px;
+}
+.heady {
+	height: 30px;
+	width: 100%;
+	float: left;
+	color: #ffffff;
+  font-size: 22px;
+  font-family: "Motiva Sans Light", Arial, Helvetica, sans-serif;
+  font-weight: normal;
+}
+.names {
+	counter-increment: liste;
+}
+.names:before {
+	content: counter(liste) ". " attr(data-index);
+}
+.names {
+	height:30px !important;
+	width: calc(100% - 10px);
+	line-height:30px !important;
+	float:left;
+	font-size: 15px;
+	padding: 0 5px 0 5px;
+	color: white;
+}
+.active-green {
+	background-color: #80a006;
+	color: white;
+}
+
+.names:hover {
+	background-color: #80a006 !important;
+	color: white;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+
+
+
+
+/* just to hide on login-process when capturing yo
+#input_username, #input_password, #login_twofactorauth_message_entercode_accountname {
+	color: transparent !important;
+}
+.names {
+	font-size: 0 !important;
+}*/
+.names-line {
+	height: 20px;
+	width: 100%;
+	float: left;
+}
+.names-line > div {
+	height: 1px;
+	width: 100%;
+	margin-top: 5px;
+	background: #67c1f5;
+}
+.names-none {
+	display: none;
+	height: 0;
+}
+.names-input {
+	float: right;
+	width: 150px !important;
+	height: 25px !important;
+  line-height: 25px !important;
+  padding: 0 5px 0 5px !important;
+  margin: 0 !important;
+}
+
+/* For DOM-Manipulation while rendering
+See: http://keithclark.co.uk/articles/working-with-elements-before-the-dom-is-ready/
+*/
+.mainLoginRightPanel, .loginbox_right:nth-child(3) {
+	animation-name: nodeReady;
+	animation-duration: 0.001s;
+}
+.names-container {
+	animation-name: namesReady;
+	animation-duration: 0.001s;
+}
+body {
+	/*overflow-y: hidden;*/
+	animation-name: bodyReady;
+	animation-duration: 0.001s;
+}
+@keyframes bodyReady {
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+@keyframes nodeReady {
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+@keyframes namesReady {
+  from { clip: rect(1px, auto, auto, auto); }
+  to { clip: rect(0px, auto, auto, auto); }
+}
+
+.names-container {
+	height: 240px;
+	width: 100%;
+	float: left;
+	border: 1px solid black;
+	border-radius: 2%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.names-container::-webkit-scrollbar {
+  width: 10px;
+  height: 240px;
+}
+.names-container::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+.names-container::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.5);
+  border: none;
+	min-height: 30px;
+}
+.names-container::-webkit-scrollbar-thumb:hover,
+.names-container::-webkit-scrollbar-thumb:active {
+  background: rgba(0,0,0,0.75);
+	cursor: pointer;
+}
+.names-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border: none;
+}
+
+#reset_skip, #community_skip, #purchased_skip, #start_discovery_queue {
+	height: 25px;
+	line-height: 25px;
+	margin: 5px 0;
+	padding: 0 5px;
+}
+select#login_tasks {
+	padding: 2px;
+	width: 100% !important;
+	min-width: calc(100% + 2px) !important;
+}
+#tasks_inputs {
+	width: 100%;
+}
+.tasks_inputs {
+	height: 20px !important;
+	width: 50% !important;
+	max-width: 50% !important;
+	float: left;
+	margin-bottom: 10px;
+}
+.tasks_inputs:nth-child(1){
+	display: none;
+}
+.tasks_inputs1 {
+	height: 100% !important;
+	width: 80% !important;
+	padding: 2px 7px !important;
+}
+.tasks_inputs2 {
+	padding: 2px !important;
+  margin: 5px 0 0 0;
+  line-height: 21px;
+	height: 21px !important;
+  font-size: 14px !important;
+  text-align: center;
+  width: 80%;
+}

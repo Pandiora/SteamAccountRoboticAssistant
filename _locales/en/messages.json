@@ -1,0 +1,701 @@
+{
+	"menu_item_overview": {
+		"message": "Overview"
+	},
+	"menu_item_database": {
+		"message": "Database"
+	},	
+	"menu_item_accounts": {
+		"message": "Accounts"
+	},
+	"menu_item_games": {
+		"message": "Games"
+	},
+	"menu_item_serials": {
+		"message": "Product-Keys"
+	},
+	"menu_item_calc": {
+		"message": "Calculator"
+	},	
+	"menu_item_booster_calc": {
+		"message": "Booster-Calc"
+	},
+	"menu_item_game_calc": {
+		"message": "Game-Calc"
+	},
+	"menu_item_free": {
+		"message": "Freebies"
+	},
+	"menu_item_chat": {
+		"message": "Chat"
+	},
+	"boostercontroltitle": {
+		"message": "Entry-Count:"
+	},
+	"entrys10": {
+		"message": "10 Entrys"
+	},
+	"entrys25": {
+		"message": "25 Entrys"
+	},
+	"entrys50": {
+		"message": "50 Entrys"
+	},
+	"entrys100": {
+		"message": "100 Entrys"
+	},
+	"header_filter": {
+		"message": "Filter:"
+	},
+	"button_show_games": {
+		"message": "Show all games"
+	},
+	"button_show_own_games": {
+		"message": "Show your games"
+	},
+	"button_show_own_taxes": {
+		"message": "Substract taxes"
+	},
+	"cssanimationloading": {
+		"message": "Loading",
+		"description": "Keep it short - max 10 characters"
+	},
+	"settings_header_settings": {
+		"message": "Settings"
+	},	
+	"settings_header_tokens": {
+		"message": "Token"
+	},	
+	"settings_header_options": {
+		"message": "Options"
+	},	
+	"settings_input_steamid": {
+		"message": "SteamID64"
+	},	
+	"settings_input_json_host": {
+		"message": "JSON-Host (URL)"
+	},	
+	"settings_input_apikey": {
+		"message": "Steam API-Key"
+	},	
+	"settings_input_phpfile": {
+		"message": "PHP-File (URL)"
+	},		
+	"settings_input_lang": {
+		"message": "Language"
+	},
+	"settings_input_currency": {
+		"message": "Currency"
+	},
+	"settings_input_token1": {
+		"message": "Token 1"
+	},
+	"settings_input_token2": {
+		"message": "Token 2"
+	},
+	"settings_input_token3": {
+		"message": "Token 3"
+	},
+	"settings_input_token4": {
+		"message": "Token 4"
+	},
+	"settings_switch_on": {
+		"message": "ON"
+	},
+	"settings_switch_off": {
+		"message": "OFF"
+	},	
+	"settings_switch_oneclick": {
+		"message": "OneClick-Login"
+	},		
+	"settings_switch_vis_debug": {
+		"message": "Visible Debug"
+	},	
+	"booster_content_card_price_sell": {
+		"message": "Card-Price (Sell)"
+	},
+	"booster_content_card_price_buy": {
+		"message": "Card-Price (Buy)"
+	},
+	"booster_content_show_cards": {
+		"message": "Show all Cards"
+	},
+	"booster_content_show_booster": {
+		"message": "Show Booster-Pack"
+	},
+	"booster_content_craft_booster": {
+		"message": "Craft Booster"
+	},
+	"booster_content_sell_total": {
+		"message": "Sell Total"
+	},
+	"booster_content_buy_total": {
+		"message": "Buy Total"
+	},
+	"booster_content_time_1": {
+		"message": "Updated: "
+	},
+	"booster_content_time_2": {
+		"message": "Minutes ago"
+	},
+	"booster_content_gems_price_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Gems-Price: </span><br>This shows you how much gems you need to craft this booster-pack."
+	},
+	"booster_content_gems_cost_bubble1": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Gems-Cost:</span><br>This shows how much"
+	},
+	"booster_content_gems_cost_bubble2": {
+		"message": " Gems would cost, <br>depending on current market-price<br>(lowest sell-order)"
+	},
+	"booster_content_buy_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Buy-Orders (Total):</span><br>This category show the sum of all Buy-Orders, of all cards for this booster-pack."
+	},
+	"booster_content_sell_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Sell-Orders (Total):</span><br>This category show the sum of all Sell-Orders, of all cards for this booster-pack."
+	},
+	"booster_content_booster_price_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Booster-Pack-Preis:</span><br>This shows the lowest sell-order<br> for this booster-pack."
+	},
+	"booster_content_card_sell_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Card-Price (Sell):</span><br>This category show all card-prices from low to high.<br><br><span class='low'>green -</span> is the lowest card-price<br><span class='avg'>yellow -</span> is the average card-price<br><span class='high'>red -</span> is the highest card-price<br><br>Taxes are already substracted.<br><br>Booster-Packs have 3 cards and the sum of all cards<br>would be:"
+	},	
+	"booster_content_card_buy_bubble": {
+		"message": "<span class='arrow-overlay'></span><span class='tooltip-title'>Card-Price (Buy):</span><br>This category show all card-prices from low to high.<br><br><span class='low'>green -</span> is the lowest card-price<br><span class='avg'>yellow -</span> is the average card-price<br><span class='high'>red -</span> is the highest card-price<br><br>Taxes are already substracted.<br><br>Booster-Packs have 3 cards and the sum of all cards<br>would be:"
+	},
+	"inventory_start_auto": {
+		"message": "Start automatically",
+		"description": ""
+	},
+	"inventory_get_item_prices": {
+		"message": "Getting Item-Prices:",
+		"description": ""
+	},
+	"inventory_total": {
+		"message": "Total: ",
+		"description": ""
+	},
+	"inventory_stat_price": {
+		"message": "Stat Price: ",
+		"description": ""
+	},
+	"inventory_item_cnt": {
+		"message": "Item-Count: ",
+		"description": ""
+	},
+	"inventory_flex_price": {
+		"message": "Flex Price: ",
+		"description": ""
+	},
+	"inventory_sell_items_overview": {
+		"message": "Sell Items (Bulk) - Overview",
+		"description": ""
+	},
+	"inventory_select_multi_items": {
+		"message": "Multiple Items",
+		"description": ""
+	},
+	"inventory_multi_items_sell": {
+		"message": " Item(s) sell",
+		"description": "needs one white-space in front of it"
+	},
+	"inventory_select_multiple_items": {
+		"message": "Select multiple Items",
+		"description": ""
+	},
+	"inventory_dialog_error_process_aborted": {
+		"message": "Error! Process aborted!",
+		"description": ""
+	},
+	"inventory_msg_sending_trades": {
+		"message": "We got the needed Card-Data. Sending trades now.",
+		"description": ""
+	},
+	"inventory_msg_not_enough_csgo": {
+		"message": "You don't have enough CS:GO-Cards to craft badges or they can't be traded.",
+		"description": ""
+	},
+	"inventory_send_gifts_bots": {
+		"message": "Send gifts to bots",
+		"description": ""
+	},
+	"inventory_send_cards_to_bots": {
+		"message": "Send cards to bots (Bulk)",
+		"description": ""
+	},
+	"inventory_send_cards_to_bots_dialog": {
+		"message": "Are you sure you want to continue? You can only abort this step by reloading the extension or closing your browser. Make sure every users Badges are up-to-date. This action will send CS:GO-Cards to every bot who doesn't have the Level 5-Badge for CS:GO. It will also calculate how much cards every user needs. Press OK if you want to continue.",
+		"description": ""
+	},
+	"inventory_send_cards_to_bots_proc": {
+		"message": "Send Cards to Bots (Bulk) - Processing ...",
+		"description": ""
+	},
+	"inventory_dialog_msg_create_confirm": {
+		"message": "Create / Confirm Sell-Orders - Processing ...",
+		"description": ""
+	},
+	"inventory_confirm_bulk_gifting": {
+		"message": "Are you sure you want to continue? You can only abort this step by reloading the page. Make sure your database is up-to-date and every game is correctly listed for every of your bots. Gifts only get send to bots which don't own one or more of the games included in the gift",
+		"description": ""
+	},
+	"inventory_alert_no_gift": {
+		"message": "You need to select a game first!",
+		"description": ""
+	},
+	"inventory_cancel_btn": {
+		"message": "Cancel",
+		"description": ""
+	},
+	"inventory_okay_btn": {
+		"message": "OK",
+		"description": ""
+	},
+	"background_progress_gifts": {
+		"message": "Sending Gifts",
+		"description": ""
+	},
+	"background_progress_csgo_cards_finished": {
+		"message": "Finished! You can accept the trades for your bots now.",
+		"description": ""
+	},
+	"background_progress_csgo_cards_sending": {
+		"message": "Sending Cards to Bot",
+		"description": ""
+	},
+	"background_item_was_accepted": {
+		"message": "Item was successfully accepted.",
+		"description": ""
+	},
+	"login_msg_cookie_exists": {
+		"message": "Cookie for this user exists in database and was set.",
+		"description": ""
+	},
+	"login_msg_cookies_deleted": {
+		"message": "Cookies deleted and missing cookies updated.",
+		"description": ""
+	},
+	"login_msg_cookies_deleted_short": {
+		"message": "Cookie deleted: ",
+		"description": "space after is needed"
+	},
+	"background_bulk_gift_error1": {
+		"message": "Looks like this gift was sent before or your sessionID expired.",
+		"description": ""
+	},
+	"background_bulk_gift_error2": {
+		"message": "Looks like you are using an old sessionID",
+		"description": ""
+	},
+	"background_bulk_gift_error3": {
+		"message": "Looks like you tried to send a gift to yourself. gg wp",
+		"description": ""
+	},
+	"background_start_sending_gifts_msg": {
+		"message": "Processed all Data. We can start sending Gifts now.",
+		"description": ""
+	},
+	"background_gifts_bulk_already_owned": {
+		"message": "All of your bots own this game already.",
+		"description": ""
+	},	
+	"background_gifts_bulk_appids_wrong": {
+		"message": "Theres a problem with getting the correct appids.",
+		"description": ""
+	},
+	"background_csgo_bulk_already_badge": {
+		"message": "All users already own the CS:GO-Badge on Level 5 or are Level 8.",
+		"description": ""
+	},
+	"background_error_steam_not_available": {
+		"message": "Error: SteamService not available. ",
+		"description": "space after is needed"
+	},
+	"background_error_too_many_attempts": {
+		"message": "Error: Too many attempts while getting market-prices for items. ",
+		"description": "space after is needed"
+	},	
+	"background_error_not_logged_in": {
+		"message": "You should log in to your steam-account -> abort process. XHR-Error: ",
+		"description": "space after is needed"
+	},
+	"background_error_steam_server": {
+		"message": "Theres a problem with Steam-Server and/or its API. XHR-Error: ",
+		"description": "space after is needed"
+	},
+	"background_bulksell_user_stopped": {
+		"message": "Process was stopped by user or retry-limit was reached (due to Steam-Servers being unavailable).",
+		"description": ""
+	},
+	"background_bulksell_user_stopped_msg": {
+		"message": "Getting Item-Prices process stopped by user.",
+		"description": ""
+	},	
+	"background_bulksell_listing_msg": {
+		"message": "We should be done now. Confirmations may run in background.",
+		"description": ""
+	},
+	"background_bulksell_listing": {
+		"message": "Listing Item on Market",
+		"description": ""
+	},
+	"background_bulksell_confirmation_bg": {
+		"message": "Confirming in the background ...",
+		"description": ""
+	},
+	"background_missing_listener_function": {
+		"message": "Theres no function for ",
+		"description": "space after is needed"
+	},
+	"webworker_getting_bot_games": {
+		"message": "Getting Data via Steam WebAPI ",
+		"description": ""
+	},
+	"webworker_idb_insert_games": {
+		"message": "Inserting Data into Database (IndexedDB)",
+		"description": ""
+	},
+	"webworker_bot_games_cant_find": {
+		"message": "Can't find appids. There could be a problem with Steam WebAPI or to fast requests.",
+		"description": ""
+	},	
+	"webworker_bot_games_done": {
+		"message": "Done. All appids were inserted.",
+		"description": ""
+	},
+	"webworker_bot_games_done_dupes": {
+		"message": "Insertion completed. Duplicates: ",
+		"description": ""
+	},
+	"webworker_getting_badges_error": {
+		"message": "An error occured: ",
+		"description": ""
+	},
+	"confirmation_2fa_trades_saved": {
+		"message": "Notifications for Trades - saved to LocalStorage",
+		"description": ""
+	},
+	"confirmation_2fa_confirm_empty": {
+		"message": "List of confirmations appears empty, there is nothing to confirm.",
+		"description": ""
+	},
+	"confirmation_2fa_wrong_key_time": {
+		"message": "Confirmation-Key or Server-Time is wrong. Retrying ...",
+		"description": ""
+	},		
+	"background_error_master_or_stalled": {
+		"message": "Master-Account not logged in or stalled connection.",
+		"description": ""
+	},
+	"background_error_missing_market_noti": {
+		"message": "Could not get notification-data for market and trade. ",
+		"description": "space after is needed"
+	},
+	"background_error_srsly": {
+		"message": "There could a serious problem with confirmation-key or server-time. Max retry-limit was reached and we reset it now.",
+		"description": ""
+	},	
+	"background_user_is_bot_msg": {
+		"message": "User is a bot and trade gets accepted.",
+		"description": ""
+	},
+	"background_user_is_not_bot_msg": {
+		"message": "User isnt a bot and trade has to be accepted manually.",
+		"description": ""
+	},
+	"background_pending_trades": {
+		"message": "Pending trade-offers detected.",
+		"description": ""
+	},
+	"background_trades_no": {
+		"message": "There are no pending trade-offers.",
+		"description": ""
+	},
+	"background_trades_not_master": {
+		"message": "Another account is logged in. It isnt your Master.",
+		"description": ""
+	},
+	"background_idb_db_blocked": {
+		"message": "Database-Store is blocked by other process",
+		"description": ""
+	},	
+	"background_idb_export_json": {
+		"message": "If you click OK the whole table will be exported. Please look in your Standard Download-Folder for the created file. The Download could start silently.",
+		"description": ""
+	},
+	"steam_login_error_no_cookie": {
+		"message": "Sorry, there is no Cookie for this user in your Database. Steam will set a new Cookie with 30 Days Trade-Restriction.",
+		"description": ""
+	},
+	"steam_login_input_appid": {
+		"message": "You have to input the appid first for the free license you want to activate.",
+		"description": ""
+	},
+	"steam_login_start_btn": {
+		"message": "Start Action",
+		"description": ""
+	},
+	"steam_login_input_reset_skip": {
+		"message": "Reset Skip",
+		"description": ""
+	},
+	"steam_login_input_skip_community": {
+		"message": "Set Skip for Community-Badge",
+		"description": ""
+	},		
+	"steam_login_input_skip_nonpurchase": {
+		"message": "Set Skip for non-purchased",
+		"description": ""
+	},
+	"steam_login_input_disc_queue": {
+		"message": "Start Discovery-Queue",
+		"description": ""
+	},
+	"steam_login_input_license_bulk": {
+		"message": "Adding free license (Bulk)",
+		"description": ""
+	},		
+	"steam_login_search": {
+		"message": "Search...",
+		"description": ""
+	},
+	"steam_login_input_appid": {
+		"message": "AppID...",
+		"description": ""
+	},
+	"index_confirm_all": {
+		"message": "Are you sure you want to accept all confirmations?",
+		"description": ""
+	},
+	"index_decline_all": {
+		"message": "Are you sure you want to decline all confirmations?",
+		"description": ""
+	},
+	"index_confirm_no_items": {
+		"message": "There are no items to confirm.",
+		"description": ""
+	},
+	"index_confirm_one_item": {
+		"message": "Are you sure you want to confirm this item now?",
+		"description": ""
+	},	
+	"index_confirm_one_item_head": {
+		"message": "Confirm Items",
+		"description": ""
+	},
+	"index_listener_malformed": {
+		"message": "WARNING! Malformed request has been send. ",
+		"description": "space after is needed"
+	},
+	"index_listener_message_received": {
+		"message": "Message received from background-page for ",
+		"description": "space after is needed"
+	},
+	"index_first_time": {
+		"message": "You´re using this extension for the first time? Please set up a few settings to enjoy this extension with all its features.",
+		"description": ""
+	},
+	"index_table_id": {
+		"message": "ID",
+		"description": ""
+	},
+	"index_table_typ": {
+		"message": "Type",
+		"description": ""
+	},		
+	"index_table_login_name": {
+		"message": "Login-Name",
+		"description": ""
+	},
+	"index_table_login_pw": {
+		"message": "Login-Password",
+		"description": ""
+	},
+	"index_table_username": {
+		"message": "Username",
+		"description": ""
+	},		
+	"index_table_email": {
+		"message": "Email-Address",
+		"description": ""
+	},
+	"index_table_steamid": {
+		"message": "SteamID (64)",
+		"description": ""
+	},
+	"index_table_lvl": {
+		"message": "Level",
+		"description": ""
+	},
+	"index_table_act": {
+		"message": "Active",
+		"description": ""
+	},
+	"index_table_verified": {
+		"message": "Verified",
+		"description": ""
+	},
+	"index_table_csgo": {
+		"message": "CS:GO",
+		"description": ""
+	},	
+	"index_table_com": {
+		"message": "Community",
+		"description": ""
+	},
+	"index_table_purchased": {
+		"message": "Purchased",
+		"description": ""
+	},
+	"index_table_group": {
+		"message": "Group",
+		"description": ""
+	},
+	"index_table_friend": {
+		"message": "Friend",
+		"description": ""
+	},
+	"index_table_public": {
+		"message": "Public",
+		"description": ""
+	},
+	"index_table_skip": {
+		"message": "Skip",
+		"description": ""
+	},		
+	"index_table_created": {
+		"message": "Created",
+		"description": ""
+	},
+	"index_table_cookie": {
+		"message": "steamMachine (Cookie)",
+		"description": ""
+	},
+	"index_table_api": {
+		"message": "API-Ke",
+		"description": ""
+	},
+	"index_table_rcode": {
+		"message": "R-Code",
+		"description": ""
+	},
+	"index_table_shared": {
+		"message": "Shared-Secret",
+		"description": ""
+	},		
+	"index_table_identity": {
+		"message": "Identity-Secret",
+		"description": ""
+	},
+	"index_table_device": {
+		"message": "Device-ID",
+		"description": ""
+	},
+	"index_table_game": {
+		"message": "Gametitle",
+		"description": ""
+	},
+	"index_table_appid": {
+		"message": "AppID",
+		"description": ""
+	},
+	"index_table_product_key": {
+		"message": "Product Key",
+		"description": ""
+	},
+	"index_table_import1": {
+		"message": "If you import your data, the table '",
+		"description": "space after and quote is needed"
+	},		
+	"index_table_import2": {
+		"message": "' gets cleared and your data deleted. Backup your data first! This step can not be undone. Press OK if you want to continue.",
+		"description": "space before and quote is needed"
+	},
+	"index_table_clear_table": {
+		"message": "Clear Table",
+		"description": ""
+	},
+	"index_table_clear_table_msg": {
+		"message": "Are you sure you want to delete all your data? Backup your data first! This step can not be undone. Press OK if you want to continue.",
+		"description": ""
+	},
+	"index_table_get_owend_games": {
+		"message": "Get Data of owned Games (Steam-API)",
+		"description": ""
+	},
+	"index_table_get_owend_games_msg": {
+		"message": "This action can take a long time depending on how much bots you have. There must be minimal one User set up with Type Master and a valid SteamID or this will not work. This task will run in the background and won´t stop if you reload the extension-tab. If you want to start press OK.",
+		"description": ""
+	},
+	"index_table_get_owend_games_progress": {
+		"message": "Get owned Games - Progress",
+		"description": ""
+	},	
+	"index_table_get_owend_badges": {
+		"message": "Get Data of owned Badges and actual Level",
+		"description": ""
+	},
+	"index_table_get_owend_badges_msg": {
+		"message": "This action can take a long time depending on how much bots you have. There must be minimal one User set up with Type Master and a valid SteamID or this will not work. This task will run in the background and won´t stop if you reload the extension-tab. This action will get the data for CS:GO- / Community-Badge and also the actual level. If you want to start, press OK.",
+		"description": ""
+	},
+	"index_table_owend_badges_progress": {
+		"message": "Get Badges- & Level-Data • Progress",
+		"description": ""
+	},
+	"inventory_input_saved": {
+		"message": "Input has been saved.",
+		"description": ""
+	},
+	"inventory_input_saved_err": {
+		"message": "There was an error saving your data.",
+		"description": ""
+	},
+  "overview_widget_games":{
+    "message":"Games",
+    "description":""
+  },
+  "overview_widget_card_drops":{
+    "message":"Cards",
+    "description":""
+  },
+  "overview_widget_own_card_profit":{
+    "message":"Cards Profit",
+    "description":""
+  },
+  "overview_widget_csgo":{
+    "message":"CS:GO-Cards",
+    "description":""
+  },
+  "overview_widget_stc_games":{
+    "message":"STC-Games",
+    "description":""
+  },
+  "notification_accept":{
+    "message":"Accept",
+    "description":""
+  },
+  "notification_cancel":{
+    "message":"Cancel",
+    "description":""
+  },
+  "notification_accept_all":{
+    "message":"Accept all",
+    "description":"should not be longer"
+  },
+  "notification_cancel_all":{
+    "message":"Decline all",
+    "description":"should not be longer"
+  },
+  "notification_market":{
+    "message":"Market",
+    "description":"cannot be much longer"
+  },
+  "notification_trade":{
+    "message":"Trades",
+    "description":"cannot be much longer"
+  },
+  "settings_switch_confirmation":{
+    "message":"Confirm Bulk-Sell",
+    "description":""
+  }
+}

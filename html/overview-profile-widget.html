@@ -1,0 +1,29 @@
+"<div class='overview-container' id='profile-widget'> \
+	<div class='overview-container-left-pane'> \
+		<div class='overview-left-circle profile' style='background-image: url(\""+profile['response']['players'][0]['avatarfull']+"\");'></div> \
+		<div class='overview-left-circle refresh' id='refresh-profile-widget'></div> \
+	</div> \
+	<a target='_blank' href='"+profile['response']['players'][0]['profileurl']+"' class='booster-title overview-header'>"+profile['response']['players'][0]['personaname']+"</a> \
+	<div class='overview-container-content'> \
+		<div class='overview-container-part'> \
+			<div class='overview-container-content-top' id='db_own_games'></div> \
+			<div class='overview-container-content-bottom' data-i18n='overview_widget_games'></div> \
+		</div> \
+		<div class='overview-container-part'> \
+			<div class='overview-container-content-top' id='db_own_card_drops'></div> \
+			<div class='overview-container-content-bottom' data-i18n='overview_widget_card_drops'></div> \
+		</div> \
+		<div class='overview-container-part'> \
+			<div class='overview-container-content-top' id='db_own_card_profit'></div> \
+			<div class='overview-container-content-bottom' data-i18n='overview_widget_own_card_profit'></div> \
+		</div> \
+		<div class='overview-container-part'> \
+			<div class='overview-container-content-top'  id='db_own_cs_cards'></div> \
+			<div class='overview-container-content-bottom' data-i18n='overview_widget_csgo'></div> \
+		</div> \
+		<div class='overview-container-part'> \
+			<div class='overview-container-content-top'  id='db_own_stc_games'></div> \
+			<div class='overview-container-content-bottom' data-i18n='overview_widget_stc_games'></div> \
+		</div> \
+	</div> \
+</div>"

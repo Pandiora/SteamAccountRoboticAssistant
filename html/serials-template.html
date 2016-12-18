@@ -1,0 +1,31 @@
+"<div class='serials-row '> \
+	<div class='serials-row-number'>"+i+"</div> \
+	<img class='serials-row-image' src='https://steamcdn-a.akamaihd.net/steam/apps/"+database[i].appid+"/header.jpg'></img> \
+	<a target='_blank' href='http://store.steampowered.com/app/"+database[i].appid+"/' class='serials-row-header booster-title'>"+database[i].gamename+"</a> \
+	<div class='serials-row-container'> \
+		<div class='serials-row-container-item'> \
+			<div class='serials-row-container-item-image serials-item-1'></div> \
+			<div class='serials-row-container-item-text'>"+database[i].keys_available+"</div> \
+		</div> \
+		<div class='serials-row-container-item'> \
+			<div class='serials-row-container-item-image serials-two serials-item-2'></div><div class='serials-row-container-item-text serials-two'>"+database[i].keys_total+"</div> \
+			<div class='serials-row-container-item-image serials-two serials-item-3'></div><div class='serials-row-container-item-text serials-two'>"+database[i].keys_activated+"</div> \
+		</div> \
+		<div class='serials-row-container-item'> \
+			<div class='serials-row-container-item-image serials-item-4'></div> \
+			<div class='serials-row-container-item-text'>"+card_sum+"</div> \
+		</div> \
+		<div class='serials-row-container-item'> \
+			<div class='serials-row-container-item-image serials-two serials-item-5'></div><div class='serials-row-container-item-text serials-two'>"+card_drops+"</div> \
+			<div class='serials-row-container-item-image serials-two serials-item-6'></div><div class='serials-row-container-item-text serials-two'>"+card_sum_drops+"</div> \
+		</div> \
+		<div class='serials-row-container-button'> \
+			<div class='button serials-button' data-i18n='serials_content_get_key'></div> \
+			<div class='button serials-button' data-i18n='serials_content_add_key'></div> \
+		</div> \
+		<div class='serials-row-container-button'> \
+			<div class='button serials-button' data-i18n='serials_content_show_keylist'></div> \
+			<a target='_blank' href='http://steamcommunity.com/market/search?q=&category_753_Game%5B%5D=tag_app_"+database[i].appid+"&category_753_cardborder%5B%5D=tag_cardborder_0&category_753_cardborder%5B%5D=tag_cardborder_1&category_753_item_class%5B%5D=tag_item_class_2&appid=753#p1_name_asc' class='button serials-button' data-i18n='serials_content_show_cards'></a> \
+		</div> \
+	</div> \
+</div>"

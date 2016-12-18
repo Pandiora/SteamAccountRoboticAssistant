@@ -1,0 +1,82 @@
+"<div class='booster-row'> \
+	<div class='booster-img' style='background-image: url("+data[i]['image']+");'></div> \
+	<a target='_blank' href='http://store.steampowered.com/app/"+data[i]['appid']+"/' class='booster-title'>"+j+". "+data[i]['title']+"</a> \
+	<div class='booster-data'> \
+		<div class='booster-gems card-data'> \
+			<div class='card-data-title' data-i18n='booster_content_card_price_sell'> \
+				<div class='info'>i \
+					<span data-i18n='booster_content_card_sell_bubble'> \
+						<span class='low'> "+(calcTax(data[i]['lowest_price_sell'], ex_rate)*3).toFixed(2)+cy+" </span><span class='avg'> "+(calcTax(data[i]['avg_price_sell'], ex_rate)*3).toFixed(2)+cy+" </span><span class='high'> "+(calcTax(data[i]['highest_price_sell'], ex_rate)*3).toFixed(2)+cy+" </span> \
+					</span> \
+				</div> \
+			</div> \
+			<div class='card-data-value'> \
+				<div class='prices low'>"+(calcTax(data[i]['lowest_price_sell'], ex_rate)).toFixed(2)+cy+"</div> \
+				<div class='prices avg'>"+(calcTax(data[i]['avg_price_sell'], ex_rate)).toFixed(2)+cy+"</div> \
+				<div class='prices high'>"+(calcTax(data[i]['highest_price_sell'], ex_rate)).toFixed(2)+cy+"</div> \
+			</div> \
+		</div> \
+		<div class='booster-gems card-data'> \
+			<div class='card-data-title' data-i18n='booster_content_card_price_buy'> \
+				<div class='info'>i \
+					<span data-i18n='booster_content_card_buy_bubble'> \
+						<span class='low'> "+(calcTax(data[i]['lowest_price_buy'], ex_rate)*3).toFixed(2)+cy+" </span><span class='avg'> "+(calcTax(data[i]['avg_price_buy'], ex_rate)*3).toFixed(2)+cy+" </span><span class='high'> "+(calcTax(data[i]['highest_price_buy'], ex_rate)*3).toFixed(2)+cy+" </span> \
+					</span> \
+				</div> \
+			</div> \
+			<div class='card-data-value'> \
+				<div class='prices low'>"+(calcTax(data[i]['lowest_price_buy'], ex_rate)).toFixed(2)+cy+"</div> \
+				<div class='prices avg'>"+(calcTax(data[i]['avg_price_buy'], ex_rate)).toFixed(2)+cy+"</div> \
+				<div class='prices high'>"+(calcTax(data[i]['highest_price_buy'], ex_rate)).toFixed(2)+cy+"</div> \
+			</div> \
+		</div> \
+		<div class='booster-gems card-data'> \
+			<div class='card-data-title' data-i18n='booster_content_sell_total'> \
+				<div class='info'>i \
+					<span data-i18n='booster_content_sell_bubble'> \
+					</span> \
+				</div> \
+			</div> \
+			<div class='card-data-value'>"+data[i]['sell_orders']+"</div> \
+		</div> \
+		<div class='booster-gems card-data'> \
+			<div class='card-data-title' data-i18n='booster_content_buy_total'> \
+				<div class='info'>i \
+					<span data-i18n='booster_content_buy_bubble'> \
+					</span> \
+				</div> \
+			</div> \
+			<div class='card-data-value'>"+data[i]['buy_orders']+"</div> \
+		</div> \
+		<div class='booster-gems'> \
+			<div class='info special'>i \
+				<span data-i18n='booster_content_gems_price_bubble'> \
+				</span> \
+			</div> \
+			"+data[i]['gems']+" \
+		</div> \
+		<div class='booster-gems'> \
+			<div class='info special'>i \
+				<span data-i18n='booster_content_gems_cost_bubble1'> \
+				"+data[i]['gems']+"<span data-i18n='booster_content_gems_cost_bubble2'></span> \
+				</span> \
+			</div> \
+			"+((data[i]['gems']/1000)*(calcTax(price['sell_order_graph'][0][0], ex_rate))).toFixed(2)+cy+" \
+		</div> \
+		<div class='booster-gems' style='background-image: url("+data[i]['image']+");'> \
+			<div class='info special'>i \
+				<span data-i18n='booster_content_booster_price_bubble'> \
+				</span> \
+			</div> \
+			"+(calcTax(data[i]['price_sell'], ex_rate)).toFixed(2)+cy+" \
+		</div> \
+	</div> \
+	<div class='booster-footer'> \
+		<a target='_blank' href='http://steamcommunity.com/market/search?q=&category_753_Game%5B%5D=tag_app_"+data[i]['appid']+"&category_753_cardborder%5B%5D=tag_cardborder_0&category_753_cardborder%5B%5D=tag_cardborder_1&category_753_item_class%5B%5D=tag_item_class_2&appid=753#p1_name_asc' class='button' data-i18n='booster_content_show_cards'></a> \
+		<a target='_blank' href='http://steamcommunity.com/market/listings/753/"+data[i]['appid']+"-"+data[i]['title']+" Booster Pack' class='button' data-i18n='booster_content_show_booster'></a> \
+		<a target='_blank' href='http://steamcommunity.com/tradingcards/boostercreator/#"+data[i]['appid']+"' class='button' data-i18n='booster_content_craft_booster'></a> \
+		<!-- <a class='button'>Refresh Data</a> \
+		<a class='button'>More Details</a> --> \
+		<div class='result' data-i18n='booster_content_time_1'>"+diffMins+" <span data-i18n='booster_content_time_2'></span></div> \
+	</div> \
+</div>"

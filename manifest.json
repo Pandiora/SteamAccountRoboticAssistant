@@ -1,0 +1,110 @@
+﻿{
+	"manifest_version": 2,
+
+	"name": "Steam Account Robotic Assistant",
+	"shortname": "SARA",
+	"description": "SteamBoard combines different tools to interact with Steam and its peripherie.",
+	"version": "0.22",
+    "background": {
+        "scripts": [
+        	"js/jquery-2.1.4.min.js", 
+        	"js/background.js", 
+        	"js/acceptTrades.js", 
+        	"js/Dexie.min.js", 
+        	"js/database.js", 
+        	"js/mobileAuth.js", 
+        	"js/confirmations_2fa.js",
+        	"js/mod_headers.js",
+        	"syncfusion/jquery.validate.min.js", 
+        	"syncfusion/jquery.validate.unobtrusive.min.js"
+        ],
+        "persistent": true
+    },
+
+	"default_locale": "en",
+
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["js/jquery-2.1.4.min.js"]
+		},
+		{
+			"matches": [
+				"*://steamcommunity.com/login*",
+				"*://store.steampowered.com//login*",
+				"*://store.steampowered.com//login/*",
+				"*://store.steampowered.com/login*",
+				"*://store.steampowered.com/login/*"
+			],
+			"css": ["css/steam_login.css", "css/jquery.mCustomScrollbar.min.css"],
+			"js": ["js/steam_login.start.js"],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://steamcommunity.com/login*",
+				"*://store.steampowered.com//login*",
+				"*://store.steampowered.com//login/*",
+				"*://store.steampowered.com/login*",
+				"*://store.steampowered.com/login/*"
+			],
+			"js": ["js/jquery.waitUntilExists.min.js", "js/steam_login.js", "js/mobileAuth.js"]
+		},
+		{
+			"matches": ["*://store.steampowered.com/*"],
+			"js": ["js/autoDiscoveryQueue.js"]
+		},
+		{
+			"matches": ["*://store.steampowered.com/*"],
+			"js": ["js/licenseBulkActivation.js"]
+		},
+		{
+			"matches": ["*://steamcommunity.com/id/*/inventory/*"],
+			"css": ["css/inventory.css"]
+		},
+		{
+			"matches": ["*://steamcommunity.com/id/*/inventory/*"],
+			"js": ["js/jquery-2.1.4.min.js", "js/jquery.waitUntilExists.min.js", "js/inventory.js"]
+		},
+		{
+			"matches": [
+				"*://steamcommunity.com/profiles/*/badges",
+				"*://steamcommunity.com/profiles/*/badges/",
+				"*://steamcommunity.com/profiles/*/badges/2",
+				"*://steamcommunity.com/profiles/*/badges/2/",
+				"*://steamcommunity.com/id/*/badges",
+				"*://steamcommunity.com/id/*/badges/",
+				"*://steamcommunity.com/id/*/badges/2",
+				"*://steamcommunity.com/id/*/badges/2/",
+				"*://steamcommunity.com//chat/"
+			],
+			"js": ["js/badges.js"]
+		}
+	],
+
+	"web_accessible_resources": [
+		"js/webworkers.js"
+	],
+
+	"sandbox": {
+		"pages": [
+			"booster-template.html"
+		]
+	},
+
+	"icons": {
+		"16": "images/icon-16x16.png",
+		"48": "images/icon-48x48.png",
+   	   "128": "images/icon-128x128.png"
+	},
+
+	"browser_action": {
+		"default_icon": "images/icon-128x128.png"
+	},
+
+	"permissions": [
+		"cookies", "tabs", "alarms", "webRequest", "webRequestBlocking", "contextMenus", "<all_urls>", "storage"
+	],
+
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
