@@ -1,4 +1,4 @@
-![alt tag](https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/images/icon-48x48.png)|  SARA • SteamAccountRoboticAssistant
+![alt tag][logo] |  SARA • SteamAccountRoboticAssistant
 :--:|:--------------------------------------------------:
 Chrome-Extension for enhancing and automating your Steam-Experience.
 
@@ -22,3 +22,6 @@ If you click this Icon a new page opens and ask you to put in your SteamID, API-
 currency and if you want to activate some features. You don't need more at this step.
 
 More explanation to be added ...
+
+
+[logo]: https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/images/icon-48x48.png "SteamAccountRoboticAssistant"
