@@ -1,5 +1,5 @@
-![alt tag](https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/images/icon-48x48.png)              |  # SARA • SteamAccountRoboticAssistant
-:-------------------------------------:|:--------------------------------------------------:
+![alt tag](https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/images/icon-48x48.png)|  SARA • SteamAccountRoboticAssistant
+:--:|:--------------------------------------------------:
 Chrome-Extension for enhancing and automating your Steam-Experience.
 
 This extension is pretty much Alpha-State, so you have to expect bugs and missing features. 
