@@ -23,6 +23,7 @@ So lets begin with the more interesting part:
 - Also for above one an Overview for Product-Keys additionally to the Syncfusion-Grid
 - Add encryption to Database-Stores (the Database can be accessed by this extension only but add it should be added anyway to make this extension more secure)
 - Add Bulk-Removal and Search for Steam-Market
+- Add option for synchronizing your settings and (encrypted) Databases with your Google-Account -> can only be done with Release on Chrome Web-Store (you should backup your data anyway from time to time)
 
 # Installation
 
