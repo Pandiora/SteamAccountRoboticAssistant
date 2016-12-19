@@ -2,8 +2,8 @@
 	"manifest_version": 2,
 
 	"name": "Steam Account Robotic Assistant",
-	"shortname": "SARA",
-	"description": "SteamBoard combines different tools to interact with Steam and its peripherie.",
+	"short_name": "SARA",
+	"description": "SARA combines different tools to interact with Steam and its peripherie.",
 	"version": "0.22",
     "background": {
         "scripts": [
