@@ -19,53 +19,53 @@ var inventoryLink; getInventoryLink();
 // Trigger events when Extension is installed
 chrome.runtime.onInstalled.addListener(function(details){
 
-	// Set up alarms / cronjob-like tasks
+  // Set up alarms / cronjob-like tasks
   // ToDo: Alarm has to be set over 60s on release
   chrome.alarms.create('booster-json',  { delayInMinutes: 0.02, periodInMinutes: 15.00 });
   chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
-	chrome.alarms.create('pending-trades',{ delayInMinutes: 0.06, periodInMinutes:  5.06 });
+  chrome.alarms.create('pending-trades',{ delayInMinutes: 0.06, periodInMinutes:  5.06 });
   // the higher delay is needed due to stalled connections
   chrome.alarms.create('notific-trades',{ delayInMinutes: 0.25, periodInMinutes:  5.25 });
 
-	// Check for Alarms/Cronjobs
-	chrome.alarms.onAlarm.addListener(function(alarm){
-		if(alarm.name == 'booster-json')  { getBoosterJSON();         } else
-		if(alarm.name == 'owned-games')   { getGameJSON();            } else
+  // Check for Alarms/Cronjobs
+  chrome.alarms.onAlarm.addListener(function(alarm){
+    if(alarm.name == 'booster-json')  { getBoosterJSON();         } else
+    if(alarm.name == 'owned-games')   { getGameJSON();            } else
     if(alarm.name == 'notific-trades'){ getNotificationsTrades(); } else
-		if(alarm.name == 'pending-trades'){
-			idb.getMasterRecord().done(function(masterSteamID){
-				getTradeOffers(masterSteamID['steam_id']);
-			});
-		} else { console.log('Task for this alarm isn´t set.'); }
-	});
+    if(alarm.name == 'pending-trades'){
+      idb.getMasterRecord().done(function(masterSteamID){
+        getTradeOffers(masterSteamID['steam_id']);
+      });
+    } else { console.log('Task for this alarm isn´t set.'); }
+  });
 
 });
 
 // Retrieve json-data for booster-packs every 15 minutes
 function getBoosterJSON(){
-	chrome.storage.sync.get(['json_host'], function(obj){
-		$.get(obj['json_host']+'?ver='+new Date().getTime(), function(response){
-			var data = JSON.stringify(response);
-			chrome.storage.local.set({'booster_data':data}, function (result) {
+  chrome.storage.sync.get(['json_host'], function(obj){
+    $.get(obj['json_host']+'?ver='+new Date().getTime(), function(response){
+      var data = JSON.stringify(response);
+      chrome.storage.local.set({'booster_data':data}, function (result) {
         console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Update: '+'%c Booster-Data', '', 'background: silver; color: green; border-radius: 10%', '');
-			});
-		});
-	});
+      });
+    });
+  });
 }
 
 // Retrieve data of owned games every 60 minutes
 function getGameJSON(){
   idb.getMasterRecord().done(function(user){
-		$.get('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='+user['apikey']+'&steamid='+user['steam_id']+'&format=json',function(appids){
-			// Put all appids of owned games into an array
-			var appid_index = [];
-			$(appids.response['games']).each(function(index){ appid_index.push(JSON.stringify(appids.response['games'][index].appid)); });
+    $.get('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='+user['apikey']+'&steamid='+user['steam_id']+'&format=json',function(appids){
+      // Put all appids of owned games into an array
+      var appid_index = [];
+      $(appids.response['games']).each(function(index){ appid_index.push(JSON.stringify(appids.response['games'][index].appid)); });
 
-			// And store array in local database
-			chrome.storage.local.set({'appids': appid_index}, function (result) {
+      // And store array in local database
+      chrome.storage.local.set({'appids': appid_index}, function (result) {
         console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Update: '+'%c Appid-Data', '', 'background: silver; color: green; border-radius: 10%', '');
-			});
-		});
+      });
+    });
   });
 }
 
@@ -379,18 +379,18 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
   // Debug
   // console.log('bg-page message-listener was called');
 
-	// We wanna login with smurf-Account and have to delete all cookies, except
-	// Session-Cookie and Master-steamMachine-Cookie to avoid an Error when
-	// Header-Size gets to big, because chrome is saving _all_ steamMachine-Cookies
-	// of all your Steam-Accounts / we´re saving new cookies on every login-attempt
-	// also don´t delete Cookies related to your age/birth so you don´t have to confirm
-	// the age-check over and over again
-	///////////////////////////////////////////////////////////////////////////////////
+  // We wanna login with smurf-Account and have to delete all cookies, except
+  // Session-Cookie and Master-steamMachine-Cookie to avoid an Error when
+  // Header-Size gets to big, because chrome is saving _all_ steamMachine-Cookies
+  // of all your Steam-Accounts / we´re saving new cookies on every login-attempt
+  // also don´t delete Cookies related to your age/birth so you don´t have to confirm
+  // the age-check over and over again
+  ///////////////////////////////////////////////////////////////////////////////////
 
-	if(message.greeting == 'deleteCookies'){
+  if(message.greeting == 'deleteCookies'){
 
     // Save Cookies to Database
-		chrome.cookies.getAll({url: sender.tab.url},function (cookies){
+    chrome.cookies.getAll({url: sender.tab.url},function (cookies){
       // Read Data for Master from IDB
       idb.opendb().then(function(db){
         // We need to wrap all database-stuff in a transaction
@@ -399,13 +399,13 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
           db.steam_users.where('type').equals('Master').first(function(master){
 
             // Iterate all existing cookies and save their values
-      			for(var i=0; i<cookies.length;i++) {
+            for(var i=0; i<cookies.length;i++) {
 
               // Update steamMachine-Cookies for every account
-    					if(cookies[i].name.indexOf('steamMachineAuth') >= 0){
+              if(cookies[i].name.indexOf('steamMachineAuth') >= 0){
 
-    						var curcookiesteamid = cookies[i].name.replace('steamMachineAuth', '');
-    						var curcookievalue = cookies[i].value;
+                var curcookiesteamid = cookies[i].name.replace('steamMachineAuth', '');
+                var curcookievalue = cookies[i].value;
 
                 // Update Cookies based on steamid
                 db.steam_users
@@ -413,52 +413,52 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
                 .equals(curcookiesteamid)
                 .modify({steamMachine: curcookievalue});
 
-    						console.log('SteamID64: '+curcookiesteamid+'\nSteamMachineAuth: '+cookies[i].name+'\nMessage: '+message);
-    					}
+                console.log('SteamID64: '+curcookiesteamid+'\nSteamMachineAuth: '+cookies[i].name+'\nMessage: '+message);
+              }
 
               // Don´t remove master-cookie, and Cookies related to age-check
               // Additionally don´t remove steamLogin-Cookies when getting logged out due
               // to a purchase and by deleting them we would quit the redirect for the purchase otherwise
               if(['steamMachineAuth'+master['steam_id'],'sessionid','lastagecheckage','birthtime','steamLoginSecure','steamLogin', 'stopme'].indexOf(cookies) == -1){
-      					chrome.cookies.remove({url: sender.tab.url + cookies[i].path, name: cookies[i].name});
+                chrome.cookies.remove({url: sender.tab.url + cookies[i].path, name: cookies[i].name});
                 console.log(chrome.i18n.getMessage("login_msg_cookies_deleted_short")+cookies[i].name);
-      				}
-      			}
+              }
+            }
           });
         }).then(function(){
           sendResponse({farewell: chrome.i18n.getMessage("login_msg_cookies_deleted")});
         }).catch(function(err) {
           console.log(err);
         }).finally(function(){
-    			db.close();
-    		});
+          db.close();
+        });
       });
     });
     // important - otherwise sendResponse throws an error
     return true;
-	} else if(message.greeting.indexOf('steamMachineAuth') >= 0){
+  } else if(message.greeting.indexOf('steamMachineAuth') >= 0){
 
-		var steamMachine = message.greeting.toString().split(';')[0];
-		var steamMachine_value = message.greeting.toString().split(';')[1];
+    var steamMachine = message.greeting.toString().split(';')[0];
+    var steamMachine_value = message.greeting.toString().split(';')[1];
 
-		chrome.cookies.set({
-			url: sender.tab.url,
-			name: steamMachine,
-			value: steamMachine_value,
-			path: '/',
-			secure: true,
-			httpOnly: true,
-			expirationDate: (new Date().getTime()/1000) + 1000000000
-		});
+    chrome.cookies.set({
+      url: sender.tab.url,
+      name: steamMachine,
+      value: steamMachine_value,
+      path: '/',
+      secure: true,
+      httpOnly: true,
+      expirationDate: (new Date().getTime()/1000) + 1000000000
+    });
 
     //Debug cookies not being set
     //console.log('Cookie has been set. Name: '+steamMachine+' Value: '+steamMachine_value);
 
-		sendResponse({farewell: chrome.i18n.getMessage("login_msg_cookie_exists")});
+    sendResponse({farewell: chrome.i18n.getMessage("login_msg_cookie_exists")});
     // important - otherwise sendResponse throws an error
     return false;
 
-	} else if(message.greeting == 'getNamesForLogin'){
+  } else if(message.greeting == 'getNamesForLogin'){
 
     var names = [];
     idb.opendb().then(function(db){
@@ -1211,11 +1211,16 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
   return true;
 });
 
-
+chrome.browserAction.onClicked.addListener(function(tab){
+  chrome.tabs.create({
+    url: chrome.extension.getURL('index.html')
+  });
+});
+/* pinned style
 chrome.tabs.create({
   url: chrome.extension.getURL('index.html'),
   pinned: true
-});
+});*/
 
 //
 function capitalizeFirstLetter(string) {
