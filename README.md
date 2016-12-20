@@ -3,9 +3,7 @@
 
 Chrome-Extension for enhancing and automating your Steam-Experience with focus on managing multiple Steam-Accounts. SARA may have the same features as other Chrome-Extensions for Steam but uses other approaches. This said, SARA isn't a copy of any other Project and was created from scratch.
 
-This extension is pretty much Alpha-State, so you have to expect bugs and missing features. 
-The use of this extension is on your own risk and I'm not responsible for any damage that 
-it might cause, but I'm trying my best to avoid such cases.
+This extension is pretty much Alpha-State, so you have to expect bugs and missing features. The use of this extension is on your own risk and I'm not responsible for any damage that it might cause, but I'm trying my best to avoid such cases. This said, this extension won't be released on Chrome-Store until all needed basic features are working/included, major bugs/problems being fixed and usability is on a good level. 
 
 So lets begin with the more interesting part:
 
