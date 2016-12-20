@@ -1114,10 +1114,8 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     sendResponse(community_badge);
     return false;
   } else if(message.greeting == 'gimmeMasterSteamID'){
-    idb.opendb().then(function(db){
-      db.steam_users.where('type').equals('Master').first(function(user){
-        sendResponse(user.steam_id);
-      });
+    idb.getMasterRecord().then(function(user){
+      sendResponse(user.steam_id);
     });
     return true;
   } else if(message.greeting == "reset_skip_login"){

@@ -108,7 +108,7 @@ $(document).ready(function(){
                               }
 
                               // check again for next-url (should be empty if list is empty)
-                              nxt = (nxt == '') ? 'http://store.steampowered.com/explore/next/' : 'http://store.steampowered.com/app/'+nxt;
+                              nxt = (nxt == '0') ? 'http://store.steampowered.com/explore/next/0/' : 'http://store.steampowered.com/app/'+nxt;
 
                               // Posting this data will give us the data for the next page
                               // This way we just have to update the needed values
