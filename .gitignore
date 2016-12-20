@@ -1,2 +1,4 @@
 .old
 .knowledge-base
+node_modules
+gulpfile.js

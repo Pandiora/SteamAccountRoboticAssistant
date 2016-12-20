@@ -42,7 +42,7 @@ function getBotGames(){
 
         var master_api_key = $.grep(users, function(e){ return e.type == 'Master'; });
         var usercnt = users.length;
-        var usermsg = chrome.i18n.getMessage("webworker_getting_bot_games");
+        var usermsg = 'Getting Bot-Games';
         var apparr = [];
         master_api_key = master_api_key[0]['apikey'];
 
@@ -53,7 +53,7 @@ function getBotGames(){
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
             setTimeout(function(){
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: chrome.i18n.getMessage("webworker_idb_insert_games")});
+              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Insert games into database.'});
               processUser(apparr);
             }, 100);
             return;
@@ -73,7 +73,7 @@ function getBotGames(){
             if(appids.response.hasOwnProperty('games')){
               var appidarr = appids.response['games'];
             } else {
-              console.log(chrome.i18n.getMessage("webworker_bot_games_cant_find"));
+              console.log('Cannot find bot-games');
               var appidarr = [];
             }
 
@@ -105,9 +105,9 @@ function getBotGames(){
     idb.opendb().then(function(db){
       db.transaction('rw', db.users_games, function*(){
         db.users_games.bulkAdd(apparr).then(function(lastKey) {
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: chrome.i18n.getMessage("webworker_bot_games_done")});
+          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
         }).catch(Dexie.BulkError, function(e){
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: chrome.i18n.getMessage("webworker_bot_games_done_dupes")+e.failures.length});
+          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
         });
       }).catch(function(err){
         console.error (err.length);
@@ -128,7 +128,7 @@ function getBotBadges(){
 
         var master_api_key = $.grep(users, function(e){ return e.type == 'Master'; });
         var usercnt = users.length;
-        var usermsg = chrome.i18n.getMessage("webworker_getting_bot_games");
+        var usermsg = 'Getting Bot-Games';
         var userarr = {
           steamid: [],
           csgo: [],
@@ -143,7 +143,7 @@ function getBotBadges(){
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
             setTimeout(function(){
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: chrome.i18n.getMessage("webworker_idb_insert_games")});
+              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Add games to Database'});
               //console.log(userarr);
               processUser(userarr);
             }, 100);
@@ -207,9 +207,9 @@ function getBotBadges(){
           });
         }
       }).then(function(){
-        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: chrome.i18n.getMessage("webworker_bot_games_done")});
+        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
       }).catch(function(err){
-        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: chrome.i18n.getMessage("webworker_getting_badges_error")+err});
+        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Error while getting badges'+err});
       }).finally(function(){
         self.postMessage({msg: 'OwnedBadgesDone'});
         self.close();

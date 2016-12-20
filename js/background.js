@@ -1201,10 +1201,13 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
   return true;
 });
 
-chrome.browserAction.onClicked.addListener(function(tab){
-	chrome.tabs.create({url: chrome.extension.getURL('index.html')});
+
+chrome.tabs.create({
+  url: chrome.extension.getURL('index.html'),
+  pinned: true
 });
 
+//
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
