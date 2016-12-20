@@ -442,8 +442,12 @@
     "message":"Skip für Community-Abzeichen",
     "description":""
   },
-  "steam_login_input_skip_nonpurchase":{
+  "steam_login_input_skip_purchase":{
     "message":"Skip für limitierte Accounts",
+    "description":""
+  },
+  "steam_login_input_skip_nonpurchase":{
+    "message":"Skip für unlimitierte Accounts",
     "description":""
   },
   "steam_login_input_disc_queue":{

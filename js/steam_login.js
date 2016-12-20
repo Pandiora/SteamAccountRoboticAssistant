@@ -114,10 +114,10 @@ $(document).ready(function(){
 			}
 		} else if(selected_option == 'start_discovery_queue'){
 			chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusActive'}, function(res){
-	      if(res == 1){
-	        document.location.href = "https://store.steampowered.com/login/?redir=explore%2F";
-	      }
-	    });
+	      		if(res == 1){
+	        		document.location.href = "https://store.steampowered.com/login/?redir=explore%2F";
+	      		}
+	    	});
 		} else {
 			chrome.runtime.sendMessage({greeting: selected_option},function(res){
 				if(res == 1){

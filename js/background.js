@@ -1178,6 +1178,18 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
     return true;
 
+  } else if(message.greeting == "set_non_purchased_skip"){
+
+    idb.opendb().then(function(db){
+      db.steam_users.where('purchased').equals(1).modify(function(user){
+        user.skip = 1;
+      }).then(function(){
+        sendResponse(1);
+      });
+    });
+
+    return true;
+
   } else if(message.greeting == "getDiscoveryQueueStatus"){
     sendResponse(stop_disc_queue);
   } else if(message.greeting == "setDiscoveryQueueStatusInactive"){

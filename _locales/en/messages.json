@@ -442,10 +442,14 @@
 		"message": "Set Skip for Community-Badge",
 		"description": ""
 	},		
-	"steam_login_input_skip_nonpurchase": {
-		"message": "Set Skip for non-purchased",
+	"steam_login_input_skip_purchase": {
+		"message": "Skip for limited accounts",
 		"description": ""
 	},
+	"steam_login_input_skip_nonpurchase":{
+	    "message":"Skip for unlimited accounts",
+	    "description":""
+  	},
 	"steam_login_input_disc_queue": {
 		"message": "Start Discovery-Queue",
 		"description": ""
