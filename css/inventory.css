@@ -209,7 +209,7 @@ body.migrated_profile_page .inventory_links {
 #progress-bar + div {
 	width: 370px;
 	height: 40px;
-	line-height: 40px;
+	line-height: 20px;
 	font-size: 15px;
 }
 @keyframes animate-stripes { 100% {background-position: 60px 0;} }
