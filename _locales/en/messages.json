@@ -255,7 +255,7 @@
 		"description": ""
 	},
 	"background_progress_csgo_cards_finished": {
-		"message": "Finished! You can accept the trades for your bots now.",
+		"message": "Finished! Confirmations get accepted in the background.",
 		"description": ""
 	},
 	"background_progress_csgo_cards_sending": {
@@ -448,6 +448,10 @@
 	},
 	"steam_login_input_skip_nonpurchase":{
 	    "message":"Skip for unlimited accounts",
+	    "description":""
+  	},
+	"steam_login_input_under_eight":{
+	    "message":"Skip for under lvl 8",
 	    "description":""
   	},
 	"steam_login_input_disc_queue": {

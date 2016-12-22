@@ -17,6 +17,7 @@ document.addEventListener("animationstart", function(e) {
           <option id="reset_community_skip">'+chrome.i18n.getMessage("steam_login_input_skip_community")+'</option> \
           <option id="set_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_skip_purchase")+'</option> \
           <option id="set_non_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_skip_nonpurchase")+'</option> \
+          <option id="set_under_eight_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_under_eight")+'</option> \
           <option id="start_discovery_queue">'+chrome.i18n.getMessage("steam_login_input_disc_queue")+'</option> \
           <option id="adding_free_license">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
         </select> \

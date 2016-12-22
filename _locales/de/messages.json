@@ -255,7 +255,7 @@
     "description":""
   },
   "background_progress_csgo_cards_finished":{
-    "message":"Fertig! Du kannst die Handelsangebote für deine Bots nun annehmen.",
+    "message":"Fertig! Angebote werden im Hintergrund bestätigt.",
     "description":""
   },
   "background_progress_csgo_cards_sending":{
@@ -450,6 +450,10 @@
     "message":"Skip für unlimitierte Accounts",
     "description":""
   },
+  "steam_login_input_under_eight":{
+      "message":"Skip für unter Lvl 8",
+      "description":""
+    },
   "steam_login_input_disc_queue":{
     "message":"Starte Entdeckungsliste",
     "description":""
