@@ -233,33 +233,51 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
            Swat = 149750036,
             Fbi = 149754772,
             Idf = 149750877;
+
   // Get the minimum tradeable cards
-  var min = cmin = Math.min.apply(Math,[cards[Anarchist].length,cards[Balkan].length,cards[Fbi].length,cards[Idf].length,cards[Swat].length]);
+  var min = cmin = Math.min.apply(Math,
+    [
+      cards[Anarchist].length,
+      cards[Balkan].length,
+      cards[Fbi].length,
+      cards[Idf].length,
+      cards[Swat].length
+    ]
+  );
+
+  // Declare one counter for iterations and one for inside-loop
   var cnt = 0, ccnt = 0;
+
+  //console.log(users.length+' Users which need more levels');
 
   // Calc the max iterations based on number of CS:GO-Cards
   // We assume 1 of each card (5 cards) for one badge-level
-  console.log('Min: '+min);
+  //console.log('Min: '+min);
   for(var i=0;0<min;i++){
-    console.log('cnt: '+cnt+' i: '+i);
+    //console.log('cnt: '+cnt+' i: '+i);
     // If we have more CS:GO-Cards then accounts which
     // need a specific amount of cards we have to exit the loop earlier
     if(i in users){
       // Even if we can't send cards for 5 levels/badges
       // send the rest of the cards to the bot to craft 1-4 badges
-      if(min<(5-users[i].csgo) && min > 0){
+      if(min<parseInt(8-(users[i].level+(2-users[i].com)+users[i].csgo+1)) && min > 0){
         i++;
       }
-      min = min-(5-users[i].csgo);
+      min = min-parseInt(8-(users[i].level+(2-users[i].com)+users[i].csgo+1));
       cnt = i+1;
     } else {
       break;
     }
   }
 
+  // In case the available amount and the needed amount = 0, set min to user-count
+  min = min == 0 ? users.length : min;
+
   // Calc the max iterations based on users which need cards
   // and the number of tradeable CS:GO-Cards
-  cnt = Math.min.apply(Math,[users.length,cnt]);
+  cnt = Math.min.apply(Math,[users.length,min]);
+  //console.log(cnt+' maximum iterations');
+
   // We need a delayed loop to not spam the steam-servers
   ///////////////////////////////////////////////////////////
   (function next(counter, maxLoops){
@@ -269,6 +287,10 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
     // after timeout (defined at frontend)
     //////////////////////////////////////////////////////////
     if (counter++ >= maxLoops){
+      // Finally start to confirm cards
+      processMarketListings();
+
+      // Tell frontend we're done
       setTimeout(function(){
         chrome.tabs.sendMessage(sender,{
           msg: 'UpdateProgress',
@@ -288,7 +310,8 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
 
     // Get the right amount of cards we need or which are left
     var cdata = [];
-    var len = Math.min.apply(Math,[(cmin-ccnt),(5-users[counter-1].csgo)]);
+    var len = Math.min.apply(Math,[(cmin-ccnt),parseInt(8-(users[counter-1].level+(2-users[counter-1].com)+users[counter-1].csgo+1))]);
+    //console.log('Name: '+users[counter-1].loginname+' Level: '+users[counter-1].level+' Community: '+users[counter-1].com+' CSGO: '+users[counter-1].csgo+' User gets '+(len*5)+' cards');
     for(var i=0;i<len;i++){
       cdata.push(cards[Anarchist][ccnt],cards[Balkan][ccnt],cards[Fbi][ccnt],cards[Idf][ccnt],cards[Swat][ccnt]);
       ccnt = ccnt+1;
@@ -329,14 +352,22 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
         if (data.hasOwnProperty('tradeofferid')) {
           // Debug
           console.log(counter+'. User: '+users[counter-1].loginname+'\nLevel: '+users[counter-1].level+'\nCSGO-Level: '+users[counter].csgo+'\nCards send: '+cdata.length);
-          // It works! Start next iteration
-          setTimeout(function(){ next(counter, maxLoops) }, 1000);
+          // Set user in DB to csgo-level 5 to avoid sending cards again
+          idb.opendb().then(function(db){
+            db.transaction("rw", db.steam_users, function () {
+              db.steam_users.where("login_name").equals(users[counter-1].loginname).modify({csgo: 5});
+            }).then(function(){
+              // alright, start next iteration
+              setTimeout(function(){ next(counter, maxLoops) }, 10000);
+            }).catch(function(err){
+              console.log(err);
+            });
+          });
         } else {
           console.log(data);
         }
       }
     });
-
   })(0, cnt);
 }
 
@@ -655,7 +686,8 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
             'steamid': f.steam_id,
             'loginname': f.login_name,
             'level': f.level,
-            'csgo': f.csgo
+            'csgo': f.csgo,
+            'com': f.community
           });
         });
       }).then(function(){
@@ -1142,6 +1174,10 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
         user.skip = 1;
       }).then(function(){
         sendResponse(1);
+      }).catch(function(err){
+        console.log(err);
+      }).finally(function(){
+        db.close();
       });
     });
 
@@ -1171,6 +1207,10 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
         user.skip = 1;
       }).then(function(){
         sendResponse(1);
+      }).catch(function(err){
+        console.log(err);
+      }).finally(function(){
+        db.close();
       });
     });
 
@@ -1183,6 +1223,29 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
         user.skip = 1;
       }).then(function(){
         sendResponse(1);
+      }).catch(function(err){
+        console.log(err);
+      }).finally(function(){
+        db.close();
+      });
+    });
+
+    return true;
+
+  } else if(message.greeting == "set_under_eight_purchased_skip"){
+
+    idb.opendb().then(function(db){
+      db.transaction('rw', 'steam_users', function(){
+        db.steam_users.each(user => {
+          if(!(user.purchased == 1 && user.level < 8))
+          db.steam_users.update(user.id, {skip: 1});
+        });
+      }).then(function(){
+        sendResponse(1);
+      }).catch(function(err){
+        console.log(err);
+      }).finally(function(){
+        db.close();
       });
     });
 
@@ -1216,11 +1279,12 @@ chrome.browserAction.onClicked.addListener(function(tab){
     url: chrome.extension.getURL('index.html')
   });
 });
-/* pinned style
+// pinned style
 chrome.tabs.create({
-  url: chrome.extension.getURL('index.html'),
-  pinned: true
-});*/
+  url: chrome.extension.getURL('index.html')
+  /*,
+  pinned: true*/
+});
 
 //
 function capitalizeFirstLetter(string) {

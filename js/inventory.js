@@ -754,10 +754,72 @@ function injectScriptGifts(){
   var actualCode = '(' + function() {
 
     var arr = [];
-    var g_ActiveInventory = window.g_ActiveInventory;
+    var items = g_ActiveInventory.m_rgItemElements;
+    var description, assetid;
+
+    for(i=0;i<items.length; i++){
+      if(items[i] !== undefined){
+
+
+        description = items[i][0].rgItem.description;
+        assetid = items[i][0].rgItem.assetid;
+
+
+        if(description.actions !== undefined){
+          if(description['owner_descriptions'] === undefined){
+            if(description.name in arr){
+              // gamename already exists, so only push the gift-id to array
+              arr[[description.name]].idarr.push(assetid);
+
+            } else {
+
+              if(description.actions[0].link.indexOf('sub') > 0){
+
+                // For subid´s we need to fill the array on the frontend because of Cross-Origin...
+                arr[[description.name]] = {
+                  title: [], 
+                  appid: [], 
+                  idarr:[assetid], 
+                  link: description.actions[0].link, 
+                  sid: g_sessionID
+                };
+
+              } else {
+
+                // For normal appids just push title and appid to array
+                var regexappid = /app\/(\d+)\//;
+                var appid = (description.actions[0].link).match(regexappid)[1];
+
+                // Create object with arrays
+                arr[[description.name]] = {
+                  title: [], 
+                  appid: [], 
+                  idarr:[assetid], 
+                  link: description.actions[0].link, 
+                  sid: g_sessionID
+                };
+
+                // Now put title and appid into our created arrays
+                arr[[description.name]].title.push(description.name);
+                arr[[description.name]].appid.push(appid);
+
+              }
+
+            }
+          } else {
+            // Already gifted games get excluded
+            // theres no separate error-handling needed though
+            // console.log('Game was already gifted.');
+          }
+
+        } else {
+          // this is probably a guest-pass -> ignore it
+        }
+      }
+    }
 
     // Iterate over all gift-id´s
-    for(var key in g_ActiveInventory.rgInventory){
+    /*for(var key in g_ActiveInventory.rgInventory){
 
       key = g_ActiveInventory.rgInventory[key];
 
@@ -799,7 +861,7 @@ function injectScriptGifts(){
         // theres no separate error-handling needed though
         // console.log('Game was already gifted.');
       }
-    }
+    }*/
 
     // Just pass an Event including a customized dataset of gifts not already gifted
     var evt=document.createEvent("CustomEvent");
