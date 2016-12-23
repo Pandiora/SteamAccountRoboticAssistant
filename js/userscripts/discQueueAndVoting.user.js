@@ -2,7 +2,7 @@
 // @name         Steam Auto-Discovery-Queue + Voting
 // @namespace    https://github.com/Pandiora/
 // @include      https://github.com/*
-// @version      0.1
+// @version      0.11
 // @description  First vote for every available award randomly and then iterate over discovery-queue until no cards are left.
 // @author       Pandi
 // @match        http://store.steampowered.com/
@@ -33,7 +33,7 @@
         jQuery.ajax({
             url: 'http://store.steampowered.com/SteamAwards/',
             success: function(res){
-                console.log(res);
+
                 var awards = jQuery(res).find('.steamaward_castvote');
                 var arr = [];
 
@@ -64,7 +64,6 @@
                                     appid: arr[Math.floor(Math.random()*arr.length)]
                                 },
                                 success: function(response){
-                                    console.log(response);
                                     scnt = 0; arr = [];
                                     setTimeout(function(){ next(counter, maxLoops); }, 300);
                                 },
