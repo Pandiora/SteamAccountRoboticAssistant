@@ -361,7 +361,7 @@ $(document).ready(function(){
 				$('#serials-content').append(data);
 				// only load if theres no content when menu-button is clicked
 				if($('.serials-row').length <= 0){
-					getSerials();
+					//getSerials();
 				}
 			});
 		} else {
@@ -370,7 +370,7 @@ $(document).ready(function(){
 	});
 
 });
-function getSerials(){
+/*function getSerials(){
 
 	chrome.storage.sync.get(['php_file', 'token2', 'currency'], function(synced){
 	if(typeof synced['php_file'] != 'undefined'){ // only execute if php-file-path is set
@@ -411,7 +411,7 @@ function getSerials(){
 	});
 	}
 });
-}
+}*/
 // a little helper for getSerials() to get the correct index of booster_data
 function getAppidIndex(arr, appid){
 	for(var i=0;i < arr.length;i++){
@@ -805,20 +805,19 @@ $(document).ready(function(){
 function getProfileWidget(timer, init){
 
 	chrome.storage.sync.get(['steamid', 'api_key', 'currency'], function(synced){
-		chrome.storage.local.get(['booster_data', 'appids'], function (local){
+	chrome.storage.local.get(['booster_data', 'appids'], function (local){
 
-		var cc = ''; // We need to fix the EUR to EUR-Conversion here
-		if(synced['currency'] == 'EUR'){ cc = 'USD'; } else { cc = synced['currency']; }
-		$.get('https://www.google.com/finance/converter?a=1&from=EUR&to='+cc,function(exchange){
-			$.getJSON('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='+synced['api_key']+'&steamids='+synced['steamid']+'&format=json', function(profile){
-				$.getJSON(profile['response']['players'][0]['profileurl']+'inventory/json/753/6', function(inventory){
 
-					$.get('../html/overview-profile-widget.html', function(response){
+		$.getJSON('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='+synced['api_key']+'&steamids='+synced['steamid']+'&format=json', function(profile){
+		$.getJSON(profile['response']['players'][0]['profileurl']+'inventory/json/753/6', function(inventory){
+
+			$.get('../html/overview-profile-widget.html', function(response){
 
 				// Currency-Crap
-				var ex_rate, cy = '';
+				/*var ex_rate, cy = '';
 				if(synced['currency'] == 'USD'){ ex_rate = $(exchange).find('.bld').html().replace(/[^0-9\.]/g, ''); cy = '$'; } else { ex_rate = 1; cy = '€'; }
-
+				*/
+				var ex_rate = 1, cy = '€', cc = '€';
 				var decimal_factor = 2 === 0 ? 1 : Math.pow(10, 2);
 				var booster_data = $.parseJSON(local['booster_data']);
 				var card_profit_sum = 0, card_sum = 0, j = 0, card_drops = 0, card_value = 0;
@@ -870,14 +869,18 @@ function getProfileWidget(timer, init){
 					getDatabaseWidget(timer);
 				}
 			});
-				});
-			});
 		});
+		});
+
+
+		 /*var cc = ''; // We need to fix the EUR to EUR-Conversion here
+		if(synced['currency'] == 'EUR'){ cc = 'USD'; } else { cc = synced['currency']; }
+		$.get('https://www.google.com/finance/converter?a=1&from=EUR&to='+cc,function(exchange){*/
 	});
 	});
 }
 function getDatabaseWidget(timer){
-
+/*
 	chrome.storage.sync.get(['php_file', 'token1', 'currency'], function(synced){
 	if(typeof synced['php_file'] != 'undefined'){ // only execute if php-file-path is set
 		chrome.storage.local.get(['booster_data'], function (local){
@@ -912,15 +915,15 @@ function getDatabaseWidget(timer){
 						card_sum += card_drops*booster_data[j]['lowest_price_sell']*games_list[i];
 						card_drops_sum += card_drops*games_list[i];
 
-						/****** DEBUG ******/
-						/*
+
+						
 						console.log(x+'. '+'Gametitle: '+booster_data[j]['title']+
 						'\nAppid: '+appid_list[i]+
 						'\nCards: '+booster_data[j]['cards']+
 						'\nCalculated Drops: '+card_drops+
 						'\nGame-Count: '+games_list[i]+
 						'\nCard-Price: '+booster_data[j]['lowest_price_sell']);
-						*/
+						
 					}
 				}
 			}
@@ -959,7 +962,8 @@ function getDatabaseWidget(timer){
 		});
 	});
 	}
-});
+	});
+*/
 }
 /***********************All Stuff for Settings-Content*******************************
 
@@ -1215,15 +1219,10 @@ function getBoosters(loop, filter) {
 	Do dat Storage-Shit
 	*******************/
 	chrome.storage.sync.get(['steamid', 'api_key', 'currency'], function(synced){
-		chrome.storage.local.get(['booster_data', 'appids'], function (local){
+	chrome.storage.local.get(['booster_data', 'appids'], function (local){
 
-		/*******************
-		Do dat External-Shit
-		*******************/
-		var cc = ''; // We need to fix the EUR to EUR-Conversion here
-		if(synced['currency'] == 'EUR'){ cc = 'USD'; } else { cc = synced['currency']; }
-		$.get('https://www.google.com/finance/converter?a=1&from=EUR&to='+cc,function(exchange){
-			$.getJSON('http://steamcommunity.com/market/itemordershistogram?country=DE&language=german&currency=3&item_nameid=26463978',function(price){
+
+		$.getJSON('http://steamcommunity.com/market/itemordershistogram?country=DE&language=german&currency=3&item_nameid=26463978',function(price){
 
 			// be stupid - use eval :> to fill variables in html-template
 			$.get('../html/booster-template.html', function(response){
@@ -1231,9 +1230,8 @@ function getBoosters(loop, filter) {
 				// Parse Booster-Data
 				var data = $.parseJSON(local['booster_data']);
 				// Get currency exchange
-				var ex_rate = '', cy = '';
-				if(synced['currency'] == 'USD'){ ex_rate = $(exchange).find('.bld').html().replace(/[^0-9\.]/g, ''); cy = ' $'; }
-				else { ex_rate = 1; cy = ' €'; }
+				var ex_rate = 1, cy = ' €', cc = '€';
+
 
 				j = 0;
 
@@ -1257,7 +1255,15 @@ function getBoosters(loop, filter) {
 				}
 			});
 		});
-		});
+
+		/*
+
+		var cc = ''; // We need to fix the EUR to EUR-Conversion here
+		if(synced['currency'] == 'EUR'){ cc = 'USD'; } else { cc = synced['currency']; }
+		$.get('https://www.google.com/finance/converter?a=1&from=EUR&to='+cc,function(exchange){
+
+		*/
+
 	});
 	});
 }
