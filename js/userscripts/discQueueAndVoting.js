@@ -6,8 +6,8 @@
 // @author       Pandi
 // @match        http://store.steampowered.com/
 // @match        http://store.steampowered.com/explore/
-// @updateURL    https://raw.githubusercontent.com/Mottie/js//master/github-code-colors.user.js
-// @downloadURL  https://raw.githubusercontent.com/Mottie/GitHub-userscripts/master/github-code-colors.user.js
+// @updateURL    https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.js
+// @downloadURL  https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.js
 // @grant        none
 // ==/UserScript==
 
@@ -91,7 +91,7 @@
         function discQueue(){
             var cards_left = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g, '');
             var cards_text = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text();
-            var cards_text_compare = "Sie können heute noch eine weitere Karte erhalten, indem Sie Ihre Entdeckungsliste erkunden.";
+            var cards_text_compare = "You can get 1 more card today by continuing to browse your Discovery Queue.";
             if ((cards_left > 0 && cards_left !== '') || (cards_text == cards_text_compare)) {
                 var GenerateQueue = function(queueNumber) {
                     console.log('Queue #' + ++queueNumber);
