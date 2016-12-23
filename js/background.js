@@ -261,10 +261,10 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
     if(i in users){
       // Even if we can't send cards for 5 levels/badges
       // send the rest of the cards to the bot to craft 1-4 badges
-      if(min<parseInt(8-(users[i].level+(2-users[i].com)+users[i].csgo+1)) && min > 0){
+      if(min<parseInt(8-(users[i].level+Math.max(2-users[i].com)+users[i].csgo+1)) && min > 0){
         i++;
       }
-      min = min-parseInt(8-(users[i].level+(2-users[i].com)+users[i].csgo+1));
+      min = min-parseInt(8-(users[i].level+Math.max(2-users[i].com)+users[i].csgo+1));
       cnt = i+1;
     } else {
       break;
@@ -311,7 +311,7 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
 
     // Get the right amount of cards we need or which are left
     var cdata = [];
-    var len = Math.min.apply(Math,[(cmin-ccnt),parseInt(8-(users[counter-1].level+(2-users[counter-1].com)+users[counter-1].csgo+1))]);
+    var len = Math.min.apply(Math,[(cmin-ccnt),parseInt(8-(users[counter-1].level+Math.max(2-users[counter-1].com)+users[counter-1].csgo+1))]);
     //console.log('Name: '+users[counter-1].loginname+' Level: '+users[counter-1].level+' Community: '+users[counter-1].com+' CSGO: '+users[counter-1].csgo+' User gets '+(len*5)+' cards');
     for(var i=0;i<len;i++){
       cdata.push(cards[Anarchist][ccnt],cards[Balkan][ccnt],cards[Fbi][ccnt],cards[Idf][ccnt],cards[Swat][ccnt]);
