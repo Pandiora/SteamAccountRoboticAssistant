@@ -455,7 +455,7 @@
 	    "description":""
   	},
 	"steam_login_input_disc_queue": {
-		"message": "Start Discovery-Queue",
+		"message": "Start Discovery-Queue  + Voting",
 		"description": ""
 	},
 	"steam_login_input_license_bulk": {

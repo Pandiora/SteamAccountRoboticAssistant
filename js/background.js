@@ -254,6 +254,7 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
   // We assume 1 of each card (5 cards) for one badge-level
   //console.log('Min: '+min);
   for(var i=0;0<min;i++){
+
     //console.log('cnt: '+cnt+' i: '+i);
     // If we have more CS:GO-Cards then accounts which
     // need a specific amount of cards we have to exit the loop earlier
