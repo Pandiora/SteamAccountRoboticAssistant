@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         Steam Auto-Discovery-Queue + Voting
 // @namespace    https://github.com/Pandiora/
+// @include      https://github.com/*
 // @version      0.1
 // @description  First vote for every available award randomly and then iterate over discovery-queue until no cards are left.
 // @author       Pandi
