@@ -203,56 +203,52 @@ function updateProgress(percent, message, price_add, amount){
   }
 }
 
+$(window).on('hashchange', function(){
+
+  // Toggle buttons based on hashes
+  // --------------------------------------------
+  var hash = window.location.hash.substring(1);
+  var selected_hash = $('#contextselect_activecontext div').attr('id').replace('context_option_', '');
+
+  if(((hash && selected_hash) == '753_1') 
+  || (hash == '' && selected_hash == '753_1')
+  || (hash == '753' && selected_hash == '753_1')){
+    // Toggle our custom-buttons
+    $('#multi_items').css('visibility', 'hidden');
+    $('#bot_gifts').css('visibility', 'visible');
+  }   
+  else if(((hash && selected_hash) == '753_0') 
+  || (hash == '' && selected_hash == '753_0')
+  || (hash == '753' && selected_hash == '753_0')){
+    // Toggle our custom-buttons
+    $('#bot_gifts').css('visibility', 'hidden');
+    $('#multi_items').css('visibility', 'visible');
+  }
+
+});
+
 
 $(document).ready(function(){
 
-  var hash = window.location.hash;
-
-  /*
-    var hash = window.location.hash.substring(1);
+  // Append buttons and functions based on hashes
+  // --------------------------------------------
+  var hash = window.location.hash.substring(1);
   var selected_hash = $('#contextselect_activecontext div').attr('id').replace('context_option_', '');
 
-           if(((hash && selected_hash) == '753_1') 
-       || (hash == '' && selected_hash == '753_1')
-    || (hash == '753' && selected_hash == '753_1'){
-
-  } else if(  ((hash && selected_hash) == '753_0') 
-       || (hash == '' && selected_hash == '753_0')
-    || (hash == '753' && selected_hash == '753_0'){
-
-  } else if(){
-
-  }
-   */
-
-  // Only show buttons on gift-page
-  if(hash == '#753_1'){
-    // Append Custom-Button and Inject Script to pass variables
+  if(((hash && selected_hash) == '753_1') 
+  || (hash == '' && selected_hash == '753_1')
+  || (hash == '753' && selected_hash == '753_1')){
+    // Add Dropdown for Bulk-Gifting
     $('.inventory_links').append(' \
       <div id="bot_gifts"> \
         <div class="btn_darkblue_white_innerfade" data-i18n="inventory_send_gifts_bots"></div> \
         <select id="gift-titles"></select> \
       </div> \
     ');
-
-    $('#bot_gifts div').on('click', function(event){
-      giftsClickHandler();
-    });
-
-    // If dropdown changes display matching items
-    $('#gift-titles').on('change', function(){
-      // input the search-string into filter and trigger a search
-      $('#filter_control').val($(this).val());
-      $('#filter_control').focus().blur();
-      // Items need some time to display/slide-in > use timeout
-      setTimeout(function(){
-        $('.itemHolder:visible:eq(0) div a')[0].click();
-      }, 10);
-    });
-
-  } else if(hash == '#753_0' || hash == ''){
-
-    // All stuff for Standard-Steam-Inventory
+  }   
+  else if(((hash && selected_hash) == '753_0') 
+  || (hash == '' && selected_hash == '753_0')
+  || (hash == '753' && selected_hash == '753_0')){
     // Add Buttons for Listing
     $('.inventory_filters').after('\
       <a class="btn_small btn_green_white_innerfade" id="multi_items" style="margin-left: 12px;"> \
@@ -262,29 +258,45 @@ $(document).ready(function(){
         <span><span id="item_count">0</span><span data-i18n="inventory_multi_items_sell"><span></span> \
       </a> \
     ');
-
-    // Rewrite Button-State and selection-bit on click
-    $('#multi_items span').on('click', function(event){
-      if(multi_selection_bit == 0){
-        $(this).text(chrome.i18n.getMessage("inventory_cancel_btn"));
-        multi_selection_bit = 1;
-        $('#multi_sell_items').css('visibility', 'visible');
-      } else {
-        $(this).text(chrome.i18n.getMessage("inventory_select_multiple_items"));
-        multi_selection_bit = 0;
-        $('.itemHolder').removeClass('multi-select');
-        $('#multi_sell_items').css('visibility', 'hidden');
-        // Must be reset to 0 since cancelling the action deselects all items
-        $('#item_count').text('0');
-      }
-    });
-
-
-    // Start Selection of multiple items if activated 
-    $('.itemHolder:not(.disabled) div').on('click', function(e){
-      multiSelection($(this), e);
-    });
   }
+
+  // Append Custom-Button and Inject Script to pass variables
+  $('#bot_gifts div').on('click', function(event){
+    giftsClickHandler();
+  });
+
+  // If dropdown changes display matching items
+  $('#gift-titles').on('change', function(){
+    // input the search-string into filter and trigger a search
+    $('#filter_control').val($(this).val());
+    $('#filter_control').focus().blur();
+    // Items need some time to display/slide-in > use timeout
+    setTimeout(function(){
+      $('.itemHolder:visible:eq(0) div a')[0].click();
+    }, 10);
+  });
+
+  // Rewrite Button-State and selection-bit on click
+  $('#multi_items span').on('click', function(event){
+    if(multi_selection_bit == 0){
+      $(this).text(chrome.i18n.getMessage("inventory_cancel_btn"));
+      multi_selection_bit = 1;
+      $('#multi_sell_items').css('visibility', 'visible');
+    } else {
+      $(this).text(chrome.i18n.getMessage("inventory_select_multiple_items"));
+      multi_selection_bit = 0;
+      $('.itemHolder').removeClass('multi-select');
+      $('#multi_sell_items').css('visibility', 'hidden');
+      // Must be reset to 0 since cancelling the action deselects all items
+      $('#item_count').text('0');
+    }
+  });
+
+
+  // Start Selection of multiple items if activated 
+  $('.itemHolder:not(.disabled) div').on('click', function(e){
+    multiSelection($(this), e);
+  });
 
   // Handle Bulk-Sell
   $('#multi_sell_items span').on('click', function(){

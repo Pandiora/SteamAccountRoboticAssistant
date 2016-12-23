@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         Steam Auto-Discovery-Queue + Voting
+// @namespace    https://github.com/Pandiora/
+// @include      https://github.com/*
 // @version      0.1
 // @description  First vote for every available award randomly and then iterate over discovery-queue until no cards are left.
 // @author       Pandi
 // @match        http://store.steampowered.com/
 // @match        http://store.steampowered.com/explore/
-// @updateURL    https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.js
-// @downloadURL  https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.js
+// @updateURL    https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.user.js
+// @downloadURL  https://raw.githubusercontent.com/Pandiora/SteamAccountRoboticAssistant/master/js/userscripts/discQueueAndVoting.user.js
 // @grant        none
 // ==/UserScript==
 
