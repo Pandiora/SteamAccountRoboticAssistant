@@ -2,6 +2,7 @@
 var multi_selection_bit = 0;
 var selectedItem, selectedPage, GiftData, walletInfo;
 var STCardsData = [];
+var steamID = $('.playerAvatar > a').attr('href').replace(/\D+/g, '');
 var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo']; // Array of Events
 
 /*************************************************
@@ -137,11 +138,12 @@ addListenerMulti(document, AoE, function(d){
 
 // the needed data isn´t available from the beginning
 // so we have to wait until the first element exists
-$('.inventory_item_link:eq(0)').waitUntilExists(function(){
-  injectScriptGifts();
-  // since this is the earliest starting-point, get our walletinfo here
-  injectScriptWalletInfo();
-});
+var doneWallet = setInterval(function() {
+  if($('a.inventory_item_link:eq(0)').length) {
+    clearInterval(doneWallet);
+    injectScriptWalletInfo();
+  }
+}, 10);
 
 // Add Dialog-Wrapper to body so we can use it later
 $('body').append("\
@@ -216,10 +218,15 @@ $(window).on('hashchange', function(){
     // Toggle our custom-buttons
     $('#multi_items').css('visibility', 'hidden');
     $('#bot_gifts').css('visibility', 'visible');
+    // Needed for changing from community to gifts (dropdown)
+    $('#inventory_'+steamID+'_753_1 .inventory_item_link:eq(0)').waitUntilExists(function(){
+      injectScriptGifts();
+    });
   }   
   else if(((hash && selected_hash) == '753_0') 
   || (hash == '' && selected_hash == '753_0')
-  || (hash == '753' && selected_hash == '753_0')){
+  || (hash == '753' && selected_hash == '753_0')
+  || (hash && selected_hash) == '753_6'){
     // Toggle our custom-buttons
     $('#bot_gifts').css('visibility', 'hidden');
     $('#multi_items').css('visibility', 'visible');
@@ -230,34 +237,43 @@ $(window).on('hashchange', function(){
 
 $(document).ready(function(){
 
+    // Add Dropdown for Bulk-Gifting
+  $('.inventory_links').append(' \
+    <div id="bot_gifts"> \
+      <div class="btn_darkblue_white_innerfade" data-i18n="inventory_send_gifts_bots"></div> \
+      <select id="gift-titles"></select> \
+    </div> \
+  ');
+    // Add Buttons for Listing
+  $('.inventory_filters').after('\
+    <a class="btn_small btn_green_white_innerfade" id="multi_items" style="margin-left: 12px;"> \
+      <span data-i18n="inventory_select_multiple_items"></span> \
+    </a> \
+    <a class="btn_small btn_green_white_innerfade" id="multi_sell_items" style="margin-left: 12px;"> \
+      <span><span id="item_count">0</span><span data-i18n="inventory_multi_items_sell"><span></span> \
+    </a> \
+  ');
+
   // Append buttons and functions based on hashes
   // --------------------------------------------
   var hash = window.location.hash.substring(1);
   var selected_hash = $('#contextselect_activecontext div').attr('id').replace('context_option_', '');
 
+
   if(((hash && selected_hash) == '753_1') 
   || (hash == '' && selected_hash == '753_1')
   || (hash == '753' && selected_hash == '753_1')){
-    // Add Dropdown for Bulk-Gifting
-    $('.inventory_links').append(' \
-      <div id="bot_gifts"> \
-        <div class="btn_darkblue_white_innerfade" data-i18n="inventory_send_gifts_bots"></div> \
-        <select id="gift-titles"></select> \
-      </div> \
-    ');
+    $('#bot_gifts').css('visibility', 'visible');
+    // wait for inventory to get loaded
+    $('#inventory_'+steamID+'_753_1 .inventory_item_link:eq(0)').waitUntilExists(function(){
+      injectScriptGifts();
+    });
   }   
   else if(((hash && selected_hash) == '753_0') 
   || (hash == '' && selected_hash == '753_0')
-  || (hash == '753' && selected_hash == '753_0')){
-    // Add Buttons for Listing
-    $('.inventory_filters').after('\
-      <a class="btn_small btn_green_white_innerfade" id="multi_items" style="margin-left: 12px;"> \
-        <span data-i18n="inventory_select_multiple_items"></span> \
-      </a> \
-      <a class="btn_small btn_green_white_innerfade" id="multi_sell_items" style="margin-left: 12px;"> \
-        <span><span id="item_count">0</span><span data-i18n="inventory_multi_items_sell"><span></span> \
-      </a> \
-    ');
+  || (hash == '753' && selected_hash == '753_0')
+  || (hash && selected_hash) == '753_6'){
+    $('#multi_items').css('visibility', 'visible');
   }
 
   // Append Custom-Button and Inject Script to pass variables
@@ -772,13 +788,12 @@ function injectScriptGifts(){
     for(i=0;i<items.length; i++){
       if(items[i] !== undefined){
 
-
         description = items[i][0].rgItem.description;
         assetid = items[i][0].rgItem.assetid;
 
 
         if(description.actions !== undefined){
-          if(description['owner_descriptions'] === undefined){
+          if(description['owner_descriptions'].length < 3){
             if(description.name in arr){
               // gamename already exists, so only push the gift-id to array
               arr[[description.name]].idarr.push(assetid);
@@ -829,51 +844,6 @@ function injectScriptGifts(){
         }
       }
     }
-
-    // Iterate over all gift-id´s
-    /*for(var key in g_ActiveInventory.rgInventory){
-
-      key = g_ActiveInventory.rgInventory[key];
-
-      // If owner_descriptions are set the gift is either untradeable or was already gifted ([1])
-      // ToDo: Check later if this works w/o problems with more gifts in inventory
-      if(key['owner_descriptions'] == undefined){
-
-        if(key.name in arr){
-          // gamename already exists, so only push the gift-id to array
-          arr[[key.name]].idarr.push(key.id);
-
-        } else {
-          // Only add new object-names to the array if we have a new gamename
-          // We have to differentiate sub and normal appids
-          // For subs we need to extract the appids with an AJAX-Call to the store-page of the game
-          if(key.actions[0].link.indexOf('sub') > 0){
-
-            // For subid´s we need to fill the array on the frontend because of Cross-Origin...
-            arr[[key.name]] = {title: [], appid: [], idarr:[key.id], link: key.actions[0].link, sid: g_sessionID};
-
-          } else {
-
-            // For normal appids just push title and appid to array
-            var regexappid = /app\/(\d+)\//;
-            var appid = (key.actions[0].link).match(regexappid)[1];
-
-            // Create object with arrays
-            arr[[key.name]] = {title: [], appid: [], idarr:[key.id], link: key.actions[0].link, sid: g_sessionID};
-
-            // Now put title and appid into our created arrays
-            arr[[key.name]].title.push(key.name);
-            arr[[key.name]].appid.push(appid);
-
-          }
-        }
-
-      } else {
-        // Already gifted games get excluded
-        // theres no separate error-handling needed though
-        // console.log('Game was already gifted.');
-      }
-    }*/
 
     // Just pass an Event including a customized dataset of gifts not already gifted
     var evt=document.createEvent("CustomEvent");

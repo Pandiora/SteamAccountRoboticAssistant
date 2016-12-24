@@ -59,11 +59,15 @@
 			"js": ["js/licenseBulkActivation.js"]
 		},
 		{
-			"matches": ["*://steamcommunity.com/id/*/inventory/*"],
+			"matches": [
+				"*://steamcommunity.com/id/*/inventory/*", 
+				"*://steamcommunity.com/profiles/*/inventory/*"],
 			"css": ["css/inventory.css"]
 		},
 		{
-			"matches": ["*://steamcommunity.com/id/*/inventory/*"],
+			"matches": [
+				"*://steamcommunity.com/id/*/inventory/*", 
+				"*://steamcommunity.com/profiles/*/inventory/*"],
 			"js": ["js/jquery-2.1.4.min.js", "js/jquery.waitUntilExists.min.js", "js/inventory.js"]
 		},
 		{
