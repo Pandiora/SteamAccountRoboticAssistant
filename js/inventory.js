@@ -2,7 +2,7 @@
 var multi_selection_bit = 0;
 var selectedItem, selectedPage, GiftData, walletInfo;
 var STCardsData = [];
-var steamID = $('.playerAvatar > a').attr('href').replace(/\D+/g, '');
+var steamID = /g_steamID\s\=\s"(.*)"\;/.exec($('#global_header + script')[0].innerHTML)[1];
 var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo']; // Array of Events
 
 /*************************************************
@@ -210,10 +210,11 @@ $(window).on('hashchange', function(){
   // Toggle buttons based on hashes
   // --------------------------------------------
   var hash = window.location.hash.substring(1);
-  var selected_hash = $('#contextselect_activecontext div').attr('id').replace('context_option_', '');
+  var selected_hash = $('#contextselect_activecontext div').length > 0 ? $('#contextselect_activecontext div').attr('id').replace('context_option_', '') : '';
 
   if(((hash && selected_hash) == '753_1') 
   || (hash == '' && selected_hash == '753_1')
+  || (hash == '753' && selected_hash == '')
   || (hash == '753' && selected_hash == '753_1')){
     // Toggle our custom-buttons
     $('#multi_items').css('visibility', 'hidden');
@@ -240,7 +241,8 @@ $(document).ready(function(){
     // Add Dropdown for Bulk-Gifting
   $('.inventory_links').append(' \
     <div id="bot_gifts"> \
-      <div class="btn_darkblue_white_innerfade" data-i18n="inventory_send_gifts_bots"></div> \
+      <div class="btn_darkblue_white_innerfade" id="gifts-bots" data-i18n="inventory_send_gifts_bots"></div> \
+      <div class="btn_darkblue_white_innerfade" id="gifts-master" data-i18n="inventory_send_gifts_master"></div> \
       <select id="gift-titles"></select> \
     </div> \
   ');
@@ -257,11 +259,12 @@ $(document).ready(function(){
   // Append buttons and functions based on hashes
   // --------------------------------------------
   var hash = window.location.hash.substring(1);
-  var selected_hash = $('#contextselect_activecontext div').attr('id').replace('context_option_', '');
-
+  var selected_hash = $('#contextselect_activecontext div').length != '' ? $('#contextselect_activecontext div').attr('id').replace('context_option_', '') : '';
 
   if(((hash && selected_hash) == '753_1') 
   || (hash == '' && selected_hash == '753_1')
+  || (hash == '' && selected_hash == '')
+  || (hash == '753' && selected_hash == '')
   || (hash == '753' && selected_hash == '753_1')){
     $('#bot_gifts').css('visibility', 'visible');
     // wait for inventory to get loaded
@@ -276,9 +279,14 @@ $(document).ready(function(){
     $('#multi_items').css('visibility', 'visible');
   }
 
-  // Append Custom-Button and Inject Script to pass variables
-  $('#bot_gifts div').on('click', function(event){
+  // Send gifts to bots
+  $('#bot_gifts #gifts-bots').on('click', function(event){
     giftsClickHandler();
+  });
+
+  // Send gifts to master
+  $('#bot_gifts #gifts-master').on('click', function(event){
+    giftsBulkMaster();
   });
 
   // If dropdown changes display matching items
@@ -310,7 +318,7 @@ $(document).ready(function(){
 
 
   // Start Selection of multiple items if activated 
-  $('.itemHolder:not(.disabled) div').on('click', function(e){
+  $(document).on('click', '.itemHolder:not(.disabled) div', function(e){
     multiSelection($(this), e);
   });
 
@@ -471,41 +479,43 @@ function bulkSellCalc(that, stat_price, flex_price){
   $('#item-prices-sum').text(sum.toString()+" "+walletInfo[0].currencySymbol);
 }
 
+function giftsBulkMaster(){
+
+  // since we can't send the complete object for gifts to background
+  // just send the needed data
+
+  var giftssum = {
+    idarr: [],
+    sid: ''
+  };
+
+  for(var key in GiftData){
+    if(GiftData.hasOwnProperty(key)){
+      giftssum.idarr.push.apply(giftssum.idarr, GiftData[key].idarr);
+      giftssum.sid = GiftData[key].sid;
+    }
+  }
+
+  createDialog("warn", chrome.i18n.getMessage("inventory_send_gifts_master_dialog"), chrome.i18n.getMessage("inventory_confirm_master_gifting"), 2);
+
+  $("#yoyo").one("click", function(){
+    // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
+    setTimeout(function(){
+      //console.log('OK was clicked so we can proceed further.');
+      chrome.runtime.sendMessage({greeting: 'sendGiftsBulkMaster', gifts: giftssum });
+    }, 500);
+    createDialog("info", chrome.i18n.getMessage("inventory_send_gifts_to_master_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+  });
+
+}
+
 function giftsClickHandler(){
   var title = $('#gift-titles').val();
   if(title != ''){
 
     console.log(GiftData[[title]]);
-    var link = GiftData[[title]].link;
 
-    if(link.indexOf('sub') > -1){
-
-      // prevent filling up the array with the same values for
-      // titles and appids again
-      GiftData[[title]].appid = [];
-      GiftData[[title]].title = [];
-
-      $.get(link, function(response){
-        var regexappid = /\<div class=\"tab_item\"\s\sdata-ds-appid=\"(\d+)\"/g;
-        var regextitle = /\<div class=\"tab_item_name\"\>(.*)\<\/div\>/g;
-        var arr = [];
-        var i;
-
-        // Now store all appids and titles in our created arrays
-        // parseInt for appid so we can use the array with Dexie
-        while (i = regexappid.exec(response)){ GiftData[[title]].appid.push(i[1]); }
-        num = 0;
-        while (i = regextitle.exec(response)){ GiftData[[title]].title.push(i[1]); }
-
-        //console.log(GiftData[[title]].appid);
-      });
-    } else {
-
-      //console.log('no sub '+GiftData[[title]]);
-
-    }
-
-    createDialog("info", chrome.i18n.getMessage("inventory_send_cards_to_bots"), chrome.i18n.getMessage("inventory_confirm_bulk_gifting"), 2);
+    createDialog("warn", chrome.i18n.getMessage("inventory_send_gifts_to_bots"), chrome.i18n.getMessage("inventory_confirm_bulk_gifting"), 2);
 
     $("#yoyo").one("click", function(){
       // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
@@ -515,7 +525,7 @@ function giftsClickHandler(){
           console.log(response);
         });
       }, 500);
-      createDialog("info", chrome.i18n.getMessage("inventory_send_cards_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+      createDialog("info", chrome.i18n.getMessage("inventory_send_gifts_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
     });
 
   } else {
@@ -783,7 +793,11 @@ function injectScriptGifts(){
 
     var arr = [];
     var items = g_ActiveInventory.m_rgItemElements;
-    var description, assetid;
+    var description, assetid, appid;
+    var regextitle = /\/\d+\/">(.*?)<\/a>/g;
+    var regexappid = /\/app\/(\d*)\/\"/g;
+    var regappid = /app\/(\d+)\//;
+    var z;
 
     for(i=0;i<items.length; i++){
       if(items[i] !== undefined){
@@ -793,7 +807,7 @@ function injectScriptGifts(){
 
 
         if(description.actions !== undefined){
-          if(description['owner_descriptions'].length < 3){
+          if(description.owner_descriptions === undefined || description.owner_descriptions.length < 3){
             if(description.name in arr){
               // gamename already exists, so only push the gift-id to array
               arr[[description.name]].idarr.push(assetid);
@@ -802,7 +816,7 @@ function injectScriptGifts(){
 
               if(description.actions[0].link.indexOf('sub') > 0){
 
-                // For subid´s we need to fill the array on the frontend because of Cross-Origin...
+                // For subid´s we need to iterate the item-description
                 arr[[description.name]] = {
                   title: [], 
                   appid: [], 
@@ -811,11 +825,14 @@ function injectScriptGifts(){
                   sid: g_sessionID
                 };
 
+                // Fill title and appids via regex from description-text
+                while (z = regextitle.exec(description.descriptions[0].value)){ arr[[description.name]].title.push(z[1]); }             
+                while (z = regexappid.exec(description.descriptions[0].value)){ arr[[description.name]].appid.push(z[1]); }
+
               } else {
 
                 // For normal appids just push title and appid to array
-                var regexappid = /app\/(\d+)\//;
-                var appid = (description.actions[0].link).match(regexappid)[1];
+                appid = (description.actions[0].link).match(regappid)[1];
 
                 // Create object with arrays
                 arr[[description.name]] = {

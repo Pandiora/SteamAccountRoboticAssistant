@@ -218,6 +218,10 @@
     "message":"Sende Geschenke an Bots",
     "description":""
   },
+  "inventory_send_gifts_master":{
+    "message":"Alle Geschenke an Master",
+    "description":""
+  },
   "inventory_send_cards_to_bots":{
     "message":"Sende Karten an Bots",
     "description":""
@@ -234,12 +238,32 @@
     "message":"Erstellen \/ Bestätigen Verkaufsaufträge ...",
     "description":""
   },
+  "inventory_send_gifts_master_dialog":{
+    "message":"Sende Geschenke an Master",
+    "description":""
+  },
+  "inventory_confirm_master_gifting":{
+    "message":"Bist du sicher fortfahren zu wollen? Du kannst diesen Vorgang nur durch Neuladen der Erweiterung oder Schließen des Browsers abbrechen. Klicke auf OK um fortzufahren.",
+    "description":""
+  },
+  "inventory_send_gifts_to_bots":{
+    "message":"Sende Geschenke an Bots",
+    "description":""
+  },
   "inventory_confirm_bulk_gifting":{
-    "message":"Bist du sich fortfahren zu wollen? Du kannst diesen Vorgang nur durch Neuladen der Erweiterung oder schließen des Browsers abbrechen. Stelle sicher, dass deine Datenbank aktuell ist und für jeden Bot alle Spiele gelistet sind. Geschenke werden nur an Bots gesendet, eines oder mehrere Spiele dieses Geschenkes nicht besitzen.",
+    "message":"Bist du sicher fortfahren zu wollen? Du kannst diesen Vorgang nur durch Neuladen der Erweiterung oder schließen des Browsers abbrechen. Stelle sicher, dass deine Datenbank aktuell ist und für jeden Bot alle Spiele gelistet sind. Geschenke werden nur an Bots gesendet, eines oder mehrere Spiele dieses Geschenkes nicht besitzen.",
     "description":""
   },
   "inventory_alert_no_gift":{
     "message":"Du musst zuerst ein Spiel auswählen!",
+    "description":""
+  },
+  "inventory_send_gifts_to_master_proc":{
+    "message":"Sende Geschenke an Master - Verarbeitung ...",
+    "description":""
+  },
+  "inventory_send_gifts_to_bots_proc":{
+    "message":"Sende Geschenke an Bots - Verarbeitung ...",
     "description":""
   },
   "inventory_cancel_btn":{

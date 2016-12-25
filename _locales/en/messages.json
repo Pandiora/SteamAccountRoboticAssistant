@@ -218,6 +218,10 @@
 		"message": "Send gifts to bots",
 		"description": ""
 	},
+	"inventory_send_gifts_master":{
+		"message":"All gifts to Master",
+		"description":""
+	},
 	"inventory_send_cards_to_bots": {
 		"message": "Send cards to bots (Bulk)",
 		"description": ""
@@ -234,14 +238,34 @@
 		"message": "Create / Confirm Sell-Orders - Processing ...",
 		"description": ""
 	},
+	"inventory_send_gifts_master_dialog":{
+	    "message":"Send gifts to Master",
+	    "description":""
+	  },
+	  "inventory_confirm_master_gifting":{
+	    "message":"Are you sure you want to continue? You can only abort this step by reloading the page. If you want to continue click OK.",
+	    "description":""
+	  },
+	  "inventory_send_gifts_to_bots":{
+	    "message":"Send gifts to bots",
+	    "description":""
+	  },
 	"inventory_confirm_bulk_gifting": {
-		"message": "Are you sure you want to continue? You can only abort this step by reloading the page. Make sure your database is up-to-date and every game is correctly listed for every of your bots. Gifts only get send to bots which don't own one or more of the games included in the gift",
+		"message": "Are you sure you want to continue? You can only abort this step by reloading the page. Make sure your database is up-to-date and every game is correctly listed for every of your bots. Gifts only get send to bots which don't own one or more of the games included in the gift.",
 		"description": ""
 	},
 	"inventory_alert_no_gift": {
 		"message": "You need to select a game first!",
 		"description": ""
 	},
+	  "inventory_send_gifts_to_master_proc":{
+	    "message":"Send gifts to Master - Processing ...",
+	    "description":""
+	  },
+	  "inventory_send_gifts_to_bots_proc":{
+	    "message":"Send gifts to Bots - Processing ...",
+	    "description":""
+	  },
 	"inventory_cancel_btn": {
 		"message": "Cancel",
 		"description": ""

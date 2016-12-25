@@ -88,6 +88,105 @@ function addGameGiftDB(username, sid, appid, gamename, created){
   });
 }
 
+function processBulkGiftsMaster(gifts, sender){
+
+  var cnt = gifts.idarr.length;
+
+  // We need a delayed loop to not spam the steam-servers
+  ///////////////////////////////////////////////////////////
+  (function next(counter, maxLoops) {
+
+    // Last Run defined here
+    // Update progressbar one last time and close the dialog
+    // after timeout (defined at frontend)
+    //////////////////////////////////////////////////////////
+
+    if (counter++ >= maxLoops){
+      setTimeout(function(){
+        chrome.tabs.sendMessage(sender,{
+          msg: 'UpdateProgress',
+          percentage: 100,
+          message: chrome.i18n.getMessage("background_progress_gifts")+' ('+maxLoops+'/'+maxLoops+')'
+        });
+      }, 100);
+      return;
+    }
+
+    // Update the progressbar at frontend
+    /////////////////////////////////////////////////////////
+
+    chrome.tabs.sendMessage(sender,{
+      msg: 'UpdateProgress',
+      percentage: ((99/maxLoops)*counter),
+      message: chrome.i18n.getMessage("background_progress_gifts")+' ('+counter+'/'+maxLoops+')'
+    });
+
+    // Send the gift to bot
+    // ----------------------------------------------------------------
+    // Conversion of SteamID64 to SteamID3 for GifteeAccountID included
+    // MySQL-like generation of Datetime included (toISOString)
+    // Finally send the gift, check for success-codes to determine if
+    // the gift was send succesfully and if so, add an entry to the db
+    // for the current user and every game which is included in gift
+    ///////////////////////////////////////////////////////////////////
+
+    chrome.webRequest.onBeforeSendHeaders.addListener(modGiftBulkHeaders, {urls: [ "https://store.steampowered.com/checkout/sendgiftsubmit/*" ]},['requestHeaders','blocking']);
+
+    $.ajax({
+      type: 'POST',
+      url: 'https://store.steampowered.com/checkout/sendgift/'+gifts.idarr[counter-1],
+      success: function(res){
+
+        $.ajax({
+          type: 'POST',
+          url: 'https://store.steampowered.com/checkout/sendgiftsubmit/',
+          data: {
+            'GifteeAccountID': (gifts.steamid.substring(3) - 61197960265728),
+            'GifteeEmail': '',
+            'GifteeName': gifts.username,
+            'GiftMessage': 'Gift-Bulk '+gifts.idarr[counter-1],
+            'GiftSentiment': 'XOXOXO',
+            'GiftSignature': 'Master',
+            'ScheduledSendOnDate': 0,
+            'GiftGID': gifts.idarr[counter-1],
+            'SessionID': /g_sessionID\s=\s\"(.*)\";/g.exec(res)[1]
+          },
+          success: function(msg){
+
+            if(msg.success == 1){
+              // nothing more to do here
+            } else if(msg.success == 42){
+              console.log(chrome.i18n.getMessage("background_bulk_gift_error1"));
+            } else if(msg.success == 15){
+              console.log(chrome.i18n.getMessage("background_bulk_gift_error2"));
+            } else if(msg.success == 8){
+              console.log(chrome.i18n.getMessage("background_bulk_gift_error3"));
+            }
+
+          },
+          error: function(err){
+            console.log('Error: '+err);
+
+            // Remove the Listener for this specific AJAX-Request
+            chrome.webRequest.onBeforeRequest.removeListener(modGiftBulkHeaders);
+
+            // Start next iteration
+            setTimeout(function(){ next(counter, maxLoops) }, 1000);
+          }
+        }).done(function(){
+
+          // Remove the Listener for this specific AJAX-Request
+          chrome.webRequest.onBeforeRequest.removeListener(modGiftBulkHeaders);
+
+          // Start next iteration
+          setTimeout(function(){ next(counter, maxLoops) }, 1000);
+
+        });
+      }
+    });
+  })(0, cnt);
+}
+
 function processBulkGifts(arr, sender){
 
   idb.getMasterRecord().done(function(master){
@@ -610,7 +709,7 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
   } else if(message.greeting == 'sendGiftsBulk'){
 
-    // Dexie has problems with searching by numbers which could be a string or plane number
+    // Dexie has problems with searching by numbers which could be a string or plain number
     // this problem only occurs on non-subs (packages)
     // We just save the appid as number and string to the appid-array and avoid further problems this way
     var appidorigin = message.gifts.appid;
@@ -673,6 +772,25 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
         message: chrome.i18n.getMessage("background_gifts_bulk_appids_wrong")
       });
     }
+    return true;
+
+  } else if(message.greeting == 'sendGiftsBulkMaster'){
+
+    // Since we're just sending to Master we only need his data
+    idb.getMasterRecord().done(function(user){
+
+      var summary = {
+        steamid: user.steam_id,
+        username: user.username,
+        idarr: message.gifts.idarr,
+        sid: message.gifts.sid
+      };
+
+      //console.log(summary);
+      processBulkGiftsMaster(summary, sender.tab.id);
+
+    });
+
     return true;
 
   } else if(message.greeting == 'sendCsgoCardsBulk'){
