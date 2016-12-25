@@ -171,7 +171,7 @@ function processBulkGiftsMaster(gifts, sender){
             chrome.webRequest.onBeforeRequest.removeListener(modGiftBulkHeaders);
 
             // Start next iteration
-            setTimeout(function(){ next(counter, maxLoops) }, 1000);
+            setTimeout(function(){ next(counter, maxLoops) }, 100);
           }
         }).done(function(){
 
@@ -179,7 +179,7 @@ function processBulkGiftsMaster(gifts, sender){
           chrome.webRequest.onBeforeRequest.removeListener(modGiftBulkHeaders);
 
           // Start next iteration
-          setTimeout(function(){ next(counter, maxLoops) }, 1000);
+          setTimeout(function(){ next(counter, maxLoops) }, 100);
 
         });
       }

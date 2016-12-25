@@ -826,7 +826,9 @@ function getProfileWidget(timer, init){
 				$('#overview-content').prepend(eval(response));
 
 				// Fill Games/DLC´s
-				$('#db_own_games').animateNumber({ number: local['appids'].length}, timer);
+				// 
+				if(local['appids'] !== undefined) $('#db_own_games').animateNumber({ number: local['appids'].length}, timer);
+				//TODO FIX $('#db_own_games').animateNumber({ number: local['appids'].length}, timer);
 
 				// Get Data for further informations
 				for(var i = 0; i < booster_data.length; i++){
@@ -1238,12 +1240,20 @@ function getBoosters(loop, filter) {
 				for (i = 1; i <= loop; ++i) {
 					if(filter == 'me' || typeof filter == 'undefined'){
 
-						if($.inArray(data[i]['appid'], local['appids']) !== -1){
-							++j;
-							var diffMins = calcDate(data[i]['updated']);
-							$('#booster-content').append(eval(response));
+						if(local['appids'] !== undefined){
+							if($.inArray(data[i]['appid'], local['appids']) !== -1){
+								++j;
+								var diffMins = calcDate(data[i]['updated']);
+								$('#booster-content').append(eval(response));
 
-						} else { ++loop; }
+							} else { ++loop; }
+						} else {
+
+								++j;
+								var diffMins = calcDate(data[i]['updated']);
+								$('#booster-content').append(eval(response));
+							
+						}
 
 					} else {
 

@@ -513,6 +513,12 @@ function giftsClickHandler(){
   var title = $('#gift-titles').val();
   if(title != ''){
 
+    // Temporary fix to be able to gift a bundle (sub) to bots which own one of the 4 games
+    // Todo: maybe implement something to exclude one or more appid's from getting  compared to database
+    /*if($.inArray('407230', GiftData[[title]].appid)){
+      GiftData[[title]].appid.splice(GiftData[[title]].appid.indexOf('407230'),1);
+    }*/
+
     console.log(GiftData[[title]]);
 
     createDialog("warn", chrome.i18n.getMessage("inventory_send_gifts_to_bots"), chrome.i18n.getMessage("inventory_confirm_bulk_gifting"), 2);
@@ -800,7 +806,8 @@ function injectScriptGifts(){
     var z;
 
     for(i=0;i<items.length; i++){
-      if(items[i] !== undefined){
+      // if rgItem is undefined it is probably pending
+      if(items[i] !== undefined && items[i][0].rgItem !== undefined){
 
         description = items[i][0].rgItem.description;
         assetid = items[i][0].rgItem.assetid;

@@ -76,7 +76,7 @@ function getTradeOffers(masterid){
 						// start the transaction and finally start accepting the trades
 						idb.opendb().then(function(db){
 							db.transaction("r", db.steam_users, function(user){
-								user.each(function(sid){
+								db.steam_users.each(function(sid){
 									sidArr.push(sid.steam_id);
 								}).then(function(result){
 									// Start accepting trades

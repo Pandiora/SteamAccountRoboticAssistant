@@ -30,7 +30,7 @@ idb = {
 
 		idb.opendb().then(function(db){
 			db.transaction("r", db[table], function(link){
-				link.toArray().then(function(data){
+				db[table].toArray().then(function(data){
 					deferred.resolve(data);
 				}).catch(function(err){
 					console.log(err);
