@@ -23,7 +23,6 @@ $(document).ready(function() {
         var cards_left = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g, '');
         var cards_text = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text();
         var cards_text_compare = "Sie können heute noch eine weitere Karte erhalten, indem Sie Ihre Entdeckungsliste erkunden.";
-        if ((cards_left > 0 && cards_left !== '') || (cards_text == cards_text_compare)) {
 
           jQuery.ajax({
             url: 'http://store.steampowered.com/SteamAwards/', 
@@ -63,9 +62,13 @@ $(document).ready(function() {
                       scnt = 0; arr = [];
                       setTimeout(function(){ next(counter, maxLoops) }, 300);
                     },
-                    error: function(){
-                      // probably some timeout - try again
-                      setTimeout(function(){ processAjax(); }, 3000);
+                    error: function(xhr, textStatus, errorThrown){
+                      if(xhr.status == 403){
+                        setTimeout(function(){ next(counter, maxLoops) }, 300);
+                      } else {
+                        // probably some timeout - try again
+                        setTimeout(function(){ processAjax(); }, 3000);
+                      }
                     }
                   });
 
@@ -85,6 +88,8 @@ $(document).ready(function() {
           });
 
           function discQueue(){
+
+            if ((cards_left > 0 && cards_left !== '') || (cards_text == cards_text_compare)) {
 
               var GenerateQueue = function(queueNumber) {
               console.log('Queue #' + ++queueNumber);
@@ -114,34 +119,36 @@ $(document).ready(function() {
                   GenerateQueue(0);
                 }, 1000);
               });
-            };
-            setTimeout(function() {
+              };
+              setTimeout(function() {
               GenerateQueue(0);
-            }, 1000);
+              }, 1000);
 
-            setTimeout(function() {
+              setTimeout(function() {
               location.reload();
-            }, 10000);
+              }, 10000);
+
+
+            } else if(typeof cards_left == 'undefined'){
+              chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
+              alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
+            } else if(cards_left == ''){
+              var user = $('#account_pulldown').text();
+              chrome.runtime.sendMessage({
+                greeting: 'setSkipForLogin',
+                user: user
+              }, function(response) {
+                if (response == 1) {
+                  jQuery.post('https://store.steampowered.com/logout/', {
+                    sessionid: sessionID
+                  });
+                  location.reload();
+                }
+              });
+            }
+
           }
 
-
-        } else if(typeof cards_left == 'undefined'){
-          chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
-          alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
-        } else if(cards_left == ''){
-          var user = $('#account_pulldown').text();
-          chrome.runtime.sendMessage({
-            greeting: 'setSkipForLogin',
-            user: user
-          }, function(response) {
-            if (response == 1) {
-              jQuery.post('https://store.steampowered.com/logout/', {
-                sessionid: sessionID
-              });
-              location.reload();
-            }
-          });
-        }
       }
 
     } else if (document.location.href == "http://store.steampowered.com/") {
