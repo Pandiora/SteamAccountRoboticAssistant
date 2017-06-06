@@ -13,7 +13,7 @@ chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, functio
           chrome.runtime.sendMessage({greeting: 'setLicenseBulkActivationInactive'});
         }
       }, 1500);
-    } else if(document.location.href == "http://store.steampowered.com/app/"+res.appid+"/"){
+    } else if(document.location.href.indexOf("http://store.steampowered.com/app/"+res.appid+"/") !== -1 && (jQuery('#account_pulldown').text() !== "")){
       if($('.already_in_library')[0]){
         // User already owns this game >> set skip for this user and log out
         var user = $('#account_pulldown').text();
@@ -41,8 +41,9 @@ chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, functio
         if (response == 1) {
           $.post('https://store.steampowered.com/logout/', {
             sessionid: sessionID
+          }).done(function(){
+            document.location.href = "https://store.steampowered.com/login/?redir=app%2F"+res.appid+"%2F";
           });
-          document.location.href = "https://store.steampowered.com/login/?redir=app%2F"+res.appid+"%2F";
         }
       });
     }
