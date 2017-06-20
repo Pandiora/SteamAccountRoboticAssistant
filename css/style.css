@@ -5,7 +5,7 @@ html, body {
 	padding:0;
 	outline:0;
 	overflow: hidden;
-}
+} 
 body {
 	background:
 	linear-gradient(45deg, #462191 0%, #462191 25%, transparent 25%, transparent 75%, #462160 75%)0 100px,

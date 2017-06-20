@@ -1399,13 +1399,13 @@ chrome.browserAction.onClicked.addListener(function(tab){
   });
 });
 // pinned style
-chrome.tabs.create({
+/*chrome.tabs.create({
   url: chrome.extension.getURL('index.html')
-  /*,
-  pinned: true*/
-});
+  ,
+  pinned: true
+});*/
 
-//
+// 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

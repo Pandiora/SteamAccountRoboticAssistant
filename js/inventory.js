@@ -5,7 +5,7 @@ var STCardsData = [];
 var steamID = /g_steamID\s\=\s"(.*)"\;/.exec($('#global_header + script')[0].innerHTML)[1];
 var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo']; // Array of Events
 
-/*************************************************
+/************************************************
 
 MUTATION OBSERVER FOR MULTILANGUAGE
 
@@ -591,7 +591,7 @@ function multiSelection(that, e){
       that.parent().not('.disabled').toggleClass('multi-select');
     }
 
-    // Update the Item-Count for Item-Selling
+    // Update the Item-Count for Item-Selling 
     $('#item_count').text($('.multi-select').length);
     // Set this Element as starting-point for multi-selection
     selectedItem = that.parent().not('.disabled').index();

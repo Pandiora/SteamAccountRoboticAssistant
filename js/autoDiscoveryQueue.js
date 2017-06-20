@@ -8,7 +8,7 @@ $(document).ready(function() {
     if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F") {
       // Click first entry until none is left
       setTimeout(function(){
-        if (stopme == 1) {
+        if (stopme == 1) { 
           if ($('.names').length > 0) {
             $('.names:eq(0)').click();
           } else {

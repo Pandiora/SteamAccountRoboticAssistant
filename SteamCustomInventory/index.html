@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+
+	<!-- Meta -->
+	<title>SARA</title>
+	<meta charset="utf-8"/>
+	<meta name="title" content="Steam Account Robotic Assistant" />
+	<meta name="description" content="SARA combines different tools to interact with Steam and its peripherie." />
+
+	<!-- Standard -->
+	<link rel='stylesheet' type="text/css" href='style.css'/>
+	<link rel='stylesheet' type="text/css" href='css/font-awesome.min.css'/>
+	<script type='text/javascript' src='../js/jquery-2.1.4.min.js'></script>
+	<script type='text/javascript' src='functions.js'></script>
+	<script type='text/javascript' src='velocity.js'></script>
+</head>
+<body>
+	<div id="sara">
+		<div id="sara_wrapper">
+			<div id="sara_inventory_controls">
+				<div class="sara_control" id="multi_select" data-multi-on="0">
+					<i class="fa fa-toggle-off" aria-hidden="true"></i>
+					<i class="fa fa-toggle-on" aria-hidden="true"></i>
+					<i class="fa fa-th-large fa-fw" aria-hidden="true"></i>
+				</div>
+				<div class="sara_control steam_blue_button" id="bulk_sell">
+					<div>Sell: </div>
+					<div>1234</div>
+				</div>
+				<div class="sara_control steam_blue_button" id="bulk_togems">
+					<div>Gems: </div>
+					<div>1234</div>
+				</div>
+				<div class="sara_control steam_blue_button" id="bulk_unbooster">
+					<div>UnBooster: </div>
+					<div>1234</div>
+				</div>
+			</div>
+			<div id="sara_inventory">
+				<!--<div class="sara_item_wrapper" style="display: inline-block;">
+					<div class="sara_item intrade">
+						<img src="100x100.png" />
+					</div>
+					<div class="sara_item gifted">
+						<img src="100x100.png" />
+					</div>
+					<div class="sara_item nomarket">
+						<img src="100x100.png" />
+					</div>
+					<div class="sara_item confirmneed">
+						<img src="100x100.png" />
+					</div>
+					<div class="sara_item">
+						<img src="http://steamcommunity-a.akamaihd.net/economy/image/U8721VM9p9C2v1o6cKJ4qEnGqnE7IoTQgZI-VTdwyTBeimAcIoxXpgK8bPeslY9pPJIvB5IWW2-452kaM8heLSRgleGEo7ZWkOk2ZKEh0eWqD1wi6LRHUWbnTUSN0zPGKe_-xVBsZZYsc0_2w5gav8AXB9aRYAwESw/75fx75f" />
+						<div class="amount">12345</div>
+					</div>
+				</div>-->
+			</div>
+			<div id="pagination">
+				<span data-counter="0"></span>
+				<span></span>
+				<span data-counter="0"></span>
+				<div class="paginate left"><i aria-hidden="true"></i><i aria-hidden="true"></i></div>
+				<div class="paginate right" data-disabled="0"><i aria-hidden="true"></i><i aria-hidden="true"></i></div>
+			</div>
+		</div>
+		<div id="sara_sidebar">
+			<div id="sara_sidebar_image"></div>
+			<div id="sara_sidebar_item_desc">
+				<div id="sidebar_inventory_image"></div>
+				<div id="sidebar_item_keyname">Commander Keen Commander Keen</div>
+			</div>
+			<div id="sidebar_item_desc">
+				<div class="sidebar_item_desc_part" data-disabled="0">
+					<div class="sidebar_part_head">Marktfähig:</div>
+					<div class="sidebar_part_content">Nein</div>
+				</div>
+				<div class="sidebar_item_desc_part" data-disabled="0">
+					<div class="sidebar_part_head">Handelbar:</div>
+					<div class="sidebar_part_content">Nein (InTrade)</div>
+				</div>
+				<div class="sidebar_item_desc_part" data-disabled="1">
+					<div class="sidebar_part_head">Verschenkt:</div>
+					<div class="sidebar_part_content">Ja</div>
+				</div>
+				<div class="sidebar_item_desc_part" data-disabled="0">
+					<div class="sidebar_part_head">Bestätigung benötigt:</div>
+					<div class="sidebar_part_content">Ja</div>
+				</div>
+				<div class="sidebar_item_desc_part" data-disabled="0">
+					<div class="sidebar_part_head">Preis:</div>
+					<div class="sidebar_part_content">0,13€</div>
+				</div>
+			</div>
+			<div id="sidebar_item_buttons">
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="show_shop">Im Shop ansehen</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="send_gift">&#127873; &#x2192; &#x1F464;</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="add_lib">Meiner Spielebibliothek hinzufügen</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="gems_to_sack"><div class="gems"></div>&#x2192;<div class="gemsack"></div></div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="craft_booster"><a target="_blank" href="http://steamcommunity.com//tradingcards/boostercreator/">Booster-Pack herstellen</a></div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="1" id="show_games">Betreffende Spiele anzeigen</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="1" id="turn_in_gems">In Edelsteine umwandeln</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="1" id="show_badge">Abzeichenfortschritt anzeigen</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="1" id="send_csgo_cards">Sende Karten an Bots</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="show_market">Im Communitymarkt anzeigen</div>
+				<div class="sidebar_item_button steam_blue_button" data-disabled="0" id="item_sell">Verkaufen</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

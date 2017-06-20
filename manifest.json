@@ -18,7 +18,7 @@
         	"syncfusion/jquery.validate.min.js", 
         	"syncfusion/jquery.validate.unobtrusive.min.js"
         ],
-        "persistent": true
+        "persistent": true 
     },
 
 	"default_locale": "en",
