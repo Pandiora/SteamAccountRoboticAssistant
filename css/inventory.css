@@ -219,7 +219,7 @@ body.migrated_profile_page .inventory_links {
 @keyframes animate-stripes { 100% {background-position: 60px 0;} }
 
 /****************/
-.multi-select div {
+.multi-select > div {
   border: 1px solid yellow !important;
   border-style: dashed !important;
 }

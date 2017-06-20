@@ -15,6 +15,7 @@
         	"js/mobileAuth.js", 
         	"js/confirmations_2fa.js",
         	"js/mod_headers.js",
+        	"js/hot-reload.js",
         	"syncfusion/jquery.validate.min.js", 
         	"syncfusion/jquery.validate.unobtrusive.min.js"
         ],

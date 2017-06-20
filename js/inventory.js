@@ -555,19 +555,39 @@ function multiSelection(that, e){
         var currentPage = that.parent().not('.disabled').parent().index(); // last clicked
         var pageCounter = Math.abs(selectedPage-currentPage); // difference positive
 
+        // Debug
+        console.log("CurrentItem: "+currentItem+" CurrentPage: "+currentPage+" SelectedItem: "+selectedItem+" SelectedPage: "+selectedPage+" PageCounter: "+pageCounter);
+
+        // Loop through all selected pages
         for(i=0; i<=pageCounter;i++){
+
+          // We can't use the item-index for counting, when filters are used
+          var len = $('.inventory_page:eq('+(i+1)+') .itemHolder').length, arr = [];
+
+          while(len--){
+            if($('.inventory_page:eq('+(i+1)+') .itemHolder').eq(len).css('display') != 'none'){
+              arr.push($('.inventory_page:eq('+(i+1)+') .itemHolder').eq(len).index()); 
+            }
+          }
+
           // Different complete iterations based on selecting-direction
-          if(currentPage > selectedPage){ genSelect(selectedPage, currentPage, currentItem, selectedItem, i); } else 
-          if(currentPage < selectedPage){ genSelect(currentPage, selectedPage, selectedItem, currentItem, i); } else 
+          if(currentPage > selectedPage){ genSelect(selectedPage, currentPage, currentItem, selectedItem, i, arr); } else 
+          if(currentPage < selectedPage){ genSelect(currentPage, selectedPage, selectedItem, currentItem, i, arr); } else 
           if(currentPage===selectedPage){
             if(currentItem < selectedItem){
+
+              // Remove all items from array which are BEFORE the selected Item
+              arr.splice(0, arr.indexOf(selectedItem));
               for(j=0; j < (selectedItem-currentItem); j++){
-                $('.inventory_page:eq('+(currentPage+i+1)+') .itemHolder:eq('+(selectedItem-j)+')').addClass('multi-select');
+                $('.inventory_page:eq('+(currentPage+i+1)+') .itemHolder:eq('+arr[j]+')').addClass('multi-select');
               }
 
             } else if(currentItem > selectedItem){
+
+              // Remove all items from array which are AFTER the selected Item
+              arr.splice(0, arr.indexOf(currentItem));
               for(j=0; j < (currentItem-selectedItem); j++){
-                $('.inventory_page:eq('+(currentPage+i+1)+') .itemHolder:eq('+(selectedItem+j)+')').addClass('multi-select');
+                $('.inventory_page:eq('+(currentPage+i+1)+') .itemHolder:eq('+arr[j]+')').addClass('multi-select');
               }
             }
           }
@@ -575,7 +595,7 @@ function multiSelection(that, e){
       }
     } else if(e.ctrlKey){
       // Detect similiar items by image-source
-      var select_by_image = that.children('img').attr('src');
+      /*var select_by_image = that.children('img').attr('src');
       // Avoid items being not unselectable
       // ToDo: Find out if this works for all items
       if($('.multi-select div img[src="'+select_by_image+'"]').length){
@@ -586,13 +606,14 @@ function multiSelection(that, e){
         $('img[src="'+select_by_image+'"]')
         .parent().parent()
         .addClass('multi-select');            
-      }
+      }*/
     } else {
       that.parent().not('.disabled').toggleClass('multi-select');
     }
 
     // Update the Item-Count for Item-Selling 
     $('#item_count').text($('.multi-select').length);
+
     // Set this Element as starting-point for multi-selection
     selectedItem = that.parent().not('.disabled').index();
     selectedPage = that.parent().not('.disabled').parent().index();
@@ -600,22 +621,37 @@ function multiSelection(that, e){
   }
 }
 
-function genSelect(posa, posb, posc, posd, i){
+function genSelect(selectedPage, currentPage, currentItem, selectedItem, i, arr){
   // used to select items on current page (shift+clicked)
   // and first page (first focused element)
-  if((posa+i) === posa){
-    for(j=0; j < (25-posd); j++){
-      $('.inventory_page:eq('+(posa+i+1)+') .itemHolder:eq('+(posd+j)+')')
-      .addClass('multi-select');
+  // this logic is turned around when selecting backwards
+
+  if((selectedPage+i) === selectedPage){
+
+    // Remove all items from array which are BEFORE the selected Item
+    arr.splice(-1*(24-arr.indexOf(selectedItem)),(24-arr.indexOf(selectedItem)));
+
+    for(j=0;j<arr.length;j++){
+      $('.inventory_page:eq('+(i+1)+') .itemHolder').eq(arr[j]).addClass('multi-select');
     }
-  } else if((posa+i) === posb){
-    for(j=0; j < (1+posc); j++){
-      $('.inventory_page:eq('+(posa+i+1)+') .itemHolder:eq('+(posc-j)+')')
-      .addClass('multi-select');
+
+  } else if((selectedPage+i) === currentPage) {
+
+    // Remove all items from array which are AFTER the current Item
+    arr.splice(0,arr.indexOf(currentItem));
+
+    for(j=0;j<arr.length; j++){
+      $('.inventory_page:eq('+(i+1)+') .itemHolder').eq(arr[j]).addClass('multi-select');
     }
+
   } else {
-    $('.inventory_page:eq('+(posa+i+1)+') .itemHolder')
-    .addClass('multi-select');
+
+    // If at least 3 pages are selected we can select all items on pages between
+    // i.e. page 1 and page 3 - so select 25 items on page 2
+    for(j=0;j<25;j++){
+      $('.inventory_page:eq('+(i+1)+') .itemHolder').eq(arr[j]).addClass('multi-select');           
+    }
+
   }
 }
 

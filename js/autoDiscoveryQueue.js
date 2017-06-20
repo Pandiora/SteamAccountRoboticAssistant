@@ -27,7 +27,7 @@ $(document).ready(function() {
           jQuery.ajax({
             url: 'http://store.steampowered.com/SteamAwards/', 
             success: function(res){
-              var awards = jQuery(res).find('.steamaward_castvote');
+              var awards = jQuery(res).find('.steamaward_castvote_writein');
               var arr = [];
 
             (function next(counter, maxLoops) {
