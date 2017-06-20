@@ -247,11 +247,11 @@ $(document).ready(function(){
     </div> \
   ');
     // Add Buttons for Listing
-  $('.inventory_filters').after('\
-    <a class="btn_small btn_green_white_innerfade" id="multi_items" style="margin-left: 12px;"> \
+  $('#inventory_load_error_ctn').after('\
+    <a class="btn_small btn_green_white_innerfade" id="multi_items" style="margin-left: 12px; margin-top: 5px;"> \
       <span data-i18n="inventory_select_multiple_items"></span> \
     </a> \
-    <a class="btn_small btn_green_white_innerfade" id="multi_sell_items" style="margin-left: 12px;"> \
+    <a class="btn_small btn_green_white_innerfade" id="multi_sell_items" style="margin-left: 12px; margin-top: 5px;"> \
       <span><span id="item_count">0</span><span data-i18n="inventory_multi_items_sell"><span></span> \
     </a> \
   ');
@@ -316,6 +316,15 @@ $(document).ready(function(){
     }
   });
 
+  // Remove multi_select from all items if filters are applied
+  $(document).on('click', '.econ_tag_filter_checkbox', function(){
+      $('#multi_items span').text(chrome.i18n.getMessage("inventory_select_multiple_items"));
+      multi_selection_bit = 0;
+      $('.itemHolder').removeClass('multi-select');
+      $('#multi_sell_items').css('visibility', 'hidden');
+      // Must be reset to 0 since cancelling the action deselects all items
+      $('#item_count').text('0');
+  });
 
   // Start Selection of multiple items if activated 
   $(document).on('click', '.itemHolder:not(.disabled) div', function(e){
@@ -596,7 +605,7 @@ function multiSelection(that, e){
       }
     } else if(e.ctrlKey){
       // Detect similiar items by image-source
-      /*var select_by_image = that.children('img').attr('src');
+      var select_by_image = that.children('img').attr('src');
       // Avoid items being not unselectable
       // ToDo: Find out if this works for all items
       if($('.multi-select div img[src="'+select_by_image+'"]').length){
@@ -607,7 +616,7 @@ function multiSelection(that, e){
         $('img[src="'+select_by_image+'"]')
         .parent().parent()
         .addClass('multi-select');            
-      }*/
+      }
     } else {
       that.parent().not('.disabled').toggleClass('multi-select');
     }
@@ -677,7 +686,7 @@ function createDialog(type, title, content, btncnt){
 	// Wait for action / button-click
 	$("#yoyo, #nope, #dialog_close_btn").on("click", function(){
     //console.log('clicked');
-		$("#dialog_wrapper").hide();
+		$("#dialog_wrapper").hide(); 
 	});
 
 }
