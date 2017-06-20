@@ -561,6 +561,7 @@ function multiSelection(that, e){
         // Loop through all selected pages
         for(i=0; i<=pageCounter;i++){
 
+
           // We can't use the item-index for counting, when filters are used
           var len = $('.inventory_page:eq('+(i+1)+') .itemHolder').length, arr = [];
 
