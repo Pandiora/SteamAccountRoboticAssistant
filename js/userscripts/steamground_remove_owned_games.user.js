@@ -1,10 +1,13 @@
 // ==UserScript==
 // @name         [steamground] - Add non-owned games to cart
-// @namespace    http://tampermonkey.net/
-// @version      0.12
+// @namespace    https://github.com/Pandiora/
+// @include      https://github.com/*
+// @version      0.13
 // @description  Add non-owned games to cart (DOES NOT WORK FOR DLC!) - YOU MUST BE LOGGED INTO STEAM - DEPENDS ON USER-ACCOUNT LOGGED INTO STEAM
 // @author       Pandi
 // @match        http://steamground.com/en/wholesale
+// @updateURL    https://github.com/Pandiora/SteamAccountRoboticAssistant/raw/master/js/userscripts/steamground_remove_owned_games.user.js
+// @downloadURL  https://github.com/Pandiora/SteamAccountRoboticAssistant/raw/master/js/userscripts/steamground_remove_owned_games.user.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
