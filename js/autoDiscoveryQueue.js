@@ -24,7 +24,7 @@ $(document).ready(function() {
 
         function discQueue(){
 
-          if (cards_dropped == '') {
+          if (cards_dropped == '' || cards_dropped == 2) {
 
             var GenerateQueue = function(queueNumber) {
             console.log('Queue #' + ++queueNumber);
@@ -67,7 +67,7 @@ $(document).ready(function() {
           } else if(typeof cards_dropped == 'undefined'){
             chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
             alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
-          } else if(cards_dropped >= 2){
+          } else if(cards_dropped >= 3){
             var user = $('#account_pulldown').text();
             chrome.runtime.sendMessage({
               greeting: 'setSkipForLogin',
