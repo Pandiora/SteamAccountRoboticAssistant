@@ -21,10 +21,15 @@ $(document).ready(function() {
       if (stopme == 1) {
 
         var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/\D/g,'');
+        var cards_remaining = jQuery('discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g,'');
 
         function discQueue(){
 
-          if (cards_dropped == '' || cards_dropped == 2) {
+          // cards_dropped == '' for the beginning of the sale when there is no number on cards dropped
+          // (cards_dropped%3 == 0) for day 2 and next days of sale
+          // (cards_remaining >= 2) for day 2 and next days of sale
+
+          if ((cards_dropped == '') || (cards_dropped%3 != 0) || (cards_remaining != '' && cards_remaining >= 2)) {
 
             var GenerateQueue = function(queueNumber) {
             console.log('Queue #' + ++queueNumber);
@@ -67,7 +72,7 @@ $(document).ready(function() {
           } else if(typeof cards_dropped == 'undefined'){
             chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
             alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
-          } else if(cards_dropped >= 3){
+          } else {
             var user = $('#account_pulldown').text();
             chrome.runtime.sendMessage({
               greeting: 'setSkipForLogin',
