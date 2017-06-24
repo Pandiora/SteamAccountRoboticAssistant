@@ -2,7 +2,7 @@
 // @name         [steamground] - Add non-owned games to cart
 // @namespace    https://github.com/Pandiora/
 // @include      https://github.com/*
-// @version      0.13
+// @version      0.14
 // @description  Add non-owned games to cart (DOES NOT WORK FOR DLC!) - YOU MUST BE LOGGED INTO STEAM - DEPENDS ON USER-ACCOUNT LOGGED INTO STEAM
 // @author       Pandi
 // @match        http://steamground.com/en/wholesale
@@ -10,6 +10,15 @@
 // @downloadURL  https://github.com/Pandiora/SteamAccountRoboticAssistant/raw/master/js/userscripts/steamground_remove_owned_games.user.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
+ 
+
+/* to get the shooping-cart to list (on cart-page) for Payment with Paypal 
+var len = jQuery('.product-name').length, arr = [];
+for(var i=0; i<len; i++){
+    arr.push(jQuery('.product-name').eq(i)[0].innerHTML);
+}
+arr
+*/ 
 
 var getOwnedData = '<a id="get_owned_data" href="#" style="position: fixed; top: 40%; transform: translateY(-260%); right: calc((100% - 940px)/2 - 140px); padding: 0 5px; background-color: #333; width: 140px; text-align: center;"><span style="font-size: 14px; line-height: 17px; padding: 2px; margin: 6px 0 0 0; background: #464646;">Get owned<br>games data</span></a>',
     addNonOwned = '<a id="add_non_owned_to_cart" href="#" style="position: fixed; top: 40%; transform: translateY(-150%); right: calc((100% - 940px)/2 - 140px); padding: 0 5px; background-color: #333; width: 140px; text-align: center;"><span style="font-size: 14px; line-height: 17px; padding: 2px; margin: 6px 0 0 0; background: #464646;">Add non-owned<br>to cart</span></a>',
@@ -21,6 +30,9 @@ var owned_games = [],
     game_list_store = [],
     owned_games_index = [],
     non_owned_games_cart = [];
+
+var startLoopClick = 0, // should be set to 100 if we need a second shopping-cart in case we need to add more than 100 items
+    endLoopClick = 101; // must be set to 101 or 201 or 301 (101 for 1st shopping-cart, 201 for 2nd shopping-cart and so on)
 
 
 jQuery(document).ready(function(){
@@ -69,7 +81,7 @@ function addOwnedGamesToCart(){
     (function next(counter, maxLoops) {
 
         // all items should be selected now
-        if(counter++ >= maxLoops || counter >= 101){
+        if(counter++ >= maxLoops || counter >= endLoopClick){
             // we're done, remove spinner
             jQuery('#add_non_owned_to_cart').remove();
             return;
@@ -84,7 +96,7 @@ function addOwnedGamesToCart(){
         // Execute Click
         processClicks();
 
-    })(0, non_owned_games_cart.length);
+    })(startLoopClick, non_owned_games_cart.length);
 }
 
 function getOwnedGamesData(){
