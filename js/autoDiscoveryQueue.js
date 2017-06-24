@@ -29,10 +29,10 @@ $(document).ready(function() {
           // (cards_dropped%3 == 0) for day 2 and next days of sale
           // (cards_remaining >= 2) for day 2 and next days of sale
 
-            if(  (cards_dropped == '') 
-             || ((cards_dropped%3 == 0) && (cards_remaining != '')) 
-             || ((cards_remaining != '') && (cards_remaining >= 2))
-            ){
+          if( (cards_dropped == '') ||
+             ((cards_dropped%3 == 0) && (cards_remaining != '')) ||
+             ((cards_remaining != '') && (cards_remaining >= 2))
+          ){
 
             var GenerateQueue = function(queueNumber) {
             console.log('Queue #' + ++queueNumber);
