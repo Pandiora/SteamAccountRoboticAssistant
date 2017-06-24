@@ -26,8 +26,8 @@ $(document).ready(function() {
         function discQueue(){
 
           // cards_dropped == '' for the beginning of the sale when there is no number on cards dropped
-          // (cards_dropped%3 == 0) for day 2 and next days of sale
-          // (cards_remaining >= 2) for day 2 and next days of sale
+          // ((cards_dropped%3 == 0) && (cards_remaining != '')) for day 2 and next days of sale
+          // ((cards_remaining != '') && (cards_remaining >= 2)) for day 2 and next days of sale
 
           if( (cards_dropped == '') ||
              ((cards_dropped%3 == 0) && (cards_remaining != '')) ||
