@@ -2,7 +2,7 @@
 // @name         [steamground] - Add non-owned games to cart
 // @namespace    https://github.com/Pandiora/
 // @include      https://github.com/*
-// @version      0.14
+// @version      0.13
 // @description  Add non-owned games to cart (DOES NOT WORK FOR DLC!) - YOU MUST BE LOGGED INTO STEAM - DEPENDS ON USER-ACCOUNT LOGGED INTO STEAM
 // @author       Pandi
 // @match        http://steamground.com/en/wholesale
@@ -10,15 +10,6 @@
 // @downloadURL  https://github.com/Pandiora/SteamAccountRoboticAssistant/raw/master/js/userscripts/steamground_remove_owned_games.user.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
- 
-
-/* to get the shooping-cart to list (on cart-page) for Payment with Paypal 
-var len = jQuery('.product-name').length, arr = [];
-for(var i=0; i<len; i++){
-    arr.push(jQuery('.product-name').eq(i)[0].innerHTML);
-}
-arr
-*/ 
 
 var getOwnedData = '<a id="get_owned_data" href="#" style="position: fixed; top: 40%; transform: translateY(-260%); right: calc((100% - 940px)/2 - 140px); padding: 0 5px; background-color: #333; width: 140px; text-align: center;"><span style="font-size: 14px; line-height: 17px; padding: 2px; margin: 6px 0 0 0; background: #464646;">Get owned<br>games data</span></a>',
     addNonOwned = '<a id="add_non_owned_to_cart" href="#" style="position: fixed; top: 40%; transform: translateY(-150%); right: calc((100% - 940px)/2 - 140px); padding: 0 5px; background-color: #333; width: 140px; text-align: center;"><span style="font-size: 14px; line-height: 17px; padding: 2px; margin: 6px 0 0 0; background: #464646;">Add non-owned<br>to cart</span></a>',
@@ -34,6 +25,15 @@ var owned_games = [],
 var startLoopClick = 0, // should be set to 100 if we need a second shopping-cart in case we need to add more than 100 items
     endLoopClick = 101; // must be set to 101 or 201 or 301 (101 for 1st shopping-cart, 201 for 2nd shopping-cart and so on)
 
+var changed_game_titles = [
+    { 'old': '1 Vs 1', 'new': 'Kick Speed : Global Operations ( KS : GO )' },
+    { 'old': 'Crazy Fun - FootRock', 'new': 'FootRock'},
+    { 'old': 'OR!', 'new': 'OR'},
+    { 'old': 'Castle Werewolf 3D', 'new': 'Castle Werewolf'},
+    { 'old': 'Ball of Light (Journey)', 'new': 'Ball of Light'},
+    { 'old': 'Drop Hunt - Adventure Puzzle', 'new': 'Drop Hunt'},
+    { 'old': 'Shake Your Money Simulator', 'new': 'Shake Your Money Simulator 2016' }
+];
 
 jQuery(document).ready(function(){
 
@@ -55,20 +55,27 @@ jQuery(document).ready(function(){
 
 });
 
+function iterateOwnedGames(i){
+    for(var j=0, k=owned_games_index.length; j<k; j++){
+        if(typeof game_list_store[i] !== 'undefined' && typeof owned_games_index[j] !== 'undefined'){
+            if(game_list_store[i].index == owned_games_index[j].index){
+                // remove owned games from helper-array
+                non_owned_games_cart.splice(i, 1);
+                return;
+            }
+        }
+    }
+}
+
 function addOwnedGamesToCart(){
 
     // Just a helper to remove already owned games
     non_owned_games_cart = game_list_store;
 
     // count backwards to not fuck up indices
-    for (var i = game_list_store.length - 1; i >= 0; i--) {
+    for (var i = game_list_store.length; i >= 0; i--) {
         // iterate through already-owned-games (based on store-games)
-        for(var j=0, k=owned_games_index.length; j<k; j++){
-            if(game_list_store[i].index == owned_games_index[j].index){
-                // remove owned games from helper-array
-                non_owned_games_cart.splice(i, 1);
-            }
-        }
+        iterateOwnedGames(i);
     }
 
     console.log("There are "+non_owned_games_cart.length+" games you don't own.");
@@ -127,6 +134,9 @@ function getOwnedGamesData(){
             var data = jQuery(response.responseText).find('#global_header + script + div > script')[0].innerHTML;
             data = JSON.parse(data.match(/\srgGames\s=\s(.*);\s*var/)[1]);
 
+            // Gamelist
+            //console.log(data);
+
             for(var i=0, l=data.length; i<l; i++){
                 owned_games.push({
                     'title': data[i].name,
@@ -146,12 +156,26 @@ function labelOwnedGames(shop_game, owned_games){
         // Check for owned games
         for(var j=0, k=owned_games.length; j<k; j++){
 
+            var shp_title = shop_game[i].title,
+                stm_title = owned_games[j].title;
+
+            for(var s=0, n=changed_game_titles.length; s<n; s++){
+                if(changed_game_titles[s].old == shp_title){
+                    shp_title = changed_game_titles[s].new;
+                }
+            }
+
+            var shop_title = shp_title.toUpperCase().replace(/\s/g, ''),
+                steam_title = stm_title.toUpperCase().replace(/\s/g, ''),
+                shop_length = shop_title.length,
+                steam_length = steam_title.length;
+
             // Check title, make all letters upper case first and remove white-spaces for better comparison
-            if(shop_game[i].title.toUpperCase().replace(/\s/g, '') == owned_games[j].title.toUpperCase().replace(/\s/g, '')){
+            if((shop_title == steam_title)){
 
                 // Games you own (by index)
                 owned_games_index.push({
-                    'title': shop_game[i].title,
+                    'title': shp_title,
                     'index': shop_game[i].index
                 });
 
