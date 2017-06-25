@@ -2,7 +2,7 @@
 // @name         [steamground] - Add non-owned games to cart
 // @namespace    https://github.com/Pandiora/
 // @include      https://github.com/*
-// @version      0.13
+// @version      0.15
 // @description  Add non-owned games to cart (DOES NOT WORK FOR DLC!) - YOU MUST BE LOGGED INTO STEAM - DEPENDS ON USER-ACCOUNT LOGGED INTO STEAM
 // @author       Pandi
 // @match        http://steamground.com/en/wholesale
