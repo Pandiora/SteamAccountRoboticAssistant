@@ -32,7 +32,8 @@ var changed_game_titles = [
     { 'old': 'Castle Werewolf 3D', 'new': 'Castle Werewolf'},
     { 'old': 'Ball of Light (Journey)', 'new': 'Ball of Light'},
     { 'old': 'Drop Hunt - Adventure Puzzle', 'new': 'Drop Hunt'},
-    { 'old': 'Shake Your Money Simulator', 'new': 'Shake Your Money Simulator 2016' }
+    { 'old': 'Shake Your Money Simulator', 'new': 'Shake Your Money Simulator 2016' },
+    { 'old': 'Spakoyno Back to the USSR 2.0', 'new': 'Spakoyno: Back to the USSR 2.0' }
 ];
 
 jQuery(document).ready(function(){
