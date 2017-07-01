@@ -20,8 +20,8 @@ $(document).ready(function() {
     } else if (document.location.href == "http://store.steampowered.com/explore/?l=english") {
       if (stopme == 1) {
 
-        var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/\D/g,'');
-        var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g,'');
+        var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/[+-]?\b\d+\b/g,'');
+        var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/[+-]?\b\d+\b/g,'');
 
         function discQueue(){
 
