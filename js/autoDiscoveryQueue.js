@@ -5,7 +5,7 @@ $(document).ready(function() {
   // Detect if Script is active
   /////////////////////////////
   chrome.runtime.sendMessage({greeting: 'getDiscoveryQueueStatus'}, function(stopme){
-    if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F") {
+    if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish") {
       // Click first entry until none is left
       setTimeout(function(){
         if (stopme == 1) { 
@@ -17,7 +17,7 @@ $(document).ready(function() {
           }
         }
       }, 1500);
-    } else if (document.location.href == "http://store.steampowered.com/explore/") {
+    } else if (document.location.href == "http://store.steampowered.com/explore/?l=english") {
       if (stopme == 1) {
 
         var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/\D/g,'');
@@ -31,7 +31,8 @@ $(document).ready(function() {
 
           if( (cards_dropped == '') ||
              ((cards_dropped%3 == 0) && (cards_remaining != '')) ||
-             ((cards_remaining != '') && (cards_remaining >= 2))
+             ((cards_remaining != '') && (cards_remaining >= 2)) ||
+             (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
           ){
 
             var GenerateQueue = function(queueNumber) {
@@ -102,7 +103,7 @@ $(document).ready(function() {
 
     } else if (document.location.href == "http://store.steampowered.com/") {
       if (stopme == 1) {
-        document.location = "https://store.steampowered.com/login/?redir=explore%2F";
+        document.location = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
       }
     }
   });
