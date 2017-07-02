@@ -115,7 +115,7 @@ $(document).ready(function(){
 		} else if(selected_option == 'start_discovery_queue'){
 			chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusActive'}, function(res){
 	      		if(res == 1){
-	        		document.location.href = "https://store.steampowered.com/login/?redir=explore%2F";
+	        		document.location.href = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
 	      		}
 	    	});
 		} else {
