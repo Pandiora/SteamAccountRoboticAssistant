@@ -20,6 +20,7 @@ document.addEventListener("animationstart", function(e) {
           <option id="set_under_eight_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_under_eight")+'</option> \
           <option id="start_discovery_queue">'+chrome.i18n.getMessage("steam_login_input_disc_queue")+'</option> \
           <option id="adding_free_license">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
+          <option id="craft_sticker_badge">Craft Sticker-Badge</option> \
         </select> \
         <div id="tasks_inputs"> \
           <div class="tasks_inputs"> \

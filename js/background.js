@@ -5,6 +5,7 @@ var worker = new Worker('js/webworkers.js');
 // Bits for automated Stuff
 var         community_badge =  0;
 var         stop_disc_queue =  0;
+var            stop_sticker =  0;
 var license_bulk_activation =  0;
 var      license_bulk_appid = '';
 var  stop_get_market_prices =  0;
@@ -1376,6 +1377,13 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     stop_disc_queue = 0;
   } else if(message.greeting == "setDiscoveryQueueStatusActive"){
     stop_disc_queue = 1;
+    sendResponse(1);
+  } else if(message.greeting == "getStickerStatus"){
+    sendResponse(stop_sticker);
+  } else if(message.greeting == "setStickerInactive"){
+    stop_sticker = 0;
+  } else if(message.greeting == "setStickerActive"){
+    stop_sticker = 1;
     sendResponse(1);
   } else if(message.greeting == "getLicenseBulkActivationStatus"){
     sendResponse({status: license_bulk_activation, appid: license_bulk_appid});
