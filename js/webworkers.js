@@ -18,7 +18,7 @@ document.appendChild = function(child) {return child;};
 
 
 // Load Dependencies
-importScripts('jquery-2.1.4.min.js', 'Dexie.min.js', 'database.js');
+importScripts('/plugins/jQuery/jquery-2.2.3.min.js', '/plugins/Dexie/Dexie.min.js', 'database.js');
 
 // Run function based on the message the worker receives
 self.onmessage = function(msg){

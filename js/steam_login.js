@@ -88,9 +88,9 @@ $(document).ready(function(){
 		timer = setTimeout(mySearch, 400);
 	});
 
-	// Display Input for AppID if we wanna add free license and Input should be visible
+	// Display Input for AppID if we wanna add free license or start nomination-queue and Input should be visible
 	$("#login_tasks").on('change', function() {
-		if($('option:selected', this).attr('id') == 'adding_free_license'){
+		if(["adding_free_license","automated_nomination"].indexOf($('option:selected', this).attr('id')) > -1){
 			$('.tasks_inputs:eq(0)').show();
 		} else {
 			$('.tasks_inputs:eq(0)').hide();
@@ -124,6 +124,13 @@ $(document).ready(function(){
 	        		document.location.href = "https://steamcommunity.com/login/home/?goto=id/my/stickers/";
 	      		}
 	    	});
+		} else if(selected_option == 'automated_nomination'){
+			var chosen_appid = $('.tasks_inputs1').val();
+			chrome.runtime.sendMessage({greeting: 'setAutoNominationActive', appid: chosen_appid}, function(res){
+		      if(res == 1){
+		        document.location.href = "https://store.steampowered.com//login/?redir=SteamAwardNominations%2F%3Fl%3Denglish";
+		      }
+		    });
 		} else {
 			chrome.runtime.sendMessage({greeting: selected_option},function(res){
 				if(res == 1){

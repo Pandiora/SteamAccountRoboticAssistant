@@ -8,7 +8,12 @@ idb = {
 		db = new Dexie('steamdb');
 		db.version(1).stores({
 			steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
-			users_games: "++id,username,&[steam_id+app_id],steam_id, app_id, [app_id+game_name], game_name, product_key,created"
+			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created"
+		});
+		// use versioning to add additional rows
+		db.version(2).stores({
+			steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
+			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created,added"
 		});
 
 		db.on('blocked', function () {
@@ -24,6 +29,7 @@ idb = {
 		return deferred.promise();
 
 	},
+
 	fillGrid: function(table){
 
 		var deferred = $.Deferred();
@@ -43,6 +49,7 @@ idb = {
 		return deferred.promise();
 
 	},
+
 	importJSON: function(dat, table){
 
 		// We return the chosen table from the data-attribute of the clicked items
@@ -78,6 +85,7 @@ idb = {
 		});
 
 	},
+
 	exportJSON: function(table){
 
 		// We return the chosen table from the data-attribute of the clicked items
@@ -114,6 +122,7 @@ idb = {
 		});
 
 	},
+
 	clearTable: function(table){
 
 		idb.opendb().then(function(db){
@@ -136,6 +145,7 @@ idb = {
 
 		});
 	},
+
 	getMasterRecord: function(){
 
 		var deferred = $.Deferred();
@@ -148,6 +158,113 @@ idb = {
 			}).finally(function(){
 				db.close();
 			});
+		});
+
+		return deferred.promise();
+
+	},
+
+	getMasterGamesWidget: function(count, scale){
+
+		// Set our language to chrome-locale
+	   	moment.locale(navigator.language);
+
+	   	// set time-formats and such based on scale (days, months, years)
+	   	var cvn = {
+	   		'day': ['DD.MMMM','YYYY-MM-DD','10'],
+	   		'month': ['MMMM \'YY','YYYY-MM','7'],
+	   		'year': ['YYYY','YYYY','4']
+	   	};
+
+	    var deferred = $.Deferred(),
+	    	startdat = moment();
+	    	     obj = { 'label': [], 'count': [] }, 
+	    	     arr = [];
+
+	  	// Generate list of [scale] first
+	    for(var i=count; i--;){
+	        arr.push({ 
+	        	'label': moment(startdat).subtract(i, scale).format(cvn[scale][0]),
+	        	'dbdate': moment(startdat).subtract(i, scale).format(cvn[scale][1]),
+	        	'count': 0
+	        });
+	    }
+
+		idb.getMasterRecord().done(function(user){
+		  idb.opendb().then(function(db){
+			db.transaction('r', 'users_games', function(){
+				db.users_games.where('steam_id').equals(user.steam_id).each(function(date){
+
+					// Find dates which are part of the past xx [scale] - search by [scale][2]
+					var d = date.added  || date.created,
+						d = d.substr(0, cvn[scale][2]);
+					for(var j=count; j--;){ if(arr[j].dbdate == d) arr[j].count += 1; }
+
+		        }).then(function(){
+
+		        	// For better handling, write arrays into obj for frontend
+		        	for(var k=0, l=count; k<l;k++){
+		        		obj.label.push(arr[k].label);
+		        		obj.count.push(arr[k].count);
+		        	}
+
+					// Add 1 extra [scale] to avoid bugged tooltip
+					obj.label.push(moment(startdat).add(1, scale).format(cvn[scale][0]));
+
+					deferred.resolve(obj);
+		        });
+		    }).catch(function(err){
+		    	console.log(err);
+		    }).finally(function(){
+		    	db.close();
+		    });
+		  });
+		});
+
+		return deferred.promise();
+
+	},
+
+	getAccountLevelsWidget: function(){
+
+		var deferred = $.Deferred();
+
+		idb.opendb().then(function(db){
+		    db.transaction('r', 'steam_users', function(){
+
+				var obj  = {}, arr = [], activated, color; 
+
+		        db.steam_users.each(function(user){
+
+					activated = (user.purchased == 1) ? 1 : 0;
+					color = randomColor({luminosity: 'dark', count: 1});
+
+					if(!obj[user.level]){
+						obj[user.level] = {
+					        'value': 1,
+					        'color': color,
+					        'highlight': color,
+					        'label': 'Level '+user.level,
+							'activated': activated
+		                };
+		            } else {
+						obj[user.level]['value'] += 1,
+						obj[user.level]['activated'] += activated;
+		            }
+
+		        }).then(function(){
+
+					for(key in obj){
+						arr.push(obj[key]);
+		            }			
+
+					deferred.resolve(arr);
+		        });
+		    }).catch(function(err){
+		        console.log(err);
+		    }).finally(function(){
+		        db.close();
+		    });
 		});
 
 		return deferred.promise();

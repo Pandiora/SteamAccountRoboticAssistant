@@ -5,12 +5,6 @@ while(num--){
 	$J('.econ_tag_filter_category:eq(2) .econ_tag_filter_container:eq('+num+') input').trigger('click');
 }
 
-
-
-
-
-
-
 // for filtering the same filters (games) again, just create an array of the checkbox-values of the before
 // used filters first, then reload page and iterate over them
 var len = $J('.econ_tag_filter_category:eq(2) .econ_tag_filter_container input').length, arr = [];
@@ -38,6 +32,8 @@ while(len--){
 	setTimeout(function(){ InventoryNextPage(); next(counter, maxLoops); }, 200)
 
 })(0, 15);
+
+https://www.kodinerds.net/index.php/Attachment/22451-addon-pvr-iptvsimple-multi-2-4-14-zip/
 
 // Bulk Booster Unpack
 var pagesLen 	= g_ActiveInventory.m_rgPages.length,

@@ -3,13 +3,15 @@
 // Set up worker
 var worker = new Worker('js/webworkers.js');
 // Bits for automated Stuff
-var         community_badge =  0;
-var         stop_disc_queue =  0;
-var            stop_sticker =  0;
-var license_bulk_activation =  0;
-var      license_bulk_appid = '';
-var  stop_get_market_prices =  0;
-var      stop_listing_items =  0;
+var        community_badge =  0,
+           stop_disc_queue =  0,
+              stop_sticker =  0,
+   license_bulk_activation =  0,
+        license_bulk_appid = '',
+    stop_get_market_prices =  0,
+        stop_listing_items =  0,
+      stop_auto_nomination =  0,
+     auto_nomination_appid =  0;
 
 // Get actual inventory-link and store it into variable
 var inventoryLink; getInventoryLink();
@@ -26,7 +28,7 @@ chrome.runtime.onInstalled.addListener(function(details){
   chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
   chrome.alarms.create('pending-trades',{ delayInMinutes: 0.06, periodInMinutes:  5.06 });
   // the higher delay is needed due to stalled connections
-  chrome.alarms.create('notific-trades',{ delayInMinutes: 0.25, periodInMinutes:  5.25 });
+  chrome.alarms.create('notific-trades',{ delayInMinutes: 0.10, periodInMinutes:  5.10 });
 
   // Check for Alarms/Cronjobs
   chrome.alarms.onAlarm.addListener(function(alarm){
@@ -34,8 +36,8 @@ chrome.runtime.onInstalled.addListener(function(details){
     if(alarm.name == 'owned-games')   { getGameJSON();            } else
     if(alarm.name == 'notific-trades'){ getNotificationsTrades(); } else
     if(alarm.name == 'pending-trades'){
-      idb.getMasterRecord().done(function(masterSteamID){
-        getTradeOffers(masterSteamID['steam_id']);
+      idb.getMasterRecord().done(function(master){
+        getTradeOffers(master['steam_id']);
       });
     } else { console.log('Task for this alarm isn´t set.'); }
   });
@@ -314,6 +316,7 @@ function getInventoryLink(){
   $.ajax({
     url: 'https://steamcommunity.com/my/inventory/',
     success: function(data){
+      data = data.replace(/<img\b[^>]*>/ig, '');
       inventoryLink = $($(data).find('.playerAvatar + a')[0]).attr('href');
     },
     error: function(){
@@ -1392,6 +1395,14 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
   } else if(message.greeting == "setLicenseBulkActivationActive"){
     license_bulk_activation = 1;
     license_bulk_appid = message.appid;
+    sendResponse(1);
+  } else if(message.greeting == "getAutoNominationStatus"){
+    sendResponse({status: stop_auto_nomination, appid: auto_nomination_appid});
+  } else if(message.greeting == "setAutoNominationInactive"){
+    stop_auto_nomination = 0;
+  } else if(message.greeting == "setAutoNominationActive"){
+    stop_auto_nomination = 1;
+    auto_nomination_appid = message.appid;
     sendResponse(1);
   } else {
     // This Listener don´t know what to do with this message

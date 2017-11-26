@@ -18,7 +18,7 @@ body {
 }
 @font-face {
     font-family: 'HedleyNew-Medium';
-    src: url('../fonts/HedleyNew-Medium.ttf') format('truetype');
+    src: url('/plugins/fonts/HedleyNew-Medium.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

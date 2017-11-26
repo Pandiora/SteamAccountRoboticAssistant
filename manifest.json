@@ -7,17 +7,19 @@
 	"version": "0.22",
     "background": {
         "scripts": [
-        	"js/jquery-2.1.4.min.js", 
-        	"js/background.js", 
-        	"js/acceptTrades.js", 
-        	"js/Dexie.min.js", 
-        	"js/database.js", 
-        	"js/mobileAuth.js", 
+        	"plugins/jQuery/jquery-2.2.3.min.js", 
+        	"plugins/Dexie/Dexie.min.js", 
+        	"plugins/MomentJS/moment.min.js",
+        	"plugins/randomColor/randomColor.js",
+        	"plugins/validate/jquery.validate.min.js", 
+        	"plugins/validate/jquery.validate.unobtrusive.min.js",
+        	"plugins/jsSha/jsSha-1.6.min.js",
+        	"js/background.js",
         	"js/confirmations_2fa.js",
-        	"js/mod_headers.js",
-        	"js/moment.min.js",
-        	"syncfusion/jquery.validate.min.js", 
-        	"syncfusion/jquery.validate.unobtrusive.min.js"
+        	"js/acceptTrades.js",
+        	"js/database.js",
+        	"js/mobileAuth.js", 
+        	"js/mod_headers.js"
         ],
         "persistent": true 
     },
@@ -27,7 +29,7 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["js/jquery-2.1.4.min.js"]
+			"js": ["plugins/jQuery/jquery-2.2.3.min.js"]
 		},
 		{
 			"matches": [
@@ -37,7 +39,7 @@
 				"*://store.steampowered.com/login*",
 				"*://store.steampowered.com/login/*"
 			],
-			"css": ["css/steam_login.css", "css/jquery.mCustomScrollbar.min.css"],
+			"css": ["css/steam_login.css"],
 			"js": ["js/steam_login.start.js"],
 			"run_at": "document_start"
 		},
@@ -49,7 +51,7 @@
 				"*://store.steampowered.com/login*",
 				"*://store.steampowered.com/login/*"
 			],
-			"js": ["js/jquery.waitUntilExists.min.js", "js/steam_login.js", "js/mobileAuth.js"]
+			"js": ["plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/steam_login.js", "plugins/jsSha/jsSha-1.6.min.js", "js/mobileAuth.js"]
 		},
 		{
 			"matches": ["*://store.steampowered.com/*"],
@@ -70,6 +72,10 @@
 			"js": ["js/licenseBulkActivation.js"]
 		},
 		{
+			"matches": ["*://store.steampowered.com/*"],
+			"js": ["js/steamNomination.js"]
+		},
+		{
 			"matches": [
 				"*://steamcommunity.com/id/*/inventory/*", 
 				"*://steamcommunity.com/profiles/*/inventory/*"],
@@ -79,7 +85,7 @@
 			"matches": [
 				"*://steamcommunity.com/id/*/inventory/*", 
 				"*://steamcommunity.com/profiles/*/inventory/*"],
-			"js": ["js/jquery-2.1.4.min.js", "js/jquery.waitUntilExists.min.js", "js/inventory.js"]
+			"js": ["plugins/jQuery/jquery-2.2.3.min.js", "plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/inventory.js"]
 		},
 		{
 			"matches": [

@@ -11,24 +11,6 @@ if(document.location.href.indexOf('profile') > -1){
 	username = (username !== null) ? username[1] : '';
 }
 
-var stickers = {
-	"beach":["deadbydaylight","drink","pitpeople","spoon","subnautica","tropico","worms"],
-	"boardwalk":["khajiit","lifeisstrange","neveralone","handsomejack","skyline","wheel","dawnofwar","claptrap","gangbeasts","dragonborn"],
-	"picnic":["pitcher","rightcup","apple","samurai","barbarian","basket","condiments","frontcup","fruitbox","conan","geralt","grill","leftcup","middlecup","knight"],
-	"scouts":["inside","littlesister","slimerancher","ori","bigdaddy","yookalaylee"],
-	"volleyball":["stardew","ball","escapists","bayonetta","jobsimulator","net"],
-	"minigolf":["h1z1","mountyourfriends","dragonsdogma","fivenightsatfreddys","footballmanager","golfwithfriends"],
-	"rollercoaster":["hitman","justcause","watchdogs","saintsrow","dishonored","deusex","divinity"],
-	"campfire":["rivalsofaether","bastion","undertale","earthlock","motherrussiableeds","kingsquest"],
-	"lemonade":["lemonade_pitcher","plantsvszombies","overcooked","samorost","snakepass","booth","theevilwithin","theforest"],
-	"park":["thelab","tf2","killingfloor","ark","nierautomata","thesims"],
-	"stargazing":["stellaris1","thewildeight","stellaris2","beamng1","beamng2","cavestory","osiris","scrapmechanic","farmingsimulator","starbound"],
-	"waterfight":["fallout","deadcells","fallout_plasma","gungeon_dog","gungeon","superhot"],
-	"pool":["assassinscreed","portal2","sunlesssea","xcom","tyranny","blackwake"],
-	"roadtrip":["residentevil","bindingofisaac","rocketleague","cactus","dontstarve","finalfantasy","darksouls","ghostrecon","goatsimulator"],
-	"tourist":["farcry","thehunters","totalwar","octodad"]
-};
-
 // at first we should get our Store SessionID
 getStoreSessionID();
 

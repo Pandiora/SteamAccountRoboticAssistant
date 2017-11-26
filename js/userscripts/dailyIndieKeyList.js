@@ -38,3 +38,12 @@ console.log("ASF: "+newArr.join(",")); // Steam
 var len = $('.table tr').length, arr = [];
 for(var i=1;i<len;i++){ arr.push($('.table tr:eq('+i+') td:eq(4)').text()); }
 console.log(arr.join(","));
+
+// Get visible keys from HumbleBundle to list
+var len = $('.js-sr-redeemed-bubble').length, arr = [];
+
+for(var i=0; i<len; i++){
+    arr.push($('.js-sr-redeemed-bubble').eq(i).text().replace(/\s+/g,''));
+}
+console.log(arr); // Plain
+console.log("ASF: "+arr.join(",")); // Steam

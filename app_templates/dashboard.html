@@ -1,0 +1,65 @@
+<script type='text/javascript' src="plugins/randomColor/randomColor.js"></script>
+<script type='text/javascript' src="plugins/ChartJS/Chart.min.js"></script>
+<script type='text/javascript' src="app_templates/js/dashboard.js"></script>
+
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Widgets & Statistics</small>
+  </h1>
+</section>
+<section class="content">
+
+  <div class="row">
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <div class="box-title">Master Games added</div>
+          <div class="pull-right box-tools">
+            <div class="btn-group">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                Time-Range
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="masterGamesTime" href="#" data-count="14" data-scale="day">14 Days</a></li>
+                <li><a class="masterGamesTime" href="#" data-count="30" data-scale="day">30 Days</a></li>
+                <li><a class="masterGamesTime" href="#" data-count="12" data-scale="month">12 Months</a></li>
+                <li><a class="masterGamesTime" href="#" data-count="24" data-scale="month">24 Months</a></li>
+                <li><a class="masterGamesTime" href="#" data-count="36" data-scale="month">36 Months</a></li>
+                <li><a class="masterGamesTime" href="#" data-count="14" data-scale="year">All Time</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="chart-responsive">
+            <canvas id="masterGamesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <div class="box-title">Accounts Level</div>
+        </div>
+        <div class="box-body">
+          <div class="col-md-8">
+              <div class="chart-responsive">
+                <canvas id="accountLevelChart" height="247"></canvas>
+              </div>  
+          </div>
+          <div class="col-md-4">
+              <div id="js-legend"></div>  
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>

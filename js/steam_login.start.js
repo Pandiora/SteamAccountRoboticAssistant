@@ -21,6 +21,7 @@ document.addEventListener("animationstart", function(e) {
           <option id="start_discovery_queue">'+chrome.i18n.getMessage("steam_login_input_disc_queue")+'</option> \
           <option id="adding_free_license">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
           <option id="craft_sticker_badge">Craft Sticker-Badge</option> \
+          <option id="automated_nomination">Automated Nomination</option> \
         </select> \
         <div id="tasks_inputs"> \
           <div class="tasks_inputs"> \

@@ -93,6 +93,42 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
   }
 },{urls: ["https://steamcommunity.com/market/sellitem/"]},['requestHeaders','blocking']);
 
+// EDIT: Can be solved by calling ?l=english as url-param
+// Add Cookie to Headers for retrieving license-data (added)
+/////////////////////////////////////////////////////////////
+/*
+chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
+  // Only replace requests from our extension
+  if(details.tabId === -1){
+
+    var headers = details.requestHeaders,
+    blockingResponse = {};
+
+    // Replacing the language-cookie to get one and the same date-format
+    for( var i = 0, l = headers.length; i < l; ++i ) {
+      if(headers[i].name == 'Cookie'){
+
+        if(/Steam_Language/.test(headers[i].value)){
+          console.log(headers[i].value);
+          var lang = /.*Steam_Language=([^;\s]+).*|.+/.exec(headers[i].value)[1];
+
+          if(lang !== 'english'){
+            headers[i].value = headers[i].value.replace('Steam_Language='+lang, 'Steam_Language=english');
+          }
+        } else {
+          headers[i].value = headers[i].value+" Steam_Language=english;";
+        }
+      }
+    }
+
+    blockingResponse.requestHeaders = headers;
+    return blockingResponse;
+
+  }
+},{urls: ["https://store.steampowered.com/account/licenses/"]},['requestHeaders','blocking']);
+
+*/
+
 
 // Replacing CSP-Headers - see https://matthewspencer.github.io/browser-extensions-and-csp-headers/
 // Needed to automate Community-Badge crafting due to some tasks rely on

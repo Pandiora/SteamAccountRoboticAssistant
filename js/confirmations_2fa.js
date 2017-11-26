@@ -29,11 +29,16 @@ function getNotificationsTrades(){
 						// Send request to Steam-Servers, to get the list of trades that need to be confirmed
 						$.ajax({
 							url: "https://steamcommunity.com/mobileconf/conf?" + all,
+							method: "POST",
 							timeout: 10000,
 							beforeSend: function(xhr) {
 								xhr.setRequestHeader("X-Requested-With", "com.valvesoftware.android.steam.community");
 							},
 							success: function(data) {
+
+								// prevent image-loading - replace src with data-src
+								data = data.replace(/(<img\s)src([^>]*>)/ig, '$1data-src$2');
+
 								// Check if confirmation-key is wrong
 								if (data.indexOf('mobileconf_empty') <= 0) {
 									var entryArr = [];
@@ -45,7 +50,7 @@ function getNotificationsTrades(){
 										for (i = 0; i < entrys.length; i++) {
 
 											// set up needed variables for notification-items
-											var imgsrc = $(entrys[i]).find('img').attr('src');
+											var imgsrc = $(entrys[i]).find('img').data('src');
 											var imgcut = imgsrc.toString().slice(-7);
 											var dataConfID = $(entrys[i]).data('confid');
 											var data_key = $(entrys[i]).data('key');

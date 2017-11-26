@@ -553,13 +553,14 @@ $(function(){
 			toolbarClick: "onToolBarClick",
 
 			columns: [
-			{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },
-			{ field: "username", headerText: chrome.i18n.getMessage("index_table_username"), width: 150 },
-			{ field: "steam_id", headerText: chrome.i18n.getMessage("index_table_steamid"), width: 150, validationRules: { required: true, range: [70000000000000000, 79999999999999999] }  },
-			{ field: "app_id", headerText: chrome.i18n.getMessage("index_table_appid"), width: 150 },
-			{ field: "game_name", headerText: chrome.i18n.getMessage("index_table_game"), width: 150 },
-			{ field: "product_key", headerText: chrome.i18n.getMessage("index_table_product_key"), width: 150 },
-			{ field: "created", headerText: chrome.i18n.getMessage("index_table_created"), format: "{0:yyyy-dd-MM HH:mm:ss}", width: 150, editType: ej.Grid.EditingType.DateTimePicker, validationRules: { required: true } },
+				{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },
+				{ field: "username", headerText: chrome.i18n.getMessage("index_table_username"), width: 150 },
+				{ field: "steam_id", headerText: chrome.i18n.getMessage("index_table_steamid"), width: 150, validationRules: { required: true, range: [70000000000000000, 79999999999999999] }  },
+				{ field: "app_id", headerText: chrome.i18n.getMessage("index_table_appid"), width: 150 },
+				{ field: "game_name", headerText: chrome.i18n.getMessage("index_table_game"), width: 150 },
+				{ field: "product_key", headerText: chrome.i18n.getMessage("index_table_product_key"), width: 150 },
+				{ field: "created", headerText: chrome.i18n.getMessage("index_table_created"), format: "{0:yyyy-dd-MM HH:mm:ss}", width: 150, editType: ej.Grid.EditingType.DateTimePicker, validationRules: { required: true } },
+				{ field: "added", headerText: "Added", format: "{0:yyyy-dd-MM HH:mm:ss}", width: 150, editType: ej.Grid.EditingType.DateTimePicker, validationRules: { required: true } },
 			],
 
 			actionBegin: "actionBegin",

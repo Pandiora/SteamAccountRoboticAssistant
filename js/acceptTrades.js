@@ -43,6 +43,9 @@ function getTradeOffers(masterid){
 		url: 'http://steamcommunity.com/profiles/'+masterid+'/tradeoffers',
 		success: function (response, textStatus, jqXHR) {
 
+			// stop loading pictures FFS
+			response = response.replace(/<img[^>]*>/g,"");
+
 			// We need to filter the response to get some parameters
 			var sessionIDExp = /g_sessionID = \"(.+)\";/;
 			var steamIDMasterExp = /g_steamID = \"(.+)\";/;
