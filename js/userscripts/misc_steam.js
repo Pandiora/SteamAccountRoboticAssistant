@@ -33,8 +33,6 @@ while(len--){
 
 })(0, 15);
 
-https://www.kodinerds.net/index.php/Attachment/22451-addon-pvr-iptvsimple-multi-2-4-14-zip/
-
 // Bulk Booster Unpack
 var pagesLen 	= g_ActiveInventory.m_rgPages.length,
 	sessionID	= g_sessionID,
@@ -98,3 +96,17 @@ function BulkBoosterUnpack(){
 }
 
 getBoosterData();
+
+// Select games with probably most cards (arr) for trading with bots (crafiting badges on em for SS)
+var container = jQuery(".econ_tag_filter_category div:contains('Spiel'):eq(0)").parent().find(".econ_tag_filter_container"), 
+	len = container.length,
+	arr = ["Back to Bed", "Gorky 17", "Jotun", "Mirage: Arcane Warfare", "Monaco", "Shadow Warrior"];
+
+jQuery(".econ_tag_filter_category div:contains('Gegenstandstyp'):eq(0)").parent().find(".econ_tag_filter_label:contains('Sammelkarte')").prev().trigger("click");
+jQuery(".econ_tag_filter_category div:contains('Kartenrahmen'):eq(0)").parent().find(".econ_tag_filter_label:contains('Normal')").prev().trigger("click"); 
+
+for(var i=0; i<len; i++){
+	if(arr.indexOf(jQuery(container[i]).find("label").text().match(/(.*).\(\d*\)/)[1]) !== -1){
+		jQuery(container[i]).find("input").trigger("click");
+    }
+}

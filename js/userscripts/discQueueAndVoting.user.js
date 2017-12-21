@@ -64,6 +64,7 @@
                                     appid: arr[Math.floor(Math.random()*arr.length)]
                                 },
                                 success: function(response){
+                                    console.log("Vote should be sent now and 1 card added yo.");
                                     scnt = 0; arr = [];
                                     setTimeout(function(){ next(counter, maxLoops); }, 300);
                                 },

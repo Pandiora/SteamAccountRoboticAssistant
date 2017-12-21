@@ -1,5 +1,3 @@
-var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
-
 $(document).ready(function() {
 
   // Detect if Script is active
@@ -20,10 +18,75 @@ $(document).ready(function() {
     } else if (document.location.href == "http://store.steampowered.com/explore/?l=english") {
       if (stopme == 1) {
 
-        var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/[+-]?\b\d+\b/g,'');
-        var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/[+-]?\b\d+\b/g,'');
+        var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
+
+        jQuery.ajax({
+          url: 'http://store.steampowered.com/SteamAwards/', 
+          success: function(res){
+            var awards = jQuery(res).find('.steamaward_castvote');
+            var arr = [];
+
+          (function next(counter, maxLoops) {
+
+            // all votes should be send now
+            if(counter++ >= maxLoops){
+              console.log("Voted! Iterating over Discovery-Queue now.");
+              discQueue();
+              return;
+            }
+
+            var scnt = 0;
+            function processAjax(){
+              scnt++;
+              if(scnt <= 5){
+
+                voteid = jQuery(awards[counter-1]).find('.vote_nominations').data('voteid');
+                jQuery(awards[counter-1]).find('.vote_nomination').map(function(){ 
+                  arr.push(jQuery(this).data('vote-appid')); 
+                });
+
+                jQuery.ajax({
+                  url: 'http://store.steampowered.com/salevote',
+                  type: 'POST',
+                  data: {
+                    sessionid: sessionID,
+                    voteid: voteid,
+                    appid: arr[Math.floor(Math.random()*arr.length)]
+                  },
+                  success: function(response){
+                    console.log(response);
+                    scnt = 0; arr = [];
+                    setTimeout(function(){ next(counter, maxLoops) }, 300);
+                  },
+                  error: function(xhr, textStatus, errorThrown){
+                    if(xhr.status == 403){
+                      setTimeout(function(){ next(counter, maxLoops) }, 300);
+                    } else {
+                      // probably some timeout - try again
+                      setTimeout(function(){ processAjax(); }, 3000);
+                    }
+                  }
+                });
+
+              } else {
+                // to much retries
+                scnt = 0; 
+                setTimeout(function(){ next(counter, maxLoops) }, 300);  
+              }
+            }
+
+            // Autostart on first iteration
+            if(scnt <= 1) processAjax();
+
+          })(0, awards.length);
+
+          }
+        });
 
         function discQueue(){
+
+          var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/[+-]?\b\d+\b/g,'');
+          var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/[+-]?\b\d+\b/g,'');
 
           // cards_dropped == '' for the beginning of the sale when there is no number on cards dropped
           // ((cards_dropped%3 == 0) && (cards_remaining != '')) for day 2 and next days of sale
@@ -95,10 +158,6 @@ $(document).ready(function() {
           }
 
         }
-
-        // Execute
-        discQueue();       
-
       }
 
     } else if (document.location.href == "http://store.steampowered.com/") {
@@ -111,8 +170,8 @@ $(document).ready(function() {
 
 
 // Awards
-/*var cards_left = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g, '');
-var cards_text = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text();
+// var cards_left = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/\D/g, '');
+/*var cards_text = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text();
 var cards_text_compare = "Sie können heute noch eine weitere Karte erhalten, indem Sie Ihre Entdeckungsliste erkunden.";
                jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/\D/g,'');
 jQuery.ajax({
