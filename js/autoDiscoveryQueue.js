@@ -151,6 +151,8 @@ $(document).ready(function() {
                 setTimeout(function(){
                   location.reload();
                 }, 1000);
+              } else {
+                alert("There is a problem with your username!");
               }
             });
           }
