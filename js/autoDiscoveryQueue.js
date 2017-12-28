@@ -92,10 +92,8 @@ $(document).ready(function() {
           // ((cards_dropped%3 == 0) && (cards_remaining != '')) for day 2 and next days of sale
           // ((cards_remaining != '') && (cards_remaining >= 2)) for day 2 and next days of sale
 
-          if( (cards_dropped == '') ||
-             ((cards_dropped%3 == 0) && (cards_remaining != '')) ||
-             ((cards_remaining != '') && (cards_remaining >= 2)) ||
-             (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
+          if(
+            (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
           ){
 
             var GenerateQueue = function(queueNumber) {
