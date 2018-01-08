@@ -1,4 +1,4 @@
-var cents = 8,
+var cents = 7,
     len = jQuery('.market_listing_cancel_button a').length,
     js = '', iid = '', lid = '',  price = 0, sid = g_sessionID;
 

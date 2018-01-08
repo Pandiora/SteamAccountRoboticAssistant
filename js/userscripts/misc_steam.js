@@ -100,7 +100,7 @@ getBoosterData();
 // Select games with probably most cards (arr) for trading with bots (crafiting badges on em for SS)
 var container = jQuery(".econ_tag_filter_category div:contains('Spiel'):eq(0)").parent().find(".econ_tag_filter_container"), 
 	len = container.length,
-	arr = ["Back to Bed", "Gorky 17", "Jotun", "Mirage: Arcane Warfare", "Monaco", "Shadow Warrior"];
+	arr = ["AX:EL", "Kingdom: Classic"];
 
 jQuery(".econ_tag_filter_category div:contains('Gegenstandstyp'):eq(0)").parent().find(".econ_tag_filter_label:contains('Sammelkarte')").prev().trigger("click");
 jQuery(".econ_tag_filter_category div:contains('Kartenrahmen'):eq(0)").parent().find(".econ_tag_filter_label:contains('Normal')").prev().trigger("click"); 
