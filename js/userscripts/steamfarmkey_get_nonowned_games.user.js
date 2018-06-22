@@ -11,11 +11,11 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-var exclude_dlc  = 1, // 1 means exclude dlc
-    max_price = 10, // select all games below this price (RUB)
-    dlc_category = '1186', // dlc-category class-ID (tr-element before the tr.goods)
-    exclude_cat = [], // more categories to be excluded
-    override_id = '', // for overriding the standard steam-id (currently logged in user), can be the custom-url (only the custom part of it) or SteamID(64) [expecting the custom-url to be not just numeric lel]
+var exclude_dlc     = 1,        // 1 means exclude dlc
+    max_price       = 10,       // select all games below this price (RUB)
+    dlc_category    = '1186',   // dlc-category class-ID (tr-element before the tr.goods)
+    exclude_cat     = [],       // more categories to be excluded
+    override_id     = '',       // for overriding the standard steam-id (currently logged in user), can be the custom-url (only the custom part of it) or SteamID(64) [expecting the custom-url to be not just numeric lel]
     changed_game_titles = [
         {
             'shop': 'Liveza Death of the Earth',

@@ -19,7 +19,8 @@
         	"js/acceptTrades.js",
         	"js/database.js",
         	"js/mobileAuth.js", 
-        	"js/mod_headers.js"
+        	"js/mod_headers.js",
+        	"hot-reload.js"
         ],
         "persistent": true 
     },
@@ -54,7 +55,7 @@
 			"js": ["plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/steam_login.js", "plugins/jsSha/jsSha-1.6.min.js", "js/mobileAuth.js"]
 		},
 		{
-			"matches": ["*://store.steampowered.com/*"],
+			"matches": ["*://store.steampowered.com/*", "*://steamcommunity.com/saliengame/*", "*://steamcommunity.com/login/home/*"],
 			"js": ["js/autoDiscoveryQueue.js"]
 		},
 		{

@@ -18,6 +18,30 @@ for(var i=1;i<keys; i++){
 console.log("Bots: "+arr3.join(", ")); // Bots
 console.log("Main: "+arr4.join(", ")); // Main
 
+// Get visible keys from DailyIndieGame to list and split it into two arrays (2 bundles only cost some cents moar)
+var keys = document.getElementById("TableKeys").getElementsByTagName("tr").length,
+     cnt = 6, arr1 = [], arr2 = [], arr3 = [], arr4 = [];
+
+for(var i=1;i<keys; i++){
+    var key = document.getElementById("TableKeys").getElementsByTagName("tr")[i].getElementsByTagName("td")[4].innerHTML.replace(/\s+/g,''),
+        tit = document.getElementById("TableKeys").getElementsByTagName("tr")[i].getElementsByTagName("td")[2].innerHTML.replace(/\s+/g,'');
+
+        arr3.push(key);
+}
+console.log("Bots: "+arr3.join(", ")); // Bots
+console.log("Main: "+arr4.join(", ")); // Main
+
+// Get visible Keys from GoGo-Bundle
+var rows = jQuery('fieldset table:eq(2) tbody tr'),
+    cnt  = rows.length,
+    arr  = [];
+
+for(var i=0;i<cnt;i++){
+    arr.push(jQuery(jQuery(rows[i]).find('td:eq(1)')).text());
+}
+
+console.log("Bots: "+arr.join(", "));
+
 // Get visible keys from IG into list
 var keys = $("input.keys").length, arr = [];
 for(var i=0;i<keys;i++){ arr.push($("input.keys").eq(i).val()); }

@@ -13,7 +13,6 @@ while(len--){
 }
 console.log("Array:"+arr);
 
-
 var arr = [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,false,true,false,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,false,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true], len = arr.length;
 
 while(len--){
@@ -82,7 +81,7 @@ function BulkBoosterUnpack(){
 
         jQuery.ajax({
             method: 'POST',
-            url: 'http://steamcommunity.com/'+userURL+'/ajaxunpackbooster/',
+            url: 'https://steamcommunity.com/'+userURL+'/ajaxunpackbooster/',
             data: {
       			'appid': arr[counter-1].appid,
 				'communityitemid': arr[counter-1].itemid,
@@ -110,3 +109,15 @@ for(var i=0; i<len; i++){
 		jQuery(container[i]).find("input").trigger("click");
     }
 }
+
+// check foreign inventory for tradable
+var pag = 1,
+	inv = g_ActiveInventory.m_rgPages[pag][0],
+    arr = [];
+
+for(var i=0;i<25;i++){
+	if(inv.childNodes[i].rgItem === undefined) break;
+	arr.push(inv.childNodes[i].rgItem.description.tradable);
+}
+
+console.log(arr);
