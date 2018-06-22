@@ -142,14 +142,14 @@ $(document).ready(function() {
             var GenerateQueue = function(queueNumber) {
             console.log('Queue #' + ++queueNumber);
 
-            jQuery.post('http://store.steampowered.com/explore/generatenewdiscoveryqueue', {
+            jQuery.post('https://store.steampowered.com/explore/generatenewdiscoveryqueue', {
               sessionid: sessionID,
               queuetype: 0
             }).done(function(data) {
               var requests = [];
 
               for (var i = 0; i < data.queue.length; i++) {
-                requests.push(jQuery.post('http://store.steampowered.com/app/10', {
+                requests.push(jQuery.post('https://store.steampowered.com/app/10', {
                   appid_to_clear_from_queue: data.queue[i],
                   sessionid: sessionID
                 }));
