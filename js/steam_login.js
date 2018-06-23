@@ -119,6 +119,12 @@ $(document).ready(function(){
 	        		//document.location.href = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
 	      		}
 	    	});
+		} else if(selected_option == 'get_minigame_token'){
+			chrome.runtime.sendMessage({greeting: 'setMinigameTokenStatusActive'}, function(res){
+	      		if(res == 1){
+	      			document.location.href = "https://steamcommunity.com/login/home/?goto=";
+	      		}
+	    	});
 		} else if(selected_option == 'craft_sticker_badge'){
 			chrome.runtime.sendMessage({greeting: 'setStickerActive'}, function(res){
 	      		if(res == 1){

@@ -11,7 +11,8 @@ var        community_badge =  0,
     stop_get_market_prices =  0,
         stop_listing_items =  0,
       stop_auto_nomination =  0,
-     auto_nomination_appid =  0;
+     auto_nomination_appid =  0,
+     stop_minigame_token   =  0;
 
 // Get actual inventory-link and store it into variable
 var inventoryLink; getInventoryLink();
@@ -28,7 +29,7 @@ chrome.runtime.onInstalled.addListener(function(details){
   chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
   chrome.alarms.create('pending-trades',{ delayInMinutes: 0.06, periodInMinutes:  5.06 });
   // the higher delay is needed due to stalled connections
-  chrome.alarms.create('notific-trades',{ delayInMinutes: 0.10, periodInMinutes:  5.10 });
+  chrome.alarms.create('notific-trades',{ delayInMinutes: 0.10, periodInMinutes: 15.10 });
 
   // Check for Alarms/Cronjobs
   chrome.alarms.onAlarm.addListener(function(alarm){
@@ -475,6 +476,69 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
   })(0, cnt);
 }
 
+function sendAllCardsToBot(sender, asset_ids, selected_user, current_user, sessionid){
+
+    var len = asset_ids.length,
+        sid = '';
+      
+    // console.log(sessionid);
+    // Prepare the important json-part related to tradeoffer-id's
+    var json = {
+      "newversion": true,
+      "version": 6,
+      "me": { "assets": [],"currency": [],"ready": false },
+      "them": { "assets": [],"currency": [],"ready": false }
+    };
+
+    // Generate JSON for all cards
+    for(var i=0;i<len;i++){
+      json['me']['assets'].push({
+        "appid": "753",
+        "contextid": "6",
+        "amount": 1,
+        "assetid": asset_ids[i]
+      });
+    }
+
+    idb.opendb().then(function(db){
+      db.steam_users.where('login_name').equals(selected_user).first(function(user){
+        sid = user['steam_id'];
+      }).then(function(){
+
+        // Finally send our trade
+        $.ajax({
+          url: 'https://steamcommunity.com/tradeoffer/new/send',
+          type: 'POST',
+          data: {
+            'sessionid': sessionid,
+            'serverid': '1',
+            'partner': sid,
+            'tradeoffermessage': '',
+            'json_tradeoffer': JSON.stringify(json),
+            'captcha': '',
+            'trade_offer_create_params': {}
+          },
+          success: function(data){
+
+            getNotificationsTrades();
+
+            chrome.tabs.sendMessage(sender.tab.id, {
+              msg: 'Done',
+              detail: data
+            });
+          }
+        });
+
+      }).catch(function(err){
+        console.log(err);
+      }).finally(function(){
+        // stop blocking the database
+        db.close();
+      });
+    });
+
+}
+
 
 function processMarketListings(){
   // Only execute if the user set this ON in settings
@@ -689,6 +753,62 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     worker.onmessage = function(e){
       var data = e.data;
       if(data.msg == 'OwnedBadgesDone'){
+        worker = new Worker('js/webworkers.js');
+        sendResponse('done');
+      } else if(data.msg == 'UpdateProgress'){
+        chrome.windows.getAll({populate:true},function(windows){
+          windows.forEach(function(window){
+            window.tabs.forEach(function(tab){
+              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
+                chrome.tabs.sendMessage(tab.id,{
+                  greeting: "update-progress",
+                  percent: data.percentage,
+                  message: data.message
+                }, function(response){
+                  //console.log();
+                });
+              }
+            });
+          });
+        });
+      }
+    }
+    return true;
+
+  } else if(message.greeting == 'getDataOfSteamBadges'){
+
+    worker.postMessage('getSteamBadges');
+    worker.onmessage = function(e){
+      var data = e.data;
+      if(data.msg == 'SteamBadgesDone'){
+        worker = new Worker('js/webworkers.js');
+        sendResponse('done');
+      } else if(data.msg == 'UpdateProgress'){
+        chrome.windows.getAll({populate:true},function(windows){
+          windows.forEach(function(window){
+            window.tabs.forEach(function(tab){
+              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
+                chrome.tabs.sendMessage(tab.id,{
+                  greeting: "update-progress",
+                  percent: data.percentage,
+                  message: data.message
+                }, function(response){
+                  //console.log();
+                });
+              }
+            });
+          });
+        });
+      }
+    }
+    return true;
+
+  } else if(message.greeting == 'getDataOfUsersBadges'){
+
+    worker.postMessage('getUsersBadges');
+    worker.onmessage = function(e){
+      var data = e.data;
+      if(data.msg == 'UsersBadgesDone'){
         worker = new Worker('js/webworkers.js');
         sendResponse('done');
       } else if(data.msg == 'UpdateProgress'){
@@ -1355,6 +1475,10 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
     return true;
 
+  } else if(message.greeting == "sendAllCardsToBot"){ 
+    console.log(message.ssid);
+    sendAllCardsToBot(sender, message.ast_ids,message.sld_name,message.cur_user, message.ssid);
+
   } else if(message.greeting == "set_under_eight_purchased_skip"){
 
     idb.opendb().then(function(db){
@@ -1404,6 +1528,13 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     stop_auto_nomination = 1;
     auto_nomination_appid = message.appid;
     sendResponse(1);
+  } else if(message.greeting == "getMinigameTokenStatus"){
+    sendResponse(stop_minigame_token);
+  } else if(message.greeting == "setMinigameTokenStatusInactive"){
+    stop_minigame_token = 0;
+  } else if(message.greeting == "setMinigameTokenStatusActive"){
+    stop_minigame_token = 1;
+    sendResponse(1);
   } else {
     // This Listener don´t know what to do with this message
     console.log(chrome.i18n.getMessage("background_missing_listener_function")+message.greeting);
@@ -1418,6 +1549,7 @@ chrome.browserAction.onClicked.addListener(function(tab){
   });
 });
 // pinned style
+
 /*chrome.tabs.create({
   url: chrome.extension.getURL('index.html')
   ,

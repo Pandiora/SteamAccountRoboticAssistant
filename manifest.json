@@ -59,6 +59,10 @@
 			"js": ["js/autoDiscoveryQueue.js"]
 		},
 		{
+			"matches": ["*://steamcommunity.com/*"],
+			"js": ["js/getMinigameToken.js"]
+		},
+		{
 			"matches": [
 				"*://steamcommunity.com/login*",
 				"*://steamcommunity.com/id/*/stickers*",
