@@ -55,12 +55,8 @@
 			"js": ["plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/steam_login.js", "plugins/jsSha/jsSha-1.6.min.js", "js/mobileAuth.js"]
 		},
 		{
-			"matches": ["*://store.steampowered.com/*", "*://steamcommunity.com/saliengame/*", "*://steamcommunity.com/login/home/*"],
+			"matches": ["*://store.steampowered.com/*"],
 			"js": ["js/autoDiscoveryQueue.js"]
-		},
-		{
-			"matches": ["*://steamcommunity.com/*"],
-			"js": ["js/getMinigameToken.js"]
 		},
 		{
 			"matches": [

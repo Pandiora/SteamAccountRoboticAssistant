@@ -22,7 +22,6 @@ document.addEventListener("animationstart", function(e) {
           <option id="adding_free_license">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
           <option id="craft_sticker_badge">Craft Sticker-Badge</option> \
           <option id="automated_nomination">Automated Nomination</option> \
-          <option id="get_minigame_token">Get Minigame-Tokens</option> \
         </select> \
         <div id="tasks_inputs"> \
           <div class="tasks_inputs"> \

@@ -3,20 +3,7 @@ $(document).ready(function() {
   // Detect if Script is active
   /////////////////////////////
   chrome.runtime.sendMessage({greeting: 'getDiscoveryQueueStatus'}, function(stopme){
-    /*if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish") {
-      // Click first entry until none is left
-      setTimeout(function(){
-        if (stopme == 1) { 
-          if ($('.names').length > 0) {
-            $('.names:eq(0)').click();
-          } else {
-            // When finished reset queue-status
-            chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
-          }
-        }
-      }, 1500);
-    }*/ 
-    if(document.location.href == "https://steamcommunity.com/login/home/?goto=saliengame%2Fplay"){
+    if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish") {
       // Click first entry until none is left
       setTimeout(function(){
         if (stopme == 1) { 
@@ -30,33 +17,7 @@ $(document).ready(function() {
       }, 1500);
     } else if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish&redir_ssl=1"){
 
-      document.location = "https://steamcommunity.com/login/home/?goto=saliengame%2Fplay";
-
-    } else if (document.location.href == "https://steamcommunity.com/saliengame/play"){
-
-      if(Cookies.get('forcereload') !== undefined){
-        if(Cookies.get('forcereload') < 4){
-          // we try to get cards 4 times (3 cards+1 fuckup-try)
-          var cookieval = Cookies.get('forcereload');
-          Cookies.set('forcereload', parseInt(cookieval)+1);
-
-          setTimeout(function(){
-            location.reload();
-          }, 20*1000);
-        } else {
-          // remove dem cookie
-          Cookies.remove('forcereload');
-
-          // now finally let's do disc-queue
-          document.location = "https://store.steampowered.com/explore/?l=english"
-        }
-      } else {
-        Cookies.set('forcereload', '1');
-
-        setTimeout(function(){
-          location.reload();
-        }, 20*1000);
-      }
+      document.location = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
 
     } else if (document.location.href == "https://store.steampowered.com/explore/?l=english"){
       if (stopme == 1) {
@@ -205,8 +166,7 @@ $(document).ready(function() {
 
     } else if (document.location.href == "http://store.steampowered.com/") {
       if (stopme == 1) {
-        document.location = "https://steamcommunity.com/login/home/?goto=saliengame%2Fplay";
-        //document.location = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
+        document.location = "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish";
       }
     }
   });
