@@ -27,9 +27,9 @@ chrome.runtime.onInstalled.addListener(function(details){
   // ToDo: Alarm has to be set over 60s on release
   chrome.alarms.create('booster-json',  { delayInMinutes: 0.02, periodInMinutes: 15.00 });
   chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
-  chrome.alarms.create('pending-trades',{ delayInMinutes: 0.06, periodInMinutes:  5.06 });
+  chrome.alarms.create('pending-trades',{ delayInMinutes: 15.06, periodInMinutes:  15.06 });
   // the higher delay is needed due to stalled connections
-  chrome.alarms.create('notific-trades',{ delayInMinutes: 0.10, periodInMinutes: 15.10 });
+  chrome.alarms.create('notific-trades',{ delayInMinutes: 15.10, periodInMinutes: 15.10 });
 
   // Check for Alarms/Cronjobs
   chrome.alarms.onAlarm.addListener(function(alarm){
@@ -476,11 +476,36 @@ function sendCsgoCardsBulk(sender, users, cards, sessionid){
   })(0, cnt);
 }
 
-function sendAllCardsToBot(sender, asset_ids, selected_user, current_user, sessionid){
+function sendTrades(sender, arr, sessionid, percentage){
 
-    var len = asset_ids.length,
-        sid = '';
-      
+  /* awaiting array with at least following structure
+  [{ assets: [], steam_id: <partner_steamid> }, {}, ...]
+  */
+
+  (function next(counter, maxLoops){
+
+    if (counter++ >= maxLoops){
+      // Tell frontend we're done
+      setTimeout(function(){
+        chrome.tabs.sendMessage(sender.tab.id,{
+          msg: 'UpdateProgress',
+          percentage: 100,
+          message: "All trades sent"
+        });
+        // and last but not least get our our trades for 2fa
+        getNotificationsTrades();
+
+      }, 100);
+      return;
+    }
+
+    // Update the progressbar at frontend
+    chrome.tabs.sendMessage(sender.tab.id,{
+      msg: 'UpdateProgress',
+      percentage: (((99-35)/maxLoops)*counter),
+      message: "Sending trade to "+arr[counter-1].persona+" ..."
+    });
+
     // console.log(sessionid);
     // Prepare the important json-part related to tradeoffer-id's
     var json = {
@@ -490,53 +515,37 @@ function sendAllCardsToBot(sender, asset_ids, selected_user, current_user, sessi
       "them": { "assets": [],"currency": [],"ready": false }
     };
 
+    var assets = arr[counter-1].assets,
+        len = assets.length;
+
     // Generate JSON for all cards
     for(var i=0;i<len;i++){
       json['me']['assets'].push({
         "appid": "753",
         "contextid": "6",
         "amount": 1,
-        "assetid": asset_ids[i]
+        "assetid": assets[i]
       });
     }
 
-    idb.opendb().then(function(db){
-      db.steam_users.where('login_name').equals(selected_user).first(function(user){
-        sid = user['steam_id'];
-      }).then(function(){
-
-        // Finally send our trade
-        $.ajax({
-          url: 'https://steamcommunity.com/tradeoffer/new/send',
-          type: 'POST',
-          data: {
-            'sessionid': sessionid,
-            'serverid': '1',
-            'partner': sid,
-            'tradeoffermessage': '',
-            'json_tradeoffer': JSON.stringify(json),
-            'captcha': '',
-            'trade_offer_create_params': {}
-          },
-          success: function(data){
-
-            getNotificationsTrades();
-
-            chrome.tabs.sendMessage(sender.tab.id, {
-              msg: 'Done',
-              detail: data
-            });
-          }
-        });
-
-      }).catch(function(err){
-        console.log(err);
-      }).finally(function(){
-        // stop blocking the database
-        db.close();
-      });
+    // Finally send our trade
+    $.ajax({
+      url: 'https://steamcommunity.com/tradeoffer/new/send',
+      type: 'POST',
+      data: {
+        'sessionid': sessionid,
+        'serverid': '1',
+        'partner': arr[counter-1].steam_id,
+        'tradeoffermessage': '',
+        'json_tradeoffer': JSON.stringify(json),
+        'captcha': '',
+        'trade_offer_create_params': {}
+      },
+      success: function(data){
+        setTimeout(function(){ next(counter, maxLoops) }, 100);
+      }
     });
-
+  })(0, arr.length);
 }
 
 
@@ -1476,8 +1485,8 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     return true;
 
   } else if(message.greeting == "sendAllCardsToBot"){ 
-    console.log(message.ssid);
-    sendAllCardsToBot(sender, message.ast_ids,message.sld_name,message.cur_user, message.ssid);
+    //console.log(message.ssid);
+    sendAllCardsToBot(sender, message.ast_ids,message.cur_user, message.ssid);
 
   } else if(message.greeting == "set_under_eight_purchased_skip"){
 

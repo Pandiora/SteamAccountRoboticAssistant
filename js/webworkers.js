@@ -34,6 +34,11 @@ self.onmessage = function(msg){
   } else if(msg.data == 'getUsersBadges'){
     //console.log(msg.data);
     getUsersBadges();
+  } else if(msg.data.msg == 'getMissingBadgesEntries'){
+    //console.log(msg.data);
+    addMissingBadgesEntries(msg.data.arr, false);
+  } else {
+    console.log("non-implemented webworker called");
   }
 };
 
@@ -142,8 +147,8 @@ function getUsersBadges(){
       created        = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 12-24-2016 13:25:34
 
   idb.opendb().then(function(db){
-    db.transaction("r", ['steam_users','steam_badges', 'users_badges'], function(){
-      db.steam_users.toArray().then(function(user){
+    db.transaction("r", ['steam_users'], function(){
+      db.steam_users.toArray().then(function(users){
 
         // first we need to get all users and master-apikey
         master_api_key = $.grep(users, function(e){ return e.type == 'Master'; }),
@@ -161,40 +166,40 @@ function getUsersBadges(){
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
             setTimeout(function(){
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Insert games into database.'});
-              processUser(apparr);
+              self.postMessage({msg: 'UpdateProgress', percentage: 98, message: 'Insert games into database.'});
+              processUser(badgesarr);
             }, 100);
             return;
           }
 
           // Update our Progressbar (frontend)
-          self.postMessage({msg: 'UpdateProgress', percentage: ((99/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
+          self.postMessage({msg: 'UpdateProgress', percentage: ((98/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
 
           // Get data of owned games for this user via steam-api
-          $.get('https://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key+'&steamid='+users[counter-1].steam_id+'&format=json', function(res){
+          $.get('https://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key+'&steamid='+userarr[counter-1].steam_id+'&format=json', function(res){
  
-            var username  = users[counter-1].username,
-                steam_id  = users[counter-1].steam_id,
+            var username  = userarr[counter-1].username,
+                steam_id  = userarr[counter-1].steam_id,
                 timestamp = '',
                 obj       = res.response.badges,
                 len       = obj.length;
 
             for(var i=0;i<len;i++){
-              if(obj[i].appid === undefined) continue;
+              if(obj[i].appid === undefined) continue; // no sale-badges or steam-badges pls
               if(obj[i].border_color === 1) continue; // no foils pls
               timestamp = new Date(obj[i].completion_time*1000).toISOString().slice(0, 19).replace('T', ' ');
 
               badgesarr.push({
-                username: '',
-                steam_id: '',
+                username: username,
+                steam_id: steam_id,
                 app_id: obj[i].appid,
                 game_name: '',
                 max_lvl: '',
                 cur_lvl: obj[i].level,
                 crafted: timestamp,
-                created: ''
-                  });
-              }                        
+                created: created
+              });
+            }                        
 
             // Call this function again until all data for all accounts were retrieved
             // Add a timeout to not spam the Steam-Servers
@@ -204,8 +209,6 @@ function getUsersBadges(){
 
         })(0, usercnt);        
 
-      }).then(function(){
-
       });
     }).catch(function(err){
       console.log(err);
@@ -214,8 +217,116 @@ function getUsersBadges(){
     });
   });
 
+  function processUser(arr){
+
+    var len   = arr.length,
+        sbarr = [],
+        ubarr = [];
+
+    idb.opendb().then(function(db){
+      db.transaction("rw", ['steam_badges', 'users_badges'], function(){
+        db.steam_badges.each(function(steam_badges){
+
+          // at first we need to fill the missing values of the array
+          for(var i=0;i<len;i++){
+            if(steam_badges.app_id == arr[i].app_id){
+              arr[i]['game_name'] = steam_badges.game_name;
+              arr[i]['max_lvl'] = steam_badges.max_lvl;
+              break;
+            }
+          }
+
+          // we also need to save appids to a seperate array for later use
+          sbarr.push(parseInt(steam_badges.app_id)); // important parse for later comparison
+
+        }).then(function(){
+
+          db.users_badges.bulkAdd(arr).then(function(lastKey) {
+            self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Search for missing entries'});
+          }).catch(Dexie.BulkError, function(e){
+            self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Duplicate-Entrys: '+e.failures.length});
+          });
+
+        }).then(function(){
+
+          var created = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+          db.users_badges.each(function(u){
+
+            // if steam-badges is missing this app-id, add object for later use
+            // this way we will ensure even missing games are added to the database (steam-badges)
+            if(sbarr.indexOf(parseInt(u.app_id)) == -1){
+              ubarr.push({
+                app_id: u.app_id, 
+                game_name: '',
+                cards_total: 0,
+                max_lvl: 0,
+                created: created
+              });
+            }
+
+          }).then(function(){
+
+            // if we found missing entries process them else finish
+            if(ubarr.length > 0){
+              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: ubarr.length+' entries missing - adding them ...'});
+              addMissingBadgesEntries(ubarr, true);
+            } else {
+              self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'No missing entries found - Done!'});           
+            }
+
+          });
+        });
+      }).catch(function(err){
+        console.error(err);
+      }).finally(function(){
+        if(ubarr.length < 1){
+          self.postMessage({msg: 'UsersBadgesDone'});
+          self.close();
+        }
+        db.close();
+      });
+    });
+  }
+}
 
 
+function addMissingBadgesEntries(arr, post){
+  // post=true is used for users_badges action on frontend to fetch users badges
+  // post=false is used to distribute cards to bots
+  var len = arr.length;
+
+  (function next(counter, maxLoops) {
+
+    // Finally insert missing entries
+    if (counter++ >= maxLoops){
+      setTimeout(function(){
+        idb.opendb().then(function(db){
+          db.transaction("rw", 'steam_badges', function(){
+            db.steam_badges.bulkAdd(arr).then(function(lastKey) {
+              if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Added missing entries. Done!'});
+            }).catch(Dexie.BulkError, function(e){
+              if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
+            });
+          }).catch(function(err){
+            console.error(err);
+          }).finally(function(){
+            post ? self.postMessage({msg: 'UsersBadgesDone'}) : self.postMessage({msg: 'SteamBadgesDone'});
+            self.close();
+            db.close();
+          });
+        });
+      }, 100);
+      return;
+    }
+
+    // get card-count and game-name for missing games and update the array of missing games with them
+    jQuery.get("https://steamcommunity.com/my/gamecards/"+arr[counter-1].app_id, function(res){
+      arr[counter-1].cards_total = res.match(/img\sclass\="gamecard/g).length,
+      arr[counter-1].game_name = (/\/\d+\/"><span\sclass\="profile_small_header_location">(.*)<\/span/).exec(res)[1];
+      setTimeout(function(){ next(counter, maxLoops) }, 100);
+    });
+  })(0, len);
 }
 
 function getSteamBadges(){
@@ -245,7 +356,7 @@ function getSteamBadges(){
           app_id: app.appid, 
           game_name: app.game, 
           cards_total: app.true_count,
-          max_lvl: app.bgs_count,
+          max_lvl: 0, // the API doesn't provide this value
           created: created
         });
       }
@@ -276,12 +387,6 @@ function getSteamBadges(){
     });
 
   });
-}
-
-function getUsersBadges(){
-
-
-
 }
 
 function getBotBadges(){

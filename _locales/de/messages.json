@@ -14,6 +14,15 @@
   "menu_item_serials":{
     "message":"Produkt-Keys"
   },
+  "menu_item_badges": {
+    "message": "Abzeichen"
+  },
+  "menu_item_ubadges": {
+    "message": "Benutzer-Abzeichen"
+  },
+  "menu_item_ssettings": {
+    "message": "Einstellungen"
+  },
   "menu_item_calc":{
     "message":"Rechner"
   },
@@ -622,8 +631,45 @@
     "message":"Spieltitel",
     "description":""
   },
+
+  "index_table_cards":{
+    "message":"Max Karten",
+    "description":""
+  },
+  "index_table_maxlevel":{
+    "message":"Max Level",
+    "description":""
+  },
+  "index_table_curlevel":{
+    "message":"Level aktuell",
+    "description":""
+  },
+  "index_table_crafted": {
+    "message": "Hergestellt",
+    "description": ""
+  },
+  "index_table_added": {
+    "message": "Hinzugefügt",
+    "description": ""
+  },
+  "index_table_get_user_badges": {
+    "message": "Alle Abzeichen für Benutzer beziehen",
+    "description": ""
+  },
+  "index_table_get_steam_badges": {
+    "message": "Alle Spiele mit Abzeichen beziehen",
+    "description": ""
+  },
   "index_table_appid":{
     "message":"AppID",
+    "description":""
+  },
+  "index_table_desc":{
+    "message":"Beschreibung",
+    "description":""
+  },
+  "index_table_keyname":{
+    "message":"Schlüssel",
     "description":""
   },
   "index_table_product_key":{

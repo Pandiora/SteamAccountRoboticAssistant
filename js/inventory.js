@@ -2,8 +2,9 @@
 var multi_selection_bit = 0;
 var selectedItem, selectedPage, GiftData, walletInfo;
 var STCardsData = [];
-var steamID = /g_steamID\s\=\s"(.*)"\;/.exec($('#global_header + script')[0].innerHTML)[1];
-var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo']; // Array of Events
+var steamID = jQuery('#filter_options div:eq(0)').attr('id').split("_")[1]; /*/g_steamID\s\=\s"(.*)"\;/.exec($('#global_header + script')[0].innerHTML)[1];*/
+var sessionid = /sessionid=(.{24})/.exec(document.cookie)[1];
+var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo', 'AllCards']; // Array of Events
 
 /************************************************
 
@@ -82,7 +83,6 @@ addListenerMulti(document, AoE, function(d){
 
     var cards = d.detail;
     var selected_cards = [];
-    var sessionid = /sessionid=(.{24})/.exec(document.cookie)[1];
 
     // Only use items we selected and push them into a new array
     for(i=0;i<cards.length;i++){
@@ -133,6 +133,17 @@ addListenerMulti(document, AoE, function(d){
 
   } else if(d.type == 'WalletInfo'){
     walletInfo = d.detail;
+  } else if(d.type == 'AllCards'){
+    
+    updateProgress(10, "Fetched all needed data from Inventory ...");
+
+    chrome.runtime.sendMessage({
+      greeting: 'sendAllCardsToBot',
+      ast_ids: d.detail, 
+      cur_user: steamID,
+      ssid: /sessionid=(.{24})/.exec(document.cookie)[1]
+    });
+
   }
 });
 
@@ -172,7 +183,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
       } else {
         updateProgress(message.percentage, message.message, message.price_add, message.amount);
       }
-  	}
+  	} else if(message.msg === "Done"){
+      console.log(message.detail);
+      setTimeout(function(){
+        document.location.reload();
+      }, 5000);
+    }
 	}
 });
 
@@ -254,6 +270,9 @@ $(document).ready(function(){
     <a class="btn_small btn_green_white_innerfade" id="multi_sell_items" style="margin-left: 12px; margin-top: 5px;"> \
       <span><span id="item_count">0</span><span data-i18n="inventory_multi_items_sell"><span></span> \
     </a> \
+    <a class="btn_small btn_green_white_innerfade" id="send_all_cards" style="margin-left: 12px; margin-top: 5px;"> \
+      <span data-i18n="inventory_send_all_cards"></span> \
+    </a> \
   ');
 
   // Append buttons and functions based on hashes
@@ -314,6 +333,23 @@ $(document).ready(function(){
       // Must be reset to 0 since cancelling the action deselects all items
       $('#item_count').text('0');
     }
+  });
+
+  // Send all cards to a given bot-instance
+  $('#send_all_cards span').on('click', function(event){
+
+      var selected_name = $('#dropdown_send_all_cards').val(),
+          current_user  = $('#filter_options div:eq(0)').attr('id').split("_")[1];
+
+      createDialog("warn", "Send all cards to "+selected_name, "Do you really want to send all of your cards to bots? If needed execute functions to retrieve information about badges before!", 2);
+
+      $("#yoyo").one("click", function(){
+        // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
+        setTimeout(function(){
+          createDialog("info", "Distribute cards to bots", "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+          injectScriptSendAllCards();
+        }, 500);
+      });
   });
 
   // Remove multi_select from all items if filters are applied
@@ -409,6 +445,19 @@ $(document).ready(function(){
   });
 });
 
+function getAccountNames(){
+
+  chrome.runtime.sendMessage({greeting: 'getNamesForLogin'},function(response){
+    var names = "";
+
+    for(var i=0;i<response.names.length;i++){
+      names += "<option>"+response.names[i]+"</option>";
+    }
+
+    $("#dropdown_send_all_cards").append(names);
+  });
+
+}
 
 function listItemsBulk(cards){
 
@@ -416,7 +465,6 @@ function listItemsBulk(cards){
   var stat_price_state = $('#stat-price').prop('disabled');
   var flex_price = parseFloat($('#flex-price').val().replace(',','.'));
   var stat_price = parseFloat($('#stat-price').val().replace(',','.'));
-  var sessionid = /sessionid=(.{24})/.exec(document.cookie)[1];
 
   // use flex-price for calculation
   if(flex_price_state === false && stat_price_state === true){
@@ -696,6 +744,77 @@ function addListenerMulti(el, s, fn) {
   s.forEach(e => el.addEventListener(e, fn, false));
 }
 
+function injectScriptSendAllCards(){
+
+  var actualCode = '(' + function() {
+
+    function checkTags(arr, str, prop){
+      var len = arr.length,
+          res = 0;
+
+      for(var i=0;i<len;i++){
+        if(arr[i][prop] === str) res=1;
+      }
+
+      return res;
+    }
+
+    g_ActiveInventory.LoadCompleteInventory().done(function(){
+      
+      var pages     = g_ActiveInventory.m_rgPages,
+          len       = pages.length,
+          childNode = '',
+          obj   = {};
+
+      for(var i=0;i<len;i++){
+
+        for(var b=0;b<25;b++){
+
+          childNode = pages[i][0].childNodes[b].rgItem;
+          if(childNode === undefined) continue;
+          if(childNode.description.tradable !== 1) continue;
+          if(childNode.description.tags.length <= 2) continue; // if there are less tags it isn't a card
+          if(childNode.description.item_expiration) continue; // mostly sale cards
+          if(!checkTags(childNode.description.tags,"item_class_2","internal_name")) continue; // only cards
+          if(!checkTags(childNode.description.tags,"cardborder_0","internal_name")) continue; // only normal cards
+
+          var appid = childNode.description.market_fee_app,
+              cname = childNode.description.name.replace(/[^A-Z0-9]/ig, "_"),
+              asset = childNode.assetid;
+
+          if(obj.hasOwnProperty(appid)){
+            if(obj[appid].hasOwnProperty(cname)){
+              obj[appid][cname].push(asset);
+            } else {
+              obj[appid][cname] = [];
+              obj[appid][cname].push(asset);
+            }
+          } else {
+            obj[appid] = {};
+            obj[appid] = {
+              [cname]: [asset]
+            };
+          }
+        }
+
+      }
+
+      // Just pass an Event including a customized dataset of gifts not already gifted
+      var evt=document.createEvent("CustomEvent");
+      evt.initCustomEvent("AllCards", true, true, obj);
+      document.dispatchEvent(evt);
+
+    });
+
+  } + ')();';
+
+  var script = document.createElement('script');
+  script.textContent = actualCode;
+  (document.head||document.documentElement).appendChild(script);
+  script.parentNode.removeChild(script);
+
+}
+
 function injectScriptWalletInfo(){
 
   var actualCode = '(' + function() {
@@ -836,6 +955,7 @@ function injectScriptCsgoCards(){
   script.parentNode.removeChild(script);
 
 }
+
 
 function injectScriptGifts(){
 

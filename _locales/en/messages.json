@@ -14,6 +14,15 @@
 	"menu_item_serials": {
 		"message": "Product-Keys"
 	},
+	"menu_item_badges": {
+		"message": "Badges"
+	},
+	"menu_item_ubadges": {
+		"message": "User-Badges"
+	},
+	"menu_item_ssettings": {
+		"message": "Settings"
+	},
 	"menu_item_calc": {
 		"message": "Calculator"
 	},	
@@ -273,6 +282,10 @@
 	"inventory_okay_btn": {
 		"message": "OK",
 		"description": ""
+	},
+	"inventory_send_all_cards": {
+		"message": "Distribute cards to bots",
+		"description": "Send all cards to bots for badge-crafting"
 	},
 	"background_progress_gifts": {
 		"message": "Sending Gifts",
@@ -626,9 +639,47 @@
 		"message": "Gametitle",
 		"description": ""
 	},
+
+	"index_table_cards": {
+		"message": "Cards Total",
+		"description": ""
+	},
+	"index_table_maxlevel": {
+		"message": "Max Level",
+		"description": ""
+	},
+	"index_table_curlevel": {
+		"message": "Current Level",
+		"description": ""
+	},
+	"index_table_crafted": {
+		"message": "Crafted",
+		"description": ""
+	},
+	"index_table_added": {
+		"message": "Added",
+		"description": ""
+	},
+	"index_table_get_user_badges": {
+		"message": "Fetch all users badges",
+		"description": ""
+	},
+	"index_table_get_steam_badges": {
+		"message": "Fetch all Games with badges",
+		"description": ""
+	},
+
 	"index_table_appid": {
 		"message": "AppID",
 		"description": ""
+	},
+	"index_table_desc":{
+		"message":"Description",
+		"description":""
+	},
+	"index_table_keyname":{
+		"message":"Key",
+		"description":""
 	},
 	"index_table_product_key": {
 		"message": "Product Key",

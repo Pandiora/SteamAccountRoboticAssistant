@@ -48,15 +48,19 @@ for(var i=0;i<keys;i++){ arr.push($("input.keys").eq(i).val()); }
 console.log(arr.join(","));
 
 // Get visible keys from Bundlestars to list
-var len = $('.key-reveal-copy .input-group input').attr('ng-model', 'game.key').length, arr = [];
-for(var i=0;i<len;i++){ arr.push($('.key-reveal-copy .input-group input').attr('ng-model', 'game.key').eq(i).val()); }
+// Get visible keys from Bundlestars to list
+var len = $$('.input-group input[type=text].font-weight-bold').length, arr = [], val = '';
+for(var i=0;i<len;i++){ val = $$('.input-group input[type=text].font-weight-bold')[i]; arr.push(val.value); }
 console.log(arr); // Plain
-console.log("ASF: "+arr.join(",")); // Steam
+console.log("ASF: \n!r^ user SD,SF "+arr.join(",")); // Steam
 
-var toRemove = ["BP40J-7AFHX-JH5G7","NEEDSTOBECHANEDTOPREVIOUSLYUSEDKEYS"], newArr = [];
+// remove Keys from Array
+var len = $$('.input-group input[type=text].font-weight-bold').length, arr = [], val = '',
+    toRemove = ["BP40J-7AFHX-JH5G7","NEEDSTOBECHANEDTOPREVIOUSLYUSEDKEYS"], newArr = [];
+for(var i=0;i<len;i++){ val = $$('.input-group input[type=text].font-weight-bold')[i]; arr.push(val.value); }
 newArr = arr.filter( function(el){return !toRemove.includes(el);});
 console.log(newArr); // Plain
-console.log("ASF: "+newArr.join(",")); // Steam
+console.log("ASF: \n!r^ user "+newArr.join(",")); // Steam
 
 // Get visible keys from CubicBundle to list
 var len = $('.table tr').length, arr = [];

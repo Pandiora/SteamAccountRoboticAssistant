@@ -6,14 +6,12 @@ idb = {
 		var deferred = $.Deferred();
 
 		db = new Dexie('steamdb');
-		db.version(1).stores({
+		db.version(4).stores({
 			steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
-			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created"
-		});
-		// use versioning to add additional rows
-		db.version(2).stores({
-			steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
-			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created,added"
+			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created,added",
+			users_badges:"++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,max_lvl,cur_lvl,crafted,created",
+			steam_badges:"++id,&[app_id+game_name],app_id,game_name,cards_total,max_lvl,created",
+			sara_settings: "++id,&keyname,description,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10"
 		});
 
 		db.on('blocked', function () {
@@ -29,6 +27,10 @@ idb = {
 		return deferred.promise();
 
 	},
+
+	update: function(table){
+
+	}, 
 
 	fillGrid: function(table){
 
@@ -48,7 +50,7 @@ idb = {
 
 		return deferred.promise();
 
-	},
+	}, 
 
 	importJSON: function(dat, table){
 
@@ -161,6 +163,26 @@ idb = {
 		});
 
 		return deferred.promise();
+
+	},
+
+	settingsProvider: function(){
+
+		var deferred = $.Deferred();
+
+		idb.opendb().then(function(db){
+		    db.transaction('r', 'sara_settings', function(){
+		    	db.sara_settings.toArray().then(function(arr){
+		    		deferred.resolve(arr);
+		    	});
+		    }).catch(function(err){
+		        console.log(err);
+		    }).finally(function(){
+		        db.close();
+		    });			
+		});
+
+		return deferred.promise();			
 
 	},
 

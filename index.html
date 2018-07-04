@@ -20,6 +20,7 @@
 	<script type='text/javascript' src='js/mobileAuth.js'></script>
 	<script type='text/javascript' src='js/database.js'></script>
 	<script type='text/javascript' src='js/functions.js'></script>
+	<script type='text/javascript' src='js/database.frontend.js'></script>
 
 	<!-- Syncfusion Grid Sources -->
 	<link rel='stylesheet' href='plugins/syncfusion/ej.web.all.min.css'/>
@@ -41,6 +42,9 @@
 					<li id='accounts' class='top-items dropdown-item' data-i18n='menu_item_accounts'></li>
 					<li id='games' class='top-items dropdown-item' data-i18n='menu_item_games'></li>
 					<li id='serials' class='top-items dropdown-item' data-i18n='menu_item_serials'></li>
+					<li id='badges' class='top-items dropdown-item' data-i18n='menu_item_badges'></li>
+					<li id='ubadges' class='top-items dropdown-item' data-i18n='menu_item_ubadges'></li>
+					<li id='ssettings' class='top-items dropdown-item' data-i18n='menu_item_ssettings'></li>
 				</ul>
 			</div>
 			<div id='calculator' class='top-items top-dropdown' data-i18n='menu_item_calc'>
@@ -79,8 +83,19 @@
 				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
 				<div id='gcontent' data-table='users_games' style='height:100%;width:100%;'></div>
 			</div>
+			<div id='badges-content' class='content' style='display:none;'>
+				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
+				<div id='bcontent' data-table='steam_badges' style='height:100%;width:100%;'></div>
+			</div>
+			<div id='ubadges-content' class='content' style='display:none;'>
+				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
+				<div id='ucontent' data-table='users_badges' style='height:100%;width:100%;'></div>
+			</div>
+			<div id='ssettings-content' class='content' style='display:none;'>
+				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
+				<div id='scontent' data-table='sara_settings' style='height:100%;width:100%;'></div>
+			</div>
 			<div id='booster-content' class='content' style='display:none;'></div>
-			<div id='serials-content' class='content' style='display:none;'></div>
 		</div>
 	</div>
 	<div id='dialog'></div>

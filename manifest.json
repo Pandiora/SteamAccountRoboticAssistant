@@ -20,6 +20,7 @@
         	"js/database.js",
         	"js/mobileAuth.js", 
         	"js/mod_headers.js",
+        	"js/distributeSetsToBots.js",
         	"hot-reload.js"
         ],
         "persistent": true 

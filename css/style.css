@@ -951,7 +951,7 @@ input:not(:valid) {
 
 
 /* ACOUNTS-CONTENT */
-#accounts-content, #games-content {
+#accounts-content, #games-content, #badges-content, #ubadges-content, #ssettings-content {
     height: calc(100% - 20px);
     width: 100% !important;
     top: 0;
@@ -963,7 +963,7 @@ input:not(:valid) {
     padding: 20px !important;
     margin: 0;
 }
-#accounts-content::before, #games-content::before {
+#accounts-content::before, #games-content::before, #badges-content::before, #ubadges-content::before, #ssettings-content::before {
 	content: "";
     height: 100%;
     width: 10px;
@@ -977,7 +977,7 @@ input:not(:valid) {
     -moz-transform: skew(0deg, 45deg);
     -webkit-transform: skew(0deg, 45deg);
 }
-#accounts-content::after, #games-content::after {
+#accounts-content::after, #games-content::after, #badges-content::after, #ubadges-content::after, #ssettings-content::after {
     content: "";
     height: 10px;
     width: 100%;
@@ -990,7 +990,7 @@ input:not(:valid) {
     -moz-transform: skew(45deg, 0deg);
     -webkit-transform: skew(45deg, 0deg);
 }
-#acontent, #gcontent {
+#acontent, #gcontent, #ucontent, #bcontent, #scontent {
 	height: 100%;
 	width: 100% !important;
 	position: relative;
@@ -999,21 +999,21 @@ input:not(:valid) {
 	background-color: #212121;
 }
 
-#acontent .e-headercell, #gcontent .e-headercell {
+#acontent .e-headercell, #gcontent .e-headercell, #ucontent .e-headercell, #bcontent .e-headercell, #scontent .e-headercell {
 	background-color: #212121;
 }
-#acontent .e-gridheader, #gcontent .e-gridheader {
+#acontent .e-gridheader, #gcontent .e-gridheader, #ucontent .e-gridheader, #bcontent .e-gridheader, #scontent .e-gridheader {
 	border-bottom: 2px solid #1470CF;
 	border-right: 1px solid #494949;
 	width: calc(100% - 19px);
 }
-#acontent .e-gridcontent, #gcontent .e-gridcontent {
+#acontent .e-gridcontent, #gcontent .e-gridcontent, #ucontent .e-gridcontent, #bcontent .e-gridcontent, #scontent .e-gridcontent {
     overflow: scroll;
     height: calc(100% - 129px);
     width: 100% !important;
     position: relative;
 }
-#acontent_searchbar, #gcontent_searchbar {
+#acontent_searchbar, #gcontent_searchbar, #ucontent_searchbar, #bcontent_searchbar, #scontent_searchbar {
 	margin-top: 4px !important;
 }
 .e-grid .e-filterdiv span {
@@ -1077,7 +1077,8 @@ input:not(:valid) {
 	background-color: #262626 !important;
 }
 
-/* Miscellaneous related to grid */
+/* Miscellaneous related to grid
+  icons can be found here: https://help.syncfusion.com/js/icon/ej-icons*/
 .passwordColumn.e-rowcell { -webkit-text-security: disc;	}
 .passwordColumn.e-rowcell span span input { -webkit-text-security: none;	}
 .export-json:before { content: ""; }
@@ -1086,6 +1087,8 @@ input:not(:valid) {
 /* Class needs to show status */
 .owned-games:before { content: ""; }
 .owned-badges:before { content: ""; }
+.users-badges:before { content: "\e74c"; }
+.steam-badges:before { content: "\e61f"; }
 .og-active { padding-left: 0 !important; }
 .og-active:before {
 	content: "";

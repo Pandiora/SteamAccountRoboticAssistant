@@ -52,7 +52,9 @@ $(document).ready(function(){
 			}
     	}
     } else {
-    	document.location = "https://steamcommunity.com/";
+    	if(stopme == 1){
+    		document.location = "https://steamcommunity.com/";
+    	}
     }
 
   });

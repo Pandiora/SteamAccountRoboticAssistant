@@ -2,8 +2,16 @@
 $.ajaxPrefilter(function( options, original_Options, jqXHR ){ options.async = true; });
 
 
-
 $(document).ready(function(){
+
+	// generate Database menu entries
+	idb.opendb().then(function(db){
+		var tables = Object.keys(db._allTables),
+			tblstr = '';
+
+		for(var i=0;i<tables.length;i++){ tblstr += '<li><a href="#db'+tables[i]+'" data-table="'+tables[i]+'">'+tables[i]+'</a></li>'; }
+		$('#loadDbContent').append(tblstr);
+	});
 
 	// Events for Content-Loading + Menu
 	var hash = window.location.hash;
@@ -42,4 +50,5 @@ function loadContent(that){
 
 	// Load Content
 	$('.content-wrapper').html('').load('/app_templates/'+id.substr(1)+'.html');
+
 }
