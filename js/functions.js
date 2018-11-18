@@ -517,7 +517,7 @@ function getProfileWidget(timer, init){
 	chrome.storage.local.get(['booster_data', 'appids'], function (local){
 
 
-		$.getJSON('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='+synced['api_key']+'&steamids='+synced['steamid']+'&format=json', function(profile){
+		$.getJSON('https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='+synced['api_key']+'&steamids='+synced['steamid']+'&format=json', function(profile){
 		$.getJSON(profile['response']['players'][0]['profileurl']+'inventory/json/753/6', function(inventory){
 
 			$.get('../html/overview-profile-widget.html', function(response){
@@ -528,7 +528,7 @@ function getProfileWidget(timer, init){
 				*/
 				var ex_rate = 1, cy = '€', cc = '€';
 				var decimal_factor = 2 === 0 ? 1 : Math.pow(10, 2);
-				var booster_data = $.parseJSON(local['booster_data']);
+				var booster_data = {};
 				var card_profit_sum = 0, card_sum = 0, j = 0, card_drops = 0, card_value = 0;
 
 				// Append Widget-Template
