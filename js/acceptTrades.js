@@ -40,7 +40,7 @@ function acceptTrades(count, arr, steamid, sessionid, sid){
 function getTradeOffers(masterid){
 	$.ajax({
 		method: "GET",
-		url: 'http://steamcommunity.com/profiles/'+masterid+'/tradeoffers',
+		url: 'https://steamcommunity.com/profiles/'+masterid+'/tradeoffers',
 		success: function (response, textStatus, jqXHR) {
 
 			// stop loading pictures FFS

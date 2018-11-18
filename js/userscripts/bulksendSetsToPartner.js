@@ -1,4 +1,5 @@
 // send trade for steam sale cards by appid (summer-sale 2018 = 876740) to a partner
+// 76561198048432253 - cards
 // first code to be executed is the following, which should return assetids of completes sets only
 g_ActiveInventory.LoadCompleteInventory().done(function(){
 

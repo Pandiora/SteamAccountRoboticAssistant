@@ -342,7 +342,7 @@ function getSteamBadges(){
   // cards from steam and the total cards needed to craft a badge for chosen games
   $.ajax({
     type: 'GET',
-    url: 'http://cdn.steam.tools/data/set_data.json',
+    url: 'https://cdn.steam.tools/data/set_data.json',
     success: function(res){
 
       var obj = Object.keys(res.sets),
