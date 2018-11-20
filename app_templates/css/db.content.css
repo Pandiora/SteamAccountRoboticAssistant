@@ -1,0 +1,235 @@
+
+#db_frontend_content {
+    height: calc(100% - 20px);
+    width: 100% !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: relative;
+    overflow: hidden;
+    padding: 20px !important;
+    margin: 0;
+}
+#db_frontend_content::before {
+	content: "";
+    height: 100%;
+    width: 10px;
+    right: -10px;
+    top: 5px;
+    display: block;
+    position: relative;
+    float: right;
+    z-index: 1000;
+    background: #0D0D0D;
+    -moz-transform: skew(0deg, 45deg);
+    -webkit-transform: skew(0deg, 45deg);
+}
+#db_frontend_content::after {
+    content: "";
+    height: 10px;
+    width: 100%;
+    bottom: 100%;
+    left: 5px;
+    display: block;
+    position: relative;
+    z-index: 1000;
+    background: #0D0D0D;
+    -moz-transform: skew(45deg, 0deg);
+    -webkit-transform: skew(45deg, 0deg);
+}
+#db_frontend_content {
+	height: 100%;
+	width: 100% !important;
+	position: relative;
+	overflow: hidden;
+	top: -100%;
+	background-color: #212121;
+}
+
+#db_frontend_content .e-headercell{
+	background-color: #212121;
+}
+#db_frontend_content .e-gridheader {
+	border-bottom: 2px solid #1470CF;
+	border-right: 1px solid #494949;
+	width: calc(100% - 19px);
+}
+#db_frontend_content .e-gridcontent {
+    overflow: scroll;
+    height: calc(100% - 129px);
+    width: 100% !important;
+    position: relative;
+}
+#db_frontend_content_searchbar {
+	margin-top: 4px !important;
+}
+.e-grid .e-filterdiv span {
+	top: 6px !important;
+}
+
+/* Everything related to a custom scrollbar, which is the replace for the built-in js-scrollbar for syncfusion */
+.e-gridcontent::-webkit-scrollbar {
+  width: 19px;
+  height: 19px;
+}
+.e-gridcontent::-webkit-scrollbar-button {
+  width: 19px;
+  height: 19px;
+  background-color: #404040;
+  background-image: url('data:image/png;base64,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');
+}
+.e-gridcontent::-webkit-scrollbar-button:horizontal:decrement { background-position: -63px -5px; border-right: 1px solid #494949; border-top: 1px solid #494949; }
+.e-gridcontent::-webkit-scrollbar-button:horizontal:decrement:hover { background-position: -92px -5px; }
+.e-gridcontent::-webkit-scrollbar-button:horizontal:increment { background-position: -121px -5px; border-left: 1px solid #494949; border-top: 1px solid #494949; }
+.e-gridcontent::-webkit-scrollbar-button:horizontal:increment:hover { background-position: -150px -5px; }
+.e-gridcontent::-webkit-scrollbar-button:vertical:decrement { background-position: -179px -5px; border-left: 1px solid #494949; border-bottom: 1px solid #494949; }
+.e-gridcontent::-webkit-scrollbar-button:vertical:decrement:hover { background-position: -208px -5px; }
+.e-gridcontent::-webkit-scrollbar-button:vertical:increment { background-position: -5px -5px; border-left: 1px solid #494949; border-top: 1px solid #494949; }
+.e-gridcontent::-webkit-scrollbar-button:vertical:increment:hover { background-position: -34px -5px; }
+
+.e-gridcontent::-webkit-scrollbar-thumb {
+  background: #404040;
+ border: 0;
+  border-radius: 0px;
+}
+.e-gridcontent::-webkit-scrollbar-thumb:hover {
+  background: #082e43;
+}
+.e-gridcontent::-webkit-scrollbar-thumb:active {
+  background: #082e43;
+}
+.e-gridcontent::-webkit-scrollbar-track {
+  background: #262626;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+.e-gridcontent::-webkit-scrollbar-track:hover {
+  background: #262626;
+}
+.e-gridcontent::-webkit-scrollbar-track:active {
+  background: #262626;
+}
+.e-gridcontent::-webkit-scrollbar-track:horizontal {
+	border-top: 1px solid #494949;
+}
+.e-gridcontent::-webkit-scrollbar-track:vertical {
+	border-left: 1px solid #494949;
+}
+.e-gridcontent::-webkit-scrollbar-corner {
+  background: #262626;
+}
+
+/* Set Background when grouping */
+.e-columnheader .e-lastgrouptopleftcell {
+	background-color: #262626 !important;
+}
+
+/* Miscellaneous related to grid
+  icons can be found here: https://help.syncfusion.com/js/icon/ej-icons*/
+.passwordColumn.e-rowcell { -webkit-text-security: disc;	}
+.passwordColumn.e-rowcell span span input { -webkit-text-security: none;	}
+.export-json:before { content: ""; }
+.import-json:before { content: ""; }
+.clear-table:before { content: ""; }
+/* Class needs to show status */
+.owned-games:before { content: ""; }
+.owned-badges:before { content: ""; }
+.users-badges:before { content: "\e74c"; }
+.steam-badges:before { content: "\e61f"; }
+.og-active { padding-left: 0 !important; }
+.og-active:before {
+	content: "";
+	animation: spin 1s infinite linear;
+	transform-origin: 70% 93%;
+	font-size: 20px;
+}
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* Dialog-Box Icons and Styling */
+#dialog_wrapper:before {
+	content: "";
+	height: calc(100% - 110px);
+	width: calc(100% - 40px);
+	position: fixed;
+	display: block;
+	left: 20px;
+	top: 70px;
+	background-color: rgba(0,0,0,0.70);
+}
+.e-close:before { padding-top: 3px; }
+.e-close { outline:0; }
+.e-title { padding-top: 2px; }
+.e-dialog-favicon .e-dialog-custom { background-size: 100% auto; }
+.info { background-image: url('../images/info.png'); }
+.warning { background-image: url('../images/warning.png'); }
+.error { background-image: url('../images/error.png'); }
+#okai, #cancel {
+	height: 25px;
+	width: 40%;
+	margin: 5%;
+	outline: 0;
+	background-color: #212121;
+	border: 2px solid #179BD7;
+	-webkit-transition: all 0.1s;
+	-moz-transition: all 0.1s;
+	transition: all 0.1s;
+}
+#okai:hover, #cancel:hover {
+	border-color: #56C1F2;
+	cursor: pointer;
+}
+#okai:active, #cancel:active {
+	background-color: #56C1F2;
+}
+/* Progressbar for dialog_wrapper */
+#progress-bar {
+  background-color: #1a1a1a;
+  height: 35px;
+  padding: 5px;
+  width: 370px;
+  margin: 10px 0;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+}
+#progress-bar span::after {
+  content: attr(data-value) "%";
+  height: 25px;
+  line-height: 25px;
+  font-size: 17px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+  font-family: 'Helvetica';
+  display: table;
+  margin: 0 auto;
+}
+#progress-bar span {
+  display: inline-block;
+  overflow: visible;
+  height: 25px;
+  border-radius: 3px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .5) inset, 0 1px 0 #444;
+  transition: width .4s ease-in-out;
+  background-color: #34c2e3;
+  background-size: 30px 30px;
+  background-image: linear-gradient(135deg,
+    rgba(255, 255, 255, .15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, .15) 50%,
+    rgba(255, 255, 255, .15) 75%,
+    transparent 75%
+  );
+  animation: animate-stripes 3s linear infinite;
+}
+#progress-bar + div {
+	width: 370px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 15px;
+}
+@keyframes animate-stripes { 100% {background-position: 60px 0;} }

@@ -2,6 +2,8 @@
 $.ajaxPrefilter(function( options, original_Options, jqXHR ){ options.async = true; });
 
 
+
+
 $(document).ready(function(){
 
 	// generate Database menu entries
@@ -17,10 +19,13 @@ $(document).ready(function(){
 	var hash = window.location.hash;
 		hash = (hash == '') ? loadContent($('.sidebar-menu li a').get(0)) : loadContent($('a[href="'+hash+'"]'));
 
-	$(window).on('hashchange', function(){ console.log('hashchange'); loadContent($('a[href="'+window.location.hash+'"]')); });		
+	$(window).on('hashchange', function(){ loadContent($('a[href="'+window.location.hash+'"]')); });		
 	$('.sidebar-menu li a, .treeview-menu li a').on('click', function(){ loadContent(this); });
 
 });
+
+
+
 
 function loadContent(that){
 
@@ -33,7 +38,7 @@ function loadContent(that){
 		treeView 	= $(parent).is('.treeview') || false,
 		treeIndex	= $(that).closest('.sidebar-menu > li').index(),
 		allMenus	= '.sidebar-menu li, .treeview-menu li',
-		id 			= (treeView) ? $('a', menuElem).attr('href') : $(that).attr('href');
+		eid 		= (treeView) ? $('a', menuElem).attr('href') : $(that).attr('href');
 
 	// Toggle active-class on menus
 	if(treeView){
@@ -46,9 +51,10 @@ function loadContent(that){
 	}
 
 	// Toggle hashchange
-	window.location.hash = id;
+	window.location.hash = eid;
+	eid = eid.substr(1); // remove #
 
-	// Load Content
-	$('.content-wrapper').html('').load('/app_templates/'+id.substr(1)+'.html');
+	// Load Content depending if it uses unique db string or not - remove leading db for function-call
+	(/db/.test(eid)) ? loadDatabaseContent(eid.substring(2)) : $('.content-wrapper').html('').load('/app_templates/'+eid+'.html');
 
 }

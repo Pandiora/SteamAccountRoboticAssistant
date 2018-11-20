@@ -23,7 +23,7 @@
         	"js/distributeSetsToBots.js",
         	"hot-reload.js"
         ],
-        "persistent": true 
+        "persistent": true
     },
 
 	"default_locale": "en",

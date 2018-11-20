@@ -120,7 +120,7 @@ $(function(){
       legendTemplate       : '<ul class="chart-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="fa fa-circle-o" style="color:<%=segments[i].fillColor%>;"></span> <%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
       tooltipTemplate	   : "<%if (label){%><%=label%>: <%}%><%= value %> account(s) \nBla",
     }
-    //Create pie or douhnut chart
+    //Create pie or doughnut chart
     // You can switch between pie and douhnut using the method below.
 
 	idb.getAccountLevelsWidget().done(function(res){
