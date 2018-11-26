@@ -32,38 +32,40 @@ function loadDatabaseContent(eid){
 			<script type='text/javascript' src='plugins/validate/jquery.validate.unobtrusive.min.js'></script>
 			<script type='text/javascript' src='plugins/easing/jquery.easing.1.3.min.js'></script>
 			<script type='text/javascript' src='plugins/render/jsrender.min.js'></script>
-			<div id='db_frontend_content' data-table='${eid}'>
-				<script type='text/javascript'>
-					idb.fillGrid('${eid}').done(function(data){
-						$('#db_frontend_content').ejGrid({
-							dataSource: ej.DataManager(data),
-							allowPaging: true,
-							allowSorting: true,
-							allowScrolling : false,
+			<div class='content'>
+				<div id='db_frontend_content' data-table='${eid}'>
+					<script type='text/javascript'>
+						idb.fillGrid('${eid}').done(function(data){
+							$('#db_frontend_content').ejGrid({
+								dataSource: ej.DataManager(data),
+								allowPaging: true,
+								allowSorting: true,
+								allowScrolling : false,
 
-							enableTouch:false,
+								enableTouch:false,
 
-							pageSettings: {
-								pageSize: 50
-							},
+								pageSettings: {
+									pageSize: 50
+								},
 
-							editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true },
-							toolbarSettings: {
-								showToolbar: true,
-								customToolbarItems: ${custom_buttons},
-								toolbarItems: ['add','edit','delete','update','cancel','search']
-							},
-							toolbarClick: 'onToolBarClick',
+								editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true },
+								toolbarSettings: {
+									showToolbar: true,
+									customToolbarItems: ${custom_buttons},
+									toolbarItems: ['add','edit','delete','update','cancel','search']
+								},
+								toolbarClick: 'onToolBarClick',
 
-							columns: ${columns},
+								columns: ${columns},
 
-							actionBegin: "actionBegin",
-							actionComplete: "actionComplete",
-							endEdit: "endEdit",
-							create: "create"
+								actionBegin: "actionBegin",
+								actionComplete: "actionComplete",
+								endEdit: "endEdit",
+								create: "create"
+							});
 						});
-					});
-				</script>
+					</script>
+				</div>
 			</div>
 		`;
 

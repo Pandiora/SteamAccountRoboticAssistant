@@ -15,11 +15,11 @@
 
 var steam_awards = {
 	"review_text": [
-		"Just wanted to add my review due to voting for Steam Nominations. =)",
-		"Nice game",
-		"Bad game",
-		"Review for Nomination purposes needed",
-		"Just wanted to leave a review"
+		"Just wanted to add my review due to voting for Steam Nominations. =) ",
+		"Nice game ",
+		"Bad game ",
+		"Review for Nomination purposes needed ",
+		"Just wanted to leave a review "
 	],
 	"review_apps": [
 		"218620"	// PAYDAY 2
