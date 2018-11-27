@@ -1,102 +1,147 @@
+<!DOCTYPE html>
 <html>
 <head>
+  
+  <!-- META -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <title>SARA SteamAccountRoboticAssistant</title>
 
-	<!-- Meta -->
-	<title>SARA</title>
-	<meta charset="utf-8"/>
-	<meta name="title" content="Steam Account Robotic Assistant" />
-	<meta name="description" content="SARA combines different tools to interact with Steam and its peripherie." />
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=3" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="plugins/Bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/FontAwesome/font-awesome.min.css">
+  <link rel="stylesheet" href="plugins/Ionicons/ionicons.min.css">
+  <link rel="stylesheet" href="plugins/AdminLTE/AdminLTE.min.css">
+  <link rel="stylesheet" href="plugins/AdminLTE/_all-skins.min.css">
+  <!-- needs to be preloaded, to prevent repaints on database -->
+  <link rel='stylesheet' href='plugins/syncfusion/ej.web.all.min.css'/>
 
-	<!-- Standard -->
-	<link rel='stylesheet' href='css/style.css'/>
-	<script type='text/javascript' src='plugins/jQuery/jquery-2.2.3.min.js'></script>
-	<script type='text/javascript' src='plugins/waitUntilExists/jquery.waitUntilExists.min.js'></script>
-	<script type='text/javascript' src='plugins/Dexie/Dexie.min.js'></script>
-	<script type='text/javascript' src='plugins/MomentJS/moment.min.js'></script>
-	<script type='text/javascript' src='plugins/animateNumber/jquery.animateNumber.min.js'></script>
-	<script type='text/javascript' src='plugins/circleProgress/jquery.circleProgress.min.js'></script>
-	<script type='text/javascript' src='js/mobileAuth.js'></script>
-	<script type='text/javascript' src='js/database.js'></script>
-	<script type='text/javascript' src='js/functions.js'></script>
-	<script type='text/javascript' src='js/database.frontend.js'></script>
+  <!-- JS -->
+  <script type='text/javascript' src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+  <script type='text/javascript' src='plugins/waitUntilExists/jquery.waitUntilExists.min.js'></script>
+  <script type='text/javascript' src="plugins/Bootstrap/bootstrap.min.js"></script>
+  <script type='text/javascript' src="plugins/AdminLTE/app.js"></script>
+  <script type='text/javascript' src='plugins/Dexie/Dexie.min.js'></script>
+  <script type='text/javascript' src='plugins/MomentJS/moment.min.js'></script>
+  <script type='text/javascript' src='plugins/jsCookie/cookie.min.js'></script>
 
-	<!-- Syncfusion Grid Sources -->
-	<link rel='stylesheet' href='plugins/syncfusion/ej.web.all.min.css'/>
-	<script type='text/javascript' src="plugins/syncfusion/ej.widget.all.min.js"></script>
-	<script type='text/javascript' src="plugins/globalize/jquery.globalize.min.js"></script>
-	<script type='text/javascript' src="plugins/validate/jquery.validate.min.js"></script>
-	<script type='text/javascript' src="plugins/validate/jquery.validate.unobtrusive.min.js"></script>
-	<script type='text/javascript' src="plugins/easing/jquery.easing.1.3.min.js"></script>
-	<script type='text/javascript' src="plugins/render/jsrender.min.js"></script>
+  <!-- SYNCFUSION - needs to be loaded very early to avoid ej being undefined -->
+  <script type='text/javascript' src='plugins/syncfusion/ej.widget.all.min.js'></script>
 
+  <!-- JS-SARA -->
+  <script type='text/javascript' src='js/database.js'></script>
+  <script type='text/javascript' src="js/main.js"></script>
+  <script type='text/javascript' src='app_templates/js/database.frontend.js'></script>
+
+  <!-- CSS SARA -->
+  <link rel='stylesheet' href='css/main.css'>
 </head>
-<body>
-	<div id='main'>
-		<div id='top'>
-			<div id='settings' class='top-items'><span></span></div>
-			<div id='overview' class='top-items' data-i18n='menu_item_overview'></div>
-			<div id='database' class='top-items top-dropdown' data-i18n='menu_item_database'>
-				<ul class='dropdown-container'>
-					<li id='accounts' class='top-items dropdown-item' data-i18n='menu_item_accounts'></li>
-					<li id='games' class='top-items dropdown-item' data-i18n='menu_item_games'></li>
-					<li id='serials' class='top-items dropdown-item' data-i18n='menu_item_serials'></li>
-					<li id='badges' class='top-items dropdown-item' data-i18n='menu_item_badges'></li>
-					<li id='ubadges' class='top-items dropdown-item' data-i18n='menu_item_ubadges'></li>
-					<li id='ssettings' class='top-items dropdown-item' data-i18n='menu_item_ssettings'></li>
-				</ul>
-			</div>
-			<div id='calculator' class='top-items top-dropdown' data-i18n='menu_item_calc'>
-				<ul class='dropdown-container'>
-					<li id='booster' class='top-items dropdown-item' data-i18n='menu_item_booster_calc'></li>
-					<li id='freebies' class='top-items dropdown-item' data-i18n='menu_item_game_calc'></li>
-				</ul>
-			</div>
-			<div id='freekeys' class='top-items' data-i18n='menu_item_free'></div>
-			<div id='chat' class='top-items' data-i18n='menu_item_chat'></div>
-			<div id='top-logo'></div>
-			<div id='top-notifications' data-content='0'>
-				<div id='notifications-container'>
-					<div id="notifications-toolbar">
-						<div id="noti-market" class="notifications-menu-items notifications-menu-active" data-content='0'><span data-i18n="notification_market"></span></div>
-						<div id="noti-trades" class="notifications-menu-items" data-content='0'><span data-i18n="notification_trade"></span></div>
-						<div id="noti-gifts" class="notifications-menu-items" data-content='0'><span>Gifts</span></div>
-						<div id="noti-news" class="notifications-menu-items" data-content='0'><span>News</span></div>
-						<div id='toolbar-actions-wrapper'>
-							<div class='notifications-toolbar-actions confirm' data-i18n="notification_accept_all"></div>
-							<div class='notifications-toolbar-actions decline' data-i18n="notification_cancel_all"></div>
-						</div>
-					</div>
-					<div id="notifications-scroller"></div>
-				</div>
-			</div>
-		</div>
-		<div id='content'>
-			<div id='settings-content' class='content' style='display:none;'></div>
-			<div id='overview-content' class='content' style='display:none;'></div>
-			<div id='accounts-content' class='content' style='display:none;'>
-				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
-				<div id='acontent' data-table='steam_users' style='height:100%;width:100%;'></div>
-			</div>
-			<div id='games-content' class='content' style='display:none;'>
-				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
-				<div id='gcontent' data-table='users_games' style='height:100%;width:100%;'></div>
-			</div>
-			<div id='badges-content' class='content' style='display:none;'>
-				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
-				<div id='bcontent' data-table='steam_badges' style='height:100%;width:100%;'></div>
-			</div>
-			<div id='ubadges-content' class='content' style='display:none;'>
-				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
-				<div id='ucontent' data-table='users_badges' style='height:100%;width:100%;'></div>
-			</div>
-			<div id='ssettings-content' class='content' style='display:none;'>
-				<!-- Fix for replaceChild-Error when using special-chars for # or . -->
-				<div id='scontent' data-table='sara_settings' style='height:100%;width:100%;'></div>
-			</div>
-			<div id='booster-content' class='content' style='display:none;'></div>
-		</div>
-	</div>
-	<div id='dialog'></div>
+
+<body class="hold-transition skin-blue sidebar-mini">
+  <div class="wrapper">
+
+    <!--
+    H E A D E R
+    -->
+    <header class="main-header">
+      <a href="index2.html" class="logo">
+        <span class="logo-mini"><b>SARA</b></span>
+        <span class="logo-lg"><img src="images/icon-48x48.png" width="36" height="36" style="margin: 0 15px 0 -30px;" /><b>SARA</b></span>
+      </a>
+
+      <nav class="navbar navbar-static-top" role="navigation">
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+          <span class="sr-only">Toggle navigation</span>
+        </a>
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+            <li class="dropdown messages-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-envelope-o"></i>
+                <span class="label label-success">4</span>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="header">You have 4 messages</li>
+                <li>
+                  <ul class="menu">
+                    <li>
+                      <a href="#">
+                        <div class="pull-left">
+                          <img src="" class="img-circle" alt="User Image">
+                        </div>
+                        <h4>
+                          Support Team
+                          <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                        </h4>
+                        <p>Why not buy a new awesome theme?</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="footer"><a href="#">See All Messages</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-sign-out"></i><span class="hidden-xs">Logout</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+  <!--
+  S I D E B A R
+  -->
+    <aside class="main-sidebar">
+      <section class="sidebar">
+        <ul class="sidebar-menu">
+          <li class="header">Menu</li>
+          <li><a href="#dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+          <li class="treeview">
+            <a><i class="fa fa-database"></i> <span>Database</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul id="loadDbContent" class="treeview-menu"></ul>
+          </li>
+          <li class="treeview">
+            <a><i class="fa fa-calculator"></i> <span>Calculator</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="#booster-calculator">Booster-Calculator</a></li>
+              <li><a href="#games-calculator">Games-Calculator</a></li>
+            </ul>
+          </li>
+          <li><a href="#settings"><i class="fa fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </section>
+    </aside>
+
+    <!--
+    C O N T E N T
+    -->
+    <div class="content-wrapper"></div>
+
+    <!--
+    F O O T E R
+    -->
+    <!--<footer class="main-footer">
+      <div class="pull-right hidden-xs">
+        <img src="images/icon-48x48.png" height="12" width="12" />
+        <a href="https://github.com/Pandiora/SteamAccountRoboticAssistant"> SARA</a> • SteamAccountRoboticAssistant
+      </div>
+      <strong><i class="fa fa-github"></i> <a href="#">Donate</a> if you found this useful.</strong>
+    </footer>-->
+
+  </div>
 </body>
 </html>

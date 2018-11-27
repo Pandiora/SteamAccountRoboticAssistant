@@ -1,0 +1,12 @@
+li.active a {
+	cursor: default !important;
+}
+ul.treeview-menu li a {
+	cursor: pointer !important;
+}
+ul.treeview-menu li.active a {
+	cursor: default !important;
+}
+li.treeview {
+	cursor: pointer;
+}

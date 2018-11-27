@@ -1,9 +1,16 @@
+.content-wrapper, .right-side {
+  background-color: #212121;
+  height: 100%;
+}
+
 .content-wrapper .content {
-    padding: 0 !important;
+  background-color: #212121;
+  padding: 0 !important;
 }
 
 #db_frontend_content {
 	height: 100%;
+  min-height: 100%;
 	width: 100% !important;
 	position: relative;
 	overflow: hidden;
@@ -20,12 +27,18 @@
 }
 #db_frontend_content .e-gridcontent {
     overflow: scroll;
-    height: calc(100vh - 129px);
+    height: calc(100vh - 183px);
     width: 100% !important;
     position: relative;
 }
 #db_frontend_content_searchbar {
 	margin-top: 4px !important;
+}
+#db_frontend_content_toolbarItems {
+  border: none;
+}
+.e-grid {
+  border-style: none;
 }
 .e-grid .e-filterdiv span {
 	top: 6px !important;
@@ -92,6 +105,19 @@
   icons can be found here: https://help.syncfusion.com/js/icon/ej-icons*/
 .passwordColumn.e-rowcell { -webkit-text-security: disc;	}
 .passwordColumn.e-rowcell span span input { -webkit-text-security: none;	}
+.refresh {
+    background-image: url('../../../images/refresh-icon.png');
+    background-repeat: no-repeat;
+    background-size: 40px auto;
+    background-position: center center;
+}
+.refresh:hover {
+  background-color: rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: 300ms linear all;
+  -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+}
 .export-json:before { content: ""; }
 .import-json:before { content: ""; }
 .clear-table:before { content: ""; }
@@ -114,22 +140,22 @@
 
 /* Dialog-Box Icons and Styling */
 #dialog_wrapper:before {
-	content: "";
-	height: calc(100% - 110px);
-	width: calc(100% - 40px);
-	position: fixed;
-	display: block;
-	left: 20px;
-	top: 70px;
-	background-color: rgba(0,0,0,0.70);
+  content: "";
+  height: calc(100% - 50px);
+  width: calc(100% - 50px);
+  position: fixed;
+  display: block;
+  left: 50px;
+  top: 50px;
+  background-color: rgba(0,0,0,0.70);
 }
 .e-close:before { padding-top: 3px; }
 .e-close { outline:0; }
 .e-title { padding-top: 2px; }
 .e-dialog-favicon .e-dialog-custom { background-size: 100% auto; }
-.info { background-image: url('../images/info.png'); }
-.warning { background-image: url('../images/warning.png'); }
-.error { background-image: url('../images/error.png'); }
+.info { background-image: url('../../../images/info.png'); }
+.warning { background-image: url('../../../images/warning.png'); }
+.error { background-image: url('../../../images/error.png'); }
 #okai, #cancel {
 	height: 25px;
 	width: 40%;

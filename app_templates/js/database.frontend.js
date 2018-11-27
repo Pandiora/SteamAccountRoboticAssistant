@@ -25,15 +25,15 @@ function loadDatabaseContent(eid){
 	// values listed here are probably static and can be reused
 	function buildTemplate(columns, custom_buttons){
 		var html_template = `
-			<link rel='stylesheet' href='plugins/syncfusion/ej.web.all.min.css'/>
 			<link rel='stylesheet' href='app_templates/css/db.content.css'/>
 			<script type='text/javascript' src='plugins/globalize/jquery.globalize.min.js'></script>
 			<script type='text/javascript' src='plugins/validate/jquery.validate.min.js'></script>
 			<script type='text/javascript' src='plugins/validate/jquery.validate.unobtrusive.min.js'></script>
 			<script type='text/javascript' src='plugins/easing/jquery.easing.1.3.min.js'></script>
 			<script type='text/javascript' src='plugins/render/jsrender.min.js'></script>
-			<div class='content'>
-				<div id='db_frontend_content' data-table='${eid}'>
+			<!-- directly add styles, to avoid flashing containers when async loading -->
+			<div class='content' style='background-color: #212121; height: calc(100vh - 50px); padding: 0;'>
+				<div id='db_frontend_content' data-table='${eid}' style='background-color: #212121; height: calc(100vh - 183px);'>
 					<script type='text/javascript'>
 						idb.fillGrid('${eid}').done(function(data){
 							$('#db_frontend_content').ejGrid({
@@ -67,11 +67,44 @@ function loadDatabaseContent(eid){
 					</script>
 				</div>
 			</div>
+			<div id='dialog'></div>
 		`;
 
 		// load the generated string into content-container
 		$('.content-wrapper').html('').append(html_template);
 	}
+}
+
+function createDialog(type, title, content, btncnt){
+
+	var btn_list = "";
+
+	// Set up buttons for inserting them into dialog
+	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button></td>'; }
+	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button><button id="cancel">'+chrome.i18n.getMessage("inventory_cancel_btn")+'</button></td>'; }
+
+	// Set up Modal parameters
+	$("#dialog").ejDialog({
+		title: title,
+		allowDraggable: false,
+		enableResize: false,
+		faviconCSS: type
+	});
+
+	// Fill Modal with content
+	$("#dialog").ejDialog("setContent", '<td>'+content+'</td>'+btn_list);
+
+	// Open Modal
+	$("#dialog").ejDialog("open");
+
+	// Wait for action / button-click
+	$("#okai, #cancel, #dialog_closebutton").on("click", function() {
+
+		// Close Modal on button-clicks
+		$("#dialog").ejDialog("close");
+
+	});
+
 }
 
 $(document).ready(function(){

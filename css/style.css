@@ -1116,9 +1116,9 @@ input:not(:valid) {
 .e-close { outline:0; }
 .e-title { padding-top: 2px; }
 .e-dialog-favicon .e-dialog-custom { background-size: 100% auto; }
-.info { background-image: url('../images/info.png'); }
-.warning { background-image: url('../images/warning.png'); }
-.error { background-image: url('../images/error.png'); }
+.info { background-image: url('../../../images/info.png'); }
+.warning { background-image: url('../../../images/warning.png'); }
+.error { background-image: url('../../../images/error.png'); }
 #okai, #cancel {
 	height: 25px;
 	width: 40%;

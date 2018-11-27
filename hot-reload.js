@@ -23,7 +23,7 @@ const reload = () => {
 
         if (tabs[0]) { chrome.tabs.reload (tabs[0].id) }
 
-        chrome.runtime.reload ()
+        // chrome.runtime.reload ()
     })
 }
 

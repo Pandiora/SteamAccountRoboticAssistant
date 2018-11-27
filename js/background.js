@@ -1554,7 +1554,7 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
 chrome.browserAction.onClicked.addListener(function(tab){
   chrome.tabs.create({
-    url: chrome.extension.getURL('index2.html')
+    url: chrome.extension.getURL('index.html')
   });
 });
 // pinned style

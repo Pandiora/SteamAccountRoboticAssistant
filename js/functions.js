@@ -1,40 +1,3 @@
-/*************************************************
-
-MUTATION OBSERVER FOR MULTILANGUAGE
-
-Because security-concerns blabla we need to
-add mutlilang-text when DOM is updated/modified
-(we can´t use placeholders inside html)
-Now using Mutation Observer for better performance
-
-*************************************************/
-$(document).on("ready", function() {
-	$('[data-i18n]').each(function() {
-		var datavalue = $(this).data('i18n');
-		$(this).prepend(chrome.i18n.getMessage(datavalue));
-	});
-
-	// Listen for added elements and iterate over nodelist
-	// only update added elements!
-	var target = document.querySelector('#main');
-
-	var observer = new MutationObserver(function(mutation) {
-		for (var m of mutation) {
-			$(m.addedNodes).each(function(value, index) {
-
-				var nodes = $(index).find('[data-i18n]');
-				$(nodes).each(function() {
-					var datavalue = $(this).data('i18n');
-					$(this).prepend(chrome.i18n.getMessage(datavalue));
-				});
-
-			});
-		}
-	});
-
-	var config = { attributes: true, childList: true, subtree: true, characterData: true };
-	observer.observe(target, config);
-});
 
 /*************************************************
 
@@ -202,43 +165,6 @@ function sendConfirmation(items, action){
 	}
 
 }
-
-/*************************************************
-
-Chrome Background-Page Listeners
-
-Receive all messages to execute functions which
-needs to be executed periodically. Check for
-sender.id and if url-key isn´t set to determine
-if this request comes from bg-script. otherwise
-we will receive disconnected port-error due to
-multiple onMessage-Listeners.
-
-*************************************************/
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
-	if(sender.id == chrome.runtime.id && !("url" in sender)){
-		if(message.greeting == "notifications-trades"){
-
-			addNotificationsTrades();
-
-		} else if(message.greeting == "update-progress"){
-
-			updateProgress(message.percent, message.message);
-
-		} else if(message.greeting == "remove-notification"){
-
-			// Remove the latest removed item when it was succesfully confirmed
-			$('.notifications-item-container[data-confid="'+message.cid+'"][data-key="'+message.ck+'"]').fadeOut(400, function(){
-				$(this).remove();
-				updateNotificationCnt();
-			});
-
-		} else {
-			console.log(chrome.i18n.getMessage("index_listener_malformed")+message.greeting);
-		}
-		sendResponse(chrome.i18n.getMessage("index_listener_message_received")+message.greeting);
-	}
-});
 
 function addNotificationsTrades(){
 	// Get the array of notifications from local storage, click the
@@ -421,51 +347,6 @@ function getAppidIndex(arr, appid){
 	}
 	return -1;
 }
-
-function createDialog(type, title, content, btncnt){
-
-	var btn_list = "";
-
-	// Set up buttons for inserting them into dialog
-	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button></td>'; }
-	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button><button id="cancel">'+chrome.i18n.getMessage("inventory_cancel_btn")+'</button></td>'; }
-
-	// Set up Modal parameters
-	$("#dialog").ejDialog({
-		title: title,
-		allowDraggable: false,
-		enableResize: false,
-		faviconCSS: type
-	});
-
-	// Fill Modal with content
-	$("#dialog").ejDialog("setContent", '<td>'+content+'</td>'+btn_list);
-
-	// Open Modal
-	$("#dialog").ejDialog("open");
-
-	// Wait for action / button-click
-	$("#okai, #cancel, #dialog_closebutton").on("click", function() {
-
-		// Close Modal on button-clicks
-		$("#dialog").ejDialog("close");
-
-	});
-
-}
-
-function updateProgress(percent, message){
-	var percentage = Math.round(percent);
-
-	$('#progress-bar span').css('width', percentage+'%');
-	$('#progress-bar span').attr('data-value', percentage);
-
-	if(message){
-		$('#progress-bar + div').text(message);
-	}
-
-}
-
 
 /***********************All Stuff for Overview-Content*******************************
 
