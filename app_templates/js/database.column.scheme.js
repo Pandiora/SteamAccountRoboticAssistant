@@ -51,7 +51,7 @@ db_scheme = {
 		{ templateID: ".ExportJSON-Button" },
 		{ templateID: ".ImportJSON-Button" },
 		{ templateID: ".ClearTable-Button" },
-		{ templateID: ".GetBadgesAndLevel"}
+		{ templateID: ".getBotBadges"}
 	]`,
 	users_games: `[
 		{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },
@@ -68,7 +68,7 @@ db_scheme = {
 		{ templateID: ".ExportJSON-Button" },
 		{ templateID: ".ImportJSON-Button" },
 		{ templateID: ".ClearTable-Button" },
-		{ templateID: ".GetDataOfOwnedGames" }
+		{ templateID: ".getBotGames" }
 	]`,
 	users_badges: `[
 		{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },
@@ -86,7 +86,7 @@ db_scheme = {
 		{ templateID: ".ExportJSON-Button" },
 		{ templateID: ".ImportJSON-Button" },
 		{ templateID: ".ClearTable-Button" },
-		{ templateID: ".GetBadgesForUser" }
+		{ templateID: ".getUsersBadges" }
 	]`,
 	steam_badges: `[
 		{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },
@@ -101,7 +101,7 @@ db_scheme = {
 		{ templateID: ".ExportJSON-Button" },
 		{ templateID: ".ImportJSON-Button" },
 		{ templateID: ".ClearTable-Button" },
-		{ templateID: ".GetAllGamesWithBadges" }
+		{ templateID: ".getSteamBadges" }
 	]`,
 	sara_settings: `[
 		{ field: "id", headerText: chrome.i18n.getMessage("index_table_id"), width: 50, isPrimaryKey: true, validationRules: { required: true, number: true } },

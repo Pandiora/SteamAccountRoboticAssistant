@@ -1,37 +1,39 @@
-﻿{
+{
 	"manifest_version": 2,
-
 	"name": "Steam Account Robotic Assistant",
 	"short_name": "SARA",
 	"description": "SARA combines different tools to interact with Steam and its peripherie.",
 	"version": "0.22",
-    "background": {
-        "scripts": [
-        	"plugins/jQuery/jquery-2.2.3.min.js", 
-        	"plugins/Dexie/Dexie.min.js", 
-        	"plugins/MomentJS/moment.min.js",
-        	"plugins/randomColor/randomColor.js",
-        	"plugins/validate/jquery.validate.min.js", 
-        	"plugins/validate/jquery.validate.unobtrusive.min.js",
-        	"plugins/jsSha/jsSha-1.6.min.js",
-        	"js/background.js",
-        	"js/confirmations_2fa.js",
-        	"js/acceptTrades.js",
-        	"js/database.js",
-        	"js/mobileAuth.js", 
-        	"js/mod_headers.js",
-        	"js/distributeSetsToBots.js",
-        	"hot-reload.js"
-        ],
-        "persistent": true
-    },
-
+	"background": {
+		"scripts": [
+			"plugins/jQuery/jquery-3.3.1.min.js",
+			"plugins/Dexie/Dexie.min.js",
+			"plugins/MomentJS/moment.min.js",
+			"plugins/randomColor/randomColor.js",
+			"plugins/validate/jquery.validate.min.js",
+			"plugins/validate/jquery.validate.unobtrusive.min.js",
+			"plugins/jsSha/jsSha-1.6.min.js",
+			"js/background.js",
+			"js/confirmations_2fa.js",
+			"js/acceptTrades.js",
+			"js/database.js",
+			"js/globalFunctions.js",
+			"js/mobileAuth.js",
+			"js/mod_headers.js",
+			"js/distributeSetsToBots.js",
+			"dev/hot-reload.js"
+		],
+		"persistent": true
+	},
 	"default_locale": "en",
-
 	"content_scripts": [
 		{
-			"matches": ["<all_urls>"],
-			"js": ["plugins/jQuery/jquery-2.2.3.min.js"]
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"plugins/jQuery/jquery-2.2.3.min.js"
+			]
 		},
 		{
 			"matches": [
@@ -41,8 +43,12 @@
 				"*://store.steampowered.com/login*",
 				"*://store.steampowered.com/login/*"
 			],
-			"css": ["css/steam_login.css"],
-			"js": ["js/steam_login.start.js"],
+			"css": [
+				"css/steam_login.css"
+			],
+			"js": [
+				"js/steam_login.start.js"
+			],
 			"run_at": "document_start"
 		},
 		{
@@ -53,11 +59,20 @@
 				"*://store.steampowered.com/login*",
 				"*://store.steampowered.com/login/*"
 			],
-			"js": ["plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/steam_login.js", "plugins/jsSha/jsSha-1.6.min.js", "js/mobileAuth.js"]
+			"js": [
+				"plugins/arrive/arrive.min.js",
+				"js/steam_login.js",
+				"plugins/jsSha/jsSha-1.6.min.js",
+				"js/mobileAuth.js"
+			]
 		},
 		{
-			"matches": ["*://store.steampowered.com/*"],
-			"js": ["js/autoDiscoveryQueue.js"]
+			"matches": [
+				"*://store.steampowered.com/*"
+			],
+			"js": [
+				"js/autoDiscoveryQueue.js"
+			]
 		},
 		{
 			"matches": [
@@ -67,27 +82,44 @@
 				"*://steamcommunity.com/profiles/*/stickers*",
 				"*://steamcommunity.com/profiles/*/stickers/*"
 			],
-			"js": ["js/craftStickerBadge.js"]
-		},
-		{
-			"matches": ["*://store.steampowered.com/*"],
-			"js": ["js/licenseBulkActivation.js"]
-		},
-		{
-			"matches": ["*://store.steampowered.com/*"],
-			"js": ["js/steamNomination.js"]
+			"js": [
+				"js/craftStickerBadge.js"
+			]
 		},
 		{
 			"matches": [
-				"*://steamcommunity.com/id/*/inventory/*", 
-				"*://steamcommunity.com/profiles/*/inventory/*"],
-			"css": ["css/inventory.css"]
+				"*://store.steampowered.com/*"
+			],
+			"js": [
+				"js/licenseBulkActivation.js"
+			]
 		},
 		{
 			"matches": [
-				"*://steamcommunity.com/id/*/inventory/*", 
-				"*://steamcommunity.com/profiles/*/inventory/*"],
-			"js": ["plugins/jQuery/jquery-2.2.3.min.js", "plugins/waitUntilExists/jquery.waitUntilExists.min.js", "js/inventory.js"]
+				"*://store.steampowered.com/*"
+			],
+			"js": [
+				"js/steamNomination.js"
+			]
+		},
+		{
+			"matches": [
+				"*://steamcommunity.com/id/*/inventory/*",
+				"*://steamcommunity.com/profiles/*/inventory/*"
+			],
+			"css": [
+				"css/inventory.css"
+			]
+		},
+		{
+			"matches": [
+				"*://steamcommunity.com/id/*/inventory/*",
+				"*://steamcommunity.com/profiles/*/inventory/*"
+			],
+			"js": [
+				"plugins/waitUntilExists/jquery.waitUntilExists.min.js",
+				"js/inventory.js"
+			]
 		},
 		{
 			"matches": [
@@ -101,33 +133,36 @@
 				"*://steamcommunity.com/id/*/badges/2/",
 				"*://steamcommunity.com//chat/"
 			],
-			"js": ["js/badges.js"]
+			"js": [
+				"js/badges.js"
+			]
 		}
 	],
-
 	"web_accessible_resources": [
 		"js/webworkers.js"
 	],
-
 	"sandbox": {
-		"pages": [
-			"booster-template.html"
-		]
+		"pages": [],
+		"content_security_policy": "sandbox allow-scripts; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
 	},
-
 	"icons": {
 		"16": "images/icon-16x16.png",
 		"48": "images/icon-48x48.png",
-   	   "128": "images/icon-128x128.png"
+		"128": "images/icon-128x128.png"
 	},
-
 	"browser_action": {
 		"default_icon": "images/icon-128x128.png"
 	},
-
 	"permissions": [
-		"cookies", "tabs", "alarms", "webRequest", "webRequestBlocking", "contextMenus", "<all_urls>", "storage"
+		"cookies",
+		"tabs",
+		"alarms",
+		"background",
+		"webRequest",
+		"webRequestBlocking",
+		"contextMenus",
+		"<all_urls>",
+		"storage"
 	],
-
-	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-vaBoTr950yDl5+anMYJVHYZMqgI4XRGyfWJSxlOs+Qc=' 'sha256-tTwmJ9+rkK30wTkOchpPT/AwziFqEPBkz0/qTxfBqV4=' 'sha256-oISksri0jE2Rqz1Zk9MVjg9WBGJNMGVV6bKd6DjmYAM=' 'sha256-RX649Xjtt/uYiICO8FKzTHfSgq8P7wYF6Di+a3Ywrhw=' 'sha256-pZOSDRbpffO92zHEy0R3rHXYa6y8UGpWkdQifkl7/BI=' 'sha256-6dC9CVT0MCNx08/24za2KyFjnbiBGaa87GE2Iw3Z81E=' 'sha256-dwX+4TQXIp1xjxSUfphg1bsrJb0VyfXNg08lRce60KY=' 'sha256-4xJOkIkaeBplN5tlcvxnCbBz34o5/kzpXcpjNkonVos=' 'sha256-rD86dXv7/J2SvI9ebmNi5dSuQdvzzrrN2puPca/ILls=' 'sha256-kYEMHX4um3ZfsQwwHHbxWhRUZtHYuByumKzZJp9016E=' 'sha256-r/xQLl0iyoPsKkiu8FuPhA8YWU9gh7YIjvuudlggWEs=' 'sha256-5sP1t2yB1Opsq2n5Aer54Db3ypc4WIukd564Q+Nty2c=' 'sha256-RfXnu2ysb0+uMZVGRMB/94yW4ydvzhsBTSNbh/OiqUY=' 'sha256-ZMtEGxNtyaGRlikesxPoNfZFCIldtiK/+SeD6fnMlhs=';object-src 'self'"
 }

@@ -1,0 +1,43 @@
+[
+
+
+
+	{
+		"type": "line",
+		"options": {
+			"legend": {
+				"display": false
+			}
+		},
+		"data": {
+			"datasets": [
+		        {
+		            "label": "Games added",
+		            "backgroundColor": "rgba(52,152,219,0.33)",
+					"borderColor": "rgba(52,152,219,0.50)"
+		        }
+		    ]
+		}
+	},
+
+
+
+	{
+		"type": "doughnut",
+		"data": {
+			"datasets": [
+				{
+					"label": "bla"
+				}
+			]
+		},
+		"options": {
+			"legend": false,
+			"legendCallback": "",
+			"tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %> account(s)"
+		}
+	}
+
+
+
+]

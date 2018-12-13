@@ -1,18 +1,23 @@
 // Function for handling and processing all requests to indexedDB
 idb = {
 
-	opendb: function(){
+	opendb: function(database, verno, scheme){
 
-		var deferred = $.Deferred();
+		var deferred 	= $.Deferred(),
+			defaultdb 	= 'steamdb',
+			db 			= (database) ? new Dexie(database) : new Dexie(defaultdb);
 
-		db = new Dexie('steamdb');
-		db.version(4).stores({
-			steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
-			users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created,added",
-			users_badges:"++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,max_lvl,cur_lvl,crafted,created",
-			steam_badges:"++id,&[app_id+game_name],app_id,game_name,cards_total,max_lvl,created",
-			sara_settings: "++id,&keyname,description,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10"
-		});
+		if(db.name === defaultdb){
+			db.version(4).stores({
+				steam_users: "++id,&login_name,login_pw,username,email,&steam_id,type,level,csgo,community,active,verified,purchased,group,friend,public,skip,created,&uuid,&steamMachine,apikey,revocation_code,shared_secret,identity_secret,device_id",
+				users_games: "++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,product_key,created,added",
+				users_badges:"++id,username,&[steam_id+app_id],steam_id,app_id,[app_id+game_name],game_name,max_lvl,cur_lvl,crafted,created",
+				steam_badges:"++id,&[app_id+game_name],app_id,game_name,cards_total,max_lvl,created",
+				sara_settings: "++id,&keyname,description,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10"
+			});
+		} else if(verno && scheme){
+			db.version(verno).stores(scheme);
+		}
 
 		db.on('blocked', function () {
 			console.log(chrome.i18n.getMessage("background_idb_db_blocked"));
@@ -30,7 +35,31 @@ idb = {
 
 	update: function(table){
 
-	}, 
+	},
+
+
+	bulkAdd: (table, array)=>{
+
+		var deferred = $.Deferred();
+
+	    idb.opendb().then((db)=>{
+	      db.transaction('rw', db[table], function*(){
+	        db[table].bulkAdd(array)
+	        .then((lastKey)=>{
+	        	deferred.resolve(lastKey);
+	        })
+	        .catch(Dexie.BulkError, (e)=>{
+	        	console.log(e);
+	        });
+	      }).catch((err)=>{
+	        console.error (err.length);
+	      }).finally(()=>{
+	        db.close();
+	      });
+	    });
+
+	    return deferred.promise();
+	},
 
 	fillGrid: function(table){
 
@@ -125,12 +154,66 @@ idb = {
 
 	},
 
-	clearTable: function(table){
+	refreshIndices: (database)=>{
+
+		var deferred = $.Deferred();
+		const databases = [database, database+'_temp'];
+
+		// Loop 2 times - move database forth and back
+		(function next(cnt, max){
+			if(cnt++ >= max){
+				deferred.resolve();
+				return;
+	        }
+
+			// ! turns 1 into 0 and vice-versa
+			// + turns boolean into integer
+			var sdb = new Dexie(databases[cnt-1]),
+				ddb = new Dexie(databases[+!(cnt-1)]);
+
+	        sdb.open().then(()=>{
+
+				// Clone scheme
+	            const schema = sdb.tables.reduce((result,table)=>{
+	              result[table.name] = (
+					[table.schema.primKey]
+	                .concat(table.schema.indexes)
+	                .map(indexSpec => indexSpec.src)
+					).toString();
+	              return result;
+	            }, {});
+				ddb.version(sdb.verno).stores(schema);
+
+				// Clone Data and delete source-database
+	            return sdb.tables.reduce(
+	              (result, table) => result
+	                .then(() => table.toArray())
+	                .then(rows => ddb.table(table.name).bulkAdd(rows) ),
+	              Promise.resolve()		
+	            )
+				.then((x)=>{ sdb.delete(); ddb.close(); next(cnt,max); })
+
+			})
+
+		})(0, databases.length);
+
+		return deferred.promise()
+	},
+
+	clearTable: (table, database)=>{
+
+		var deferred = $.Deferred();
 
 		idb.opendb().then(function(db){
+			db[table].clear().then(function(){
 
-			db[table].clear().then(function() {
-
+				if(database){
+					idb.refreshIndices(database).then(()=>{
+						deferred.resolve();
+					});
+				} else {
+					deferred.resolve();
+				}
 				// Refresh Content after table was cleared
 				// get ID of grid which uses this table dynamically
 				var gridid = $('.e-grid').data('table', table).attr('id');
@@ -144,8 +227,9 @@ idb = {
 			}).finally(function() {
 				db.close();
 			});
-
 		});
+
+		return deferred.promise();
 	},
 
 	getMasterRecord: function(){
@@ -250,34 +334,44 @@ idb = {
 	getAccountLevelsWidget: function(){
 
 		var deferred = $.Deferred();
+		var obj  = {}, arr, activated, color;
 
 		idb.opendb().then(function(db){
 		    db.transaction('r', 'steam_users', function(){
-
-				var obj  = {}, arr = [], activated, color; 
-
 		        db.steam_users.each(function(user){
 
-					activated = (user.purchased == 1) ? 1 : 0;
+					activated = user.purchased;
 					color = randomColor({luminosity: 'dark', count: 1});
 
 					if(!obj[user.level]){
 						obj[user.level] = {
-					        'value': 1,
+							'labels': 'Level '+user.level,
+							'data': activated,
+							'backgroundColor': color
+					        /*'value': 1,
 					        'color': color,
 					        'highlight': color,
 					        'label': 'Level '+user.level,
-							'activated': activated
+							'activated': activated*/
 		                };
 		            } else {
-						obj[user.level]['value'] += 1,
-						obj[user.level]['activated'] += activated;
+		            	obj[user.level]['data'] += activated;
+						/*obj[user.level]['value'] += 1,
+						obj[user.level]['activated'] += activated;*/
 		            }
 
 		        }).then(function(){
 
+					arr = {
+						data: [],
+						labels: [],
+						backgroundColor: []
+					};
+
 					for(key in obj){
-						arr.push(obj[key]);
+						arr.data.push(obj[key].data);
+						arr.labels.push(obj[key].labels);
+						arr.backgroundColor.push(obj[key].backgroundColor.toString());
 		            }			
 
 					deferred.resolve(arr);

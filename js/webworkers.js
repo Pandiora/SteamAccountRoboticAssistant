@@ -18,44 +18,29 @@ document.appendChild = function(child) {return child;};
 
 
 // Load Dependencies
-importScripts('/plugins/jQuery/jquery-2.2.3.min.js', '/plugins/Dexie/Dexie.min.js', 'database.js');
+importScripts('/plugins/jQuery/jquery-2.2.3.min.js', '/plugins/Dexie/Dexie.min.js', 'database.js', 'globalFunctions.js');
 
 // Run function based on the message the worker receives
-self.onmessage = function(msg){
-  if(msg.data == 'getBotGames'){
-    //console.log(msg.data);
-    getBotGames();
-  } else if(msg.data == 'getBotBadges'){
-    //console.log(msg.data);
-    getBotBadges();
-  } else if(msg.data == 'getSteamBadges'){
-    //console.log(msg.data);
-    getSteamBadges();
-  } else if(msg.data == 'getUsersBadges'){
-    //console.log(msg.data);
-    getUsersBadges();
-  } else if(msg.data.msg == 'getMissingBadgesEntries'){
-    //console.log(msg.data);
-    addMissingBadgesEntries(msg.data.arr, false);
+self.onmessage = (msg)=>{
+  if (typeof self[msg.data.process] === "function"){
+    self[msg.data.process](msg.data);
   } else {
-    console.log("non-implemented webworker called");
+    console.log("Unknown webworker called with name "+msg.data.process);
   }
-};
+}
 
+function getBotGames(message){
 
+  idb.opendb().then((db)=>{
+    db.transaction("r", db.steam_users, ()=>{
+      db.steam_users.toArray().then((users)=>{
 
-
-function getBotGames(){
-
-  idb.opendb().then(function(db){
-    db.transaction("r", db.steam_users, function(){
-      db.steam_users.toArray().then(function(users){
-
-        var master_api_key = $.grep(users, function(e){ return e.type == 'Master'; });
-        var usercnt = users.length;
-        var usermsg = 'Getting Bot-Games';
-        var apparr = [];
-        master_api_key = master_api_key[0]['apikey'];
+        var master_entry    = $.grep(users, (e)=>{ return e.type == 'Master'; }),
+            master_api_key  = master_entry[0]['apikey'],
+            master_steamid  = master_entry[0]['steam_id'],
+            usermsg         = 'Getting Bot-Games',
+            usercnt         = users.length,
+            apparr          = [];
 
         // We need a delayed loop to not spam the steam-servers
         (function next(counter, maxLoops) {
@@ -63,77 +48,163 @@ function getBotGames(){
           // Finally start to insert data into table and stop iteration
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
-            setTimeout(function(){
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Insert games into database.'});
-              processUser(apparr);
+            setTimeout(()=>{
+              self.postMessage({
+                msg: 'UpdateProgress', 
+                percentage: 99, 
+                message: 'Insert games into database.'
+              });
+              idb.bulkAdd('users_games', apparr);
             }, 100);
+
             return;
           }
 
           // Update our Progressbar (frontend)
-
-          self.postMessage({msg: 'UpdateProgress', percentage: ((99/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
-
-          // Get data of owned games for this user via steam-api
-          $.get('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='+master_api_key+'&steamid='+users[counter-1].steam_id+'&include_appinfo=1&format=json',function(appids){
-            var username = users[counter-1].username;
-            var steam_id = users[counter-1].steam_id;
-            var created = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 12-24-2016 13:25:34
-
-            // We need to check for existence of the key if the ajax-request fails for some reason
-            if(appids.response.hasOwnProperty('games')){
-              var appidarr = appids.response['games'];
-            } else {
-              console.log('Cannot find bot-games');
-              var appidarr = [];
-            }
-
-            // Push an entry into our array for every appid of this user
-            if(appidarr.length){
-              for(i=0; i<appidarr.length; i++){
-                apparr.push({
-                  username: username, 
-                  created: created, 
-                  app_id: appidarr[i]['appid'], 
-                  game_name: appidarr[i]['name'],
-                  steam_id: steam_id
-                });
-              }
-            }
-
-            // Call this function again until all data for all accounts were retrieved
-            // Add a timeout to not spam the Steam-Servers
-            // Todo: Maybe add retry if Steam-Servers aren´t available - else add error-handling
-            setTimeout(function(){ next(counter, maxLoops) }, 1000);
+          self.postMessage({
+            msg: 'UpdateProgress', 
+            percentage: ((99/maxLoops)*counter), 
+            message: (usermsg+'('+counter+'/'+maxLoops+')')
           });
 
+          // Get data of owned games for this user via steam-api
+          $.ajax({
+            url: 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/',
+            method: 'GET',
+            data: {
+              'key': master_api_key,
+              'steamid': users[counter-1].steam_id,
+              'include_appinfo': 1,
+              'format': 'json'
+            }, 
+            success: (appids)=>{
+
+              var username  = users[counter-1].username,
+                  steam_id  = users[counter-1].steam_id,
+                  created   = fun.dateToIso().res(), // current date
+                  appidarr  = [];
+
+              // We need to check for existence of the key if the ajax-request fails for some reason
+              appidarr = (appids.response.hasOwnProperty('games')) ? appids.response['games'] : [];
+
+              // On Master-Accounts get more detailed data (only first Master-Account is targeted)
+              // since multiple Master-Accounts are not supported - there is a 0 one could change ;)
+              if(master_steamid !== steam_id){
+                // add created objects to existing array of user-games
+                Array.prototype.push.apply(apparr, buildAppArr(username, created, appidarr, steam_id) );
+                setTimeout(()=>{ next(counter, maxLoops) }, 1000);
+              }
+
+              // spare unnecessary loops and match on already existing entries
+              compareArray(db, steam_id).then((e)=>{
+
+                // array should be updated now to represent the diff
+                appidarr = fun
+                .objKeysToArr(appidarr, 'appid')
+                .symDiff(e)
+                .wipeObjByKeyVal(appidarr, 'appid')
+                .res();
+
+                // tell conf amount of loops for progress-updater
+                message.parameters[0] = maxLoops+appidarr.length;
+
+                // to retrieve the detailed timestamps we need an active session for support-site
+                fun.getSession('support').then((s)=>{
+
+                  // set up config for Ajax-Calls
+                  var conf = {
+                      iterateValues: { appid: appidarr },
+                      fetchOptions: {
+                        params: { sessionid: s, wizard_ajax: 1 },
+                        url: 'https://help.steampowered.com/en/wizard/HelpWithGame/',
+                        format: 'json'
+                      },
+                      progress: message
+                  }
+
+                  // seems like there is no active session / user is not logged in
+                  if(!s) setTimeout(()=>{ next(counter, maxLoops); break; }, 1000);
+
+                  // the chained/mapped AJAX-Calls should return their promises and the filled object here
+                  fun.fetchChain(conf).then((s)=>{
+                    s.map((item, index)=>{
+                      var time  = (item) ? convResTime(s.html) : fun.dateToIso().res(),
+                          build = buildAppArr(username, time, conf.iterateValues.appid[index], steam_id);
+                      idb.bulkAdd('users_games', build);
+                    });
+                    // check if all entries got resolved/rejected
+                  });
+
+                });
+              });              
+            }
+          });
         })(0, usercnt);
       });
-    }).catch(function(err){
+    }).catch((err)=>{
       console.log(err);
-    }).finally(function(){
+    }).finally(()=>{
       db.close();
       //console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Update: '+'%c Appids for all users added to "users_games"', '', 'background: silver; color: green; border-radius: 10%', '');
     });
   });
 
-  function processUser(apparr){
 
-    idb.opendb().then(function(db){
-      db.transaction('rw', db.users_games, function*(){
-        db.users_games.bulkAdd(apparr).then(function(lastKey) {
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
-        }).catch(Dexie.BulkError, function(e){
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
-        });
-      }).catch(function(err){
-        console.error (err.length);
-      }).finally(function(){
-        self.postMessage({msg: 'OwnedGamesDone'});
-        self.close();
-        db.close();
+
+  function convResTime(reponse){
+
+      // we can't use find in webworker => use regex to find times of games being added 
+      var reg1 = /wlight_text">([a-zA-Z]{3}.{2,9})<.span/g, 
+          reg2 = /span>([a-zA-z]{3}.{5,12})&nbsp/g,
+          html = response;
+          html = (html.match(reg1) && html.match(reg1)[1]) ? reg1.exec(html.match(reg1)[1])[1] : reg2.exec(html.match(reg2)[0])[1],
+          html = html.replace("&nbsp;-", ""),
+          html = (html.length < 6) ? (html+", "+(new Date()).getFullYear().toString()) : html,
+          html = html+' GMT', // fix 1 day offset
+          html = fun.dateToIso(html).res();
+
+      return html;
+  }
+
+
+
+  function compareArray(db, steamid){
+    var deferred = $.Deferred();
+    var arr = [];
+    idb.opendb().then((db)=>{
+    db.transaction('r', db.users_games, ()=>{
+      db.users_games.where('steam_id').equals(steamid).each((res)=>{
+        if(res.app_id) arr.push(res.app_id);
+      }).then((s)=>{
+        deferred.resolve(arr);
       });
     });
+    });
+    return deferred.promise();
+  }
+
+
+
+  function buildAppArr(username, added, appidarr, steam_id){
+    console.log(appidarr);
+    var arr     = [],
+        created = fun.dateToIso().res();
+
+    // Push an entry into our array for every appid of this user
+    // make sure to use the same timestamp everytime or detailed timestamp if user-account is Master
+    if(appidarr.length){
+      for(i=0; i<appidarr.length; i++){
+        arr.push({
+          username: username, 
+          created: created,
+          added: ((Array.isArray(added)) ? added[i] : added),
+          app_id: appidarr[i]['appid'], 
+          game_name: appidarr[i]['name'],
+          steam_id: steam_id
+        });
+      }
+    }
+    return arr;
   }
 }
 
@@ -146,17 +217,17 @@ function getUsersBadges(){
       badgesarr      = [],
       created        = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 12-24-2016 13:25:34
 
-  idb.opendb().then(function(db){
-    db.transaction("r", ['steam_users'], function(){
-      db.steam_users.toArray().then(function(users){
+  idb.opendb().then((db)=>{
+    db.transaction("r", ['steam_users'], ()=>{
+      db.steam_users.toArray().then((users)=>{
 
         // first we need to get all users and master-apikey
-        master_api_key = $.grep(users, function(e){ return e.type == 'Master'; }),
+        master_api_key = $.grep(users, (e)=>{ return e.type == 'Master'; }),
         master_api_key = master_api_key[0]['apikey'],
         userarr        = users,
         usercnt        = users.length;
 
-      }).then(function(){
+      }).then(()=>{
         
         // now get the data for every user from steam and compare it to our games in database
         // We need a delayed loop to not spam the steam-servers
@@ -165,7 +236,7 @@ function getUsersBadges(){
           // Finally start to insert data into table and stop iteration
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
-            setTimeout(function(){
+            setTimeout(()=>{
               self.postMessage({msg: 'UpdateProgress', percentage: 98, message: 'Insert games into database.'});
               processUser(badgesarr);
             }, 100);
@@ -176,7 +247,7 @@ function getUsersBadges(){
           self.postMessage({msg: 'UpdateProgress', percentage: ((98/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
 
           // Get data of owned games for this user via steam-api
-          $.get('https://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key+'&steamid='+userarr[counter-1].steam_id+'&format=json', function(res){
+          $.get('https://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key+'&steamid='+userarr[counter-1].steam_id+'&format=json', (res)=>{
  
             var username  = userarr[counter-1].username,
                 steam_id  = userarr[counter-1].steam_id,
@@ -204,15 +275,15 @@ function getUsersBadges(){
             // Call this function again until all data for all accounts were retrieved
             // Add a timeout to not spam the Steam-Servers
             // Todo: Maybe add retry if Steam-Servers aren´t available - else add error-handling
-            setTimeout(function(){ next(counter, maxLoops) }, 1000);
+            setTimeout(()=>{ next(counter, maxLoops) }, 1000);
           });
 
         })(0, usercnt);        
 
       });
-    }).catch(function(err){
+    }).catch((err)=>{
       console.log(err);
-    }).finally(function(){
+    }).finally(()=>{
       db.close();
     });
   });
@@ -223,9 +294,9 @@ function getUsersBadges(){
         sbarr = [],
         ubarr = [];
 
-    idb.opendb().then(function(db){
-      db.transaction("rw", ['steam_badges', 'users_badges'], function(){
-        db.steam_badges.each(function(steam_badges){
+    idb.opendb().then((db)=>{
+      db.transaction("rw", ['steam_badges', 'users_badges'], ()=>{
+        db.steam_badges.each((steam_badges)=>{
 
           // at first we need to fill the missing values of the array
           for(var i=0;i<len;i++){
@@ -239,19 +310,19 @@ function getUsersBadges(){
           // we also need to save appids to a seperate array for later use
           sbarr.push(parseInt(steam_badges.app_id)); // important parse for later comparison
 
-        }).then(function(){
+        }).then(()=>{
 
-          db.users_badges.bulkAdd(arr).then(function(lastKey) {
+          db.users_badges.bulkAdd(arr).then((lastKey)=> {
             self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Search for missing entries'});
-          }).catch(Dexie.BulkError, function(e){
+          }).catch(Dexie.BulkError, (e)=>{
             self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Duplicate-Entrys: '+e.failures.length});
           });
 
-        }).then(function(){
+        }).then(()=>{
 
           var created = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-          db.users_badges.each(function(u){
+          db.users_badges.each((u)=>{
 
             // if steam-badges is missing this app-id, add object for later use
             // this way we will ensure even missing games are added to the database (steam-badges)
@@ -265,7 +336,7 @@ function getUsersBadges(){
               });
             }
 
-          }).then(function(){
+          }).then(()=>{
 
             // if we found missing entries process them else finish
             if(ubarr.length > 0){
@@ -277,9 +348,9 @@ function getUsersBadges(){
 
           });
         });
-      }).catch(function(err){
+      }).catch((err)=>{
         console.error(err);
-      }).finally(function(){
+      }).finally(()=>{
         if(ubarr.length < 1){
           self.postMessage({msg: 'UsersBadgesDone'});
           self.close();
@@ -300,17 +371,17 @@ function addMissingBadgesEntries(arr, post){
 
     // Finally insert missing entries
     if (counter++ >= maxLoops){
-      setTimeout(function(){
-        idb.opendb().then(function(db){
-          db.transaction("rw", 'steam_badges', function(){
-            db.steam_badges.bulkAdd(arr).then(function(lastKey) {
+      setTimeout(()=>{
+        idb.opendb().then((db)=>{
+          db.transaction("rw", 'steam_badges', ()=>{
+            db.steam_badges.bulkAdd(arr).then((lastKey)=> {
               if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Added missing entries. Done!'});
-            }).catch(Dexie.BulkError, function(e){
+            }).catch(Dexie.BulkError, (e)=>{
               if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
             });
-          }).catch(function(err){
+          }).catch((err)=>{
             console.error(err);
-          }).finally(function(){
+          }).finally(()=>{
             post ? self.postMessage({msg: 'UsersBadgesDone'}) : self.postMessage({msg: 'SteamBadgesDone'});
             self.close();
             db.close();
@@ -321,10 +392,10 @@ function addMissingBadgesEntries(arr, post){
     }
 
     // get card-count and game-name for missing games and update the array of missing games with them
-    jQuery.get("https://steamcommunity.com/my/gamecards/"+arr[counter-1].app_id, function(res){
+    jQuery.get("https://steamcommunity.com/my/gamecards/"+arr[counter-1].app_id, (res)=>{
       arr[counter-1].cards_total = res.match(/img\sclass\="gamecard/g).length,
       arr[counter-1].game_name = (/\/\d+\/"><span\sclass\="profile_small_header_location">(.*)<\/span/).exec(res)[1];
-      setTimeout(function(){ next(counter, maxLoops) }, 100);
+      setTimeout(()=>{ next(counter, maxLoops) }, 100);
     });
   })(0, len);
 }
@@ -333,7 +404,7 @@ function getSteamBadges(){
 
   // array with all games having trading-cards
   var arr = [],
-  created = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  created = fun.dateToIso().res(); // current datetime
 
   // announce process-start
   self.postMessage({msg: 'UpdateProgress', percentage: 0, message: 'Fetching Data ...'});
@@ -343,7 +414,7 @@ function getSteamBadges(){
   $.ajax({
     type: 'GET',
     url: 'https://cdn.steam.tools/data/set_data.json',
-    success: function(res){
+    success: (res)=>{
 
       var obj = Object.keys(res.sets),
       len = obj.length,
@@ -363,23 +434,23 @@ function getSteamBadges(){
 
       self.postMessage({msg: 'UpdateProgress', percentage: 50, message: 'Inserting into Database ...'});
     },
-    error: function(err){
+    error: (err)=>{
       console.log("Can't get data from steam.tools"+err);
     }
 
-  }).done(function(){
+  }).done(()=>{
 
-    idb.opendb().then(function(db){
+    idb.opendb().then((db)=>{
       db.transaction('rw', db.steam_badges, function*(){
-        db.steam_badges.bulkAdd(arr).then(function(lastKey) {
+        db.steam_badges.bulkAdd(arr).then((lastKey)=> {
           self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
-        }).catch(Dexie.BulkError, function(e){
+        }).catch(Dexie.BulkError, (e)=>{
           self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
         });
-      }).catch(function(err){
+      }).catch((err)=>{
         console.log(err);
         console.error(err.length);
-      }).finally(function(){
+      }).finally(()=>{
         self.postMessage({msg: 'SteamBadgesDone'});
         self.close();
         db.close();
@@ -391,11 +462,11 @@ function getSteamBadges(){
 
 function getBotBadges(){
 
-  idb.opendb().then(function(db){
-    db.transaction("r", db.steam_users, function(){
-      db.steam_users.toArray().then(function(users){
+  idb.opendb().then((db)=>{
+    db.transaction("r", db.steam_users, ()=>{
+      db.steam_users.toArray().then((users)=>{
 
-        var master_api_key = $.grep(users, function(e){ return e.type == 'Master'; });
+        var master_api_key = $.grep(users, (e)=>{ return e.type == 'Master'; });
         var usercnt = users.length;
         var usermsg = 'Getting Bot-Games';
         var userarr = {
@@ -411,7 +482,7 @@ function getBotBadges(){
           // Finally start to insert data into table and stop iteration
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
-            setTimeout(function(){
+            setTimeout(()=>{
               self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Add games to Database'});
               //console.log(userarr);
               processUser(userarr);
@@ -429,9 +500,9 @@ function getBotBadges(){
           var community_badge = 0;
 
           // Get data of owned games for this user via steam-api
-          $.get('http://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key[0]['apikey']+'&steamid='+users[counter-1].steam_id+'&format=json', function(data){
+          $.get('http://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key[0]['apikey']+'&steamid='+users[counter-1].steam_id+'&format=json', (data)=>{
 
-            $.each(data['response']['badges'], function(key,val){
+            $.each(data['response']['badges'], (key,val)=>{
               if(val['badgeid'] == 1 && val['appid'] == 730){
                 // CSGO's appid is 730 - avoid getting multiple results
                 //console.log('CSGO-Badge: '+val['level']);
@@ -451,22 +522,22 @@ function getBotBadges(){
             // Call this function again until all data for all accounts were retrieved
             // Add a timeout to not spam the Steam-Servers
             // Todo: Maybe add retry if Steam-Servers aren´t available - else add error-handling
-            setTimeout(function(){ next(counter, maxLoops) }, 1000);
+            setTimeout(()=>{ next(counter, maxLoops) }, 1000);
           });
 
         })(0, usercnt);
       });
-    }).catch(function(err){
+    }).catch((err)=>{
       console.log(err);
-    }).finally(function(){
+    }).finally(()=>{
       db.close();
       //console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Update: '+'%c Appids for all users added to "users_games"', '', 'background: silver; color: green; border-radius: 10%', '');
     });
   });
 
   function processUser(userarr){
-    idb.opendb().then(function(db){
-      db.transaction('rw', db.steam_users, function(){
+    idb.opendb().then((db)=>{
+      db.transaction('rw', db.steam_users, ()=>{
         for(var i=0; i<userarr.steamid.length;i++){
           //console.log('SteamID: '+userarr.steamid[i]+' Level: '+userarr.lvl[i]+' CSGO: '+userarr.csgo[i]+' Community: '+userarr.com[i]);
           db.steam_users.where('steam_id').equals(userarr.steamid[i]).modify({
@@ -475,11 +546,11 @@ function getBotBadges(){
             community: userarr.com[i]
           });
         }
-      }).then(function(){
+      }).then(()=>{
         self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
-      }).catch(function(err){
+      }).catch((err)=>{
         self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Error while getting badges'+err});
-      }).finally(function(){
+      }).finally(()=>{
         self.postMessage({msg: 'OwnedBadgesDone'});
         self.close();
         db.close();

@@ -10,3 +10,19 @@ ul.treeview-menu li.active a {
 li.treeview {
 	cursor: pointer;
 }
+ul.chart-legend {
+    margin-right: 10px;
+    list-style: none; 
+    height: 300px; 
+    overflow-y: scroll;
+}
+
+.chart-legend li span:first-child {
+	width: 10px ;
+    height: 10px;
+    display: inline-block;
+}
+.chart-legend li span + span {
+	display: inline-block;
+    padding: 0 0 0 5px;
+}

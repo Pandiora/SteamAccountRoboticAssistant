@@ -1,3 +1,49 @@
+// F O R
+// D E V E L O P M E N T  O N L Y
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+/* since content security policy got more strict with manifest
+   version 2 and I still want to load some stuff dynamically
+   I need to get the hashes of used inline-scripts and add them
+   to manifest.json - so far this is the only good workaround for
+   this problem and to spare me some time, I'm generating the hashes
+   while going (manually) through the background-page
+*/ 
+var csp_hashes = [], csp_result;
+
+$(document).on('DOMNodeInserted', function(e){
+	var target = e.target;
+
+	if(
+		(!$(target).attr('src')) &&	
+		(!$(target).attr('class')) &&		
+		($(target).prop('tagName') === 'SCRIPT')
+	){
+		target = target.innerHTML,
+		target = sjcl.hash.sha256.hash(target),
+		target = sjcl.codec.base64.fromBits(target);
+
+		csp_hashes.indexOf(target) === -1 ? csp_hashes.push(target) : false;
+
+		$.get('manifest.json', function(res){
+		
+			var csp_string = "'sha256-" + csp_hashes.join("' 'sha256-") + "'",
+				csp_string = "script-src 'self' 'unsafe-eval' "+csp_string+";object-src 'self'"
+
+			csp_result = res;
+			csp_result.content_security_policy = csp_string;
+		});
+	}
+});
+
+function downloadManifest(){
+	download(JSON.stringify(csp_result, null, "\t"), 'manifest.json', 'application/json')
+}
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
 // Fix for warnings about sync requests (we are loading scripts inside html-templates)
 $.ajaxPrefilter(function( options, original_Options, jqXHR ){ options.async = true; });
 
@@ -58,10 +104,24 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
 				updateNotificationCnt();
 			});
 
+		} else if(message.sender == "webworker" && message.action == "updateProgress"){
+
+			updateProgress(message.percentage, message.message);
+			if(message.status === 'done'){
+				setTimeout(()=>{
+					$("#dialog").ejDialog("close");
+					$(message.process).removeClass('og-active');
+
+					var grid = $('#db_frontend_content').ejGrid('instance');
+					idb.fillGrid(datatable).done(function(data){
+						grid.dataSource(data);
+					});
+				}, 5000);	
+			}
+
 		} else {
 			console.log(chrome.i18n.getMessage("index_listener_malformed")+message.greeting);
 		}
-		sendResponse(chrome.i18n.getMessage("index_listener_message_received")+message.greeting);
 	}
 });
 
@@ -116,7 +176,7 @@ function loadContent(that){
 	eid = eid.substr(1); // remove #
 
 	// Load Content depending if it uses unique db string or not - remove leading db for function-call
-	(/db/.test(eid)) ? loadDatabaseContent(eid.substr(2)) : $('.content-wrapper').html('').load('/app_templates/'+eid+'.html');
+	(/db/.test(eid)) ? loadDatabaseContent(eid.substr(2)) : $('.content-wrapper').load('/app_templates/'+eid+'.html');
 
 }
 

@@ -118,16 +118,16 @@
   -moz-transform: rotate(360deg);
     -webkit-transform: rotate(360deg);
 }
-.export-json:before { content: ""; }
-.import-json:before { content: ""; }
-.clear-table:before { content: ""; }
+a.export-json:before { content: ""; }
+a.import-json:before { content: ""; }
+a.clear-table:before { content: ""; }
 /* Class needs to show status */
-.owned-games:before { content: ""; }
-.owned-badges:before { content: ""; }
-.users-badges:before { content: "\e74c"; }
-.steam-badges:before { content: "\e61f"; }
-.og-active { padding-left: 0 !important; }
-.og-active:before {
+a.getBotGames:before { content: ""; }
+a.getBotBadges:before { content: ""; }
+a.getUsersBadges:before { content: "\e74c"; }
+a.getSteamBadges:before { content: "\e61f"; }
+a.og-active { padding-left: 0 !important; }
+a.og-active:before {
 	content: "";
 	animation: spin 1s infinite linear;
 	transform-origin: 70% 93%;
@@ -142,10 +142,10 @@
 #dialog_wrapper:before {
   content: "";
   height: calc(100% - 50px);
-  width: calc(100% - 50px);
+  width: calc(100% - 230px);
   position: fixed;
   display: block;
-  left: 50px;
+  left: 230px;
   top: 50px;
   background-color: rgba(0,0,0,0.70);
 }

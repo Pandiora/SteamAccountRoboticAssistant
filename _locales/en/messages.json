@@ -660,11 +660,11 @@
 		"message": "Added",
 		"description": ""
 	},
-	"index_table_get_user_badges": {
+	"index_table_getBotBadges": {
 		"message": "Fetch all users badges",
 		"description": ""
 	},
-	"index_table_get_steam_badges": {
+	"index_table_getSteamBadges": {
 		"message": "Fetch all Games with badges",
 		"description": ""
 	},
@@ -701,27 +701,27 @@
 		"message": "Are you sure you want to delete all your data? Backup your data first! This step can not be undone. Press OK if you want to continue.",
 		"description": ""
 	},
-	"index_table_get_owend_games": {
+	"index_table_getBotGames": {
 		"message": "Get Data of owned Games (Steam-API)",
 		"description": ""
 	},
-	"index_table_get_owend_games_msg": {
+	"index_table_getBotGames_msg": {
 		"message": "This action can take a long time depending on how much bots you have. There must be minimal one User set up with Type Master and a valid SteamID or this will not work. This task will run in the background and won´t stop if you reload the extension-tab. If you want to start press OK.",
 		"description": ""
 	},
-	"index_table_get_owend_games_progress": {
+	"index_table_getBotGames_progress": {
 		"message": "Get owned Games - Progress",
 		"description": ""
 	},	
-	"index_table_get_owend_badges": {
+	"index_table_getUsersBadges": {
 		"message": "Get Data of owned Badges and actual Level",
 		"description": ""
 	},
-	"index_table_get_owend_badges_msg": {
+	"index_table_getUsersBadges_msg": {
 		"message": "This action can take a long time depending on how much bots you have. There must be minimal one User set up with Type Master and a valid SteamID or this will not work. This task will run in the background and won´t stop if you reload the extension-tab. This action will get the data for CS:GO- / Community-Badge and also the actual level. If you want to start, press OK.",
 		"description": ""
 	},
-	"index_table_owend_badges_progress": {
+	"index_table_getUsersBadges_progress": {
 		"message": "Get Badges- & Level-Data • Progress",
 		"description": ""
 	},

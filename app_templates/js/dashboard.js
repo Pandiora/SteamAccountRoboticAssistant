@@ -1,133 +1,81 @@
-$(function(){
+getMasterGamesWidget();
+getAccountLevelsWidget();
 
-    var option = {
-	    	responsive: true,
-	    	animation: true,
-			tooltipFontSize: 12,
-			tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %> games added",
-			pointHitDetectionRadius : 1
-    	},
-    	data = {
-	    	datasets: [
-		        {
-		            label: "My First dataset",
-		            fillColor: "rgba(151,187,205,0.2)",
-		            strokeColor: "rgba(151,187,205,1)",
-		            pointColor: "rgba(151,187,205,1)",
-		            pointStrokeColor: "#fff",
-		            pointHighlightFill: "#fff",
-		            pointHighlightStroke: "rgba(151,187,205,1)"
-		        }
-	        ]
-    	},
-		ctx = document.getElementById("masterGamesChart").getContext('2d'),
-    	masterGamesChart;
+$('.dropdown-menu').on('click', '.masterGamesTime', function(){
 
-	idb.getMasterGamesWidget(24, 'month').done(function(res){
+	var count = $(this).data('count'),
+		scale = $(this).data('scale');
 
-		// Add data to our chart
-		data.labels = res.label; 
-		data.datasets[0].data = res.count;
+	getMasterGamesWidget(count, scale);
+});
 
-	    // create Canvas
-	    masterGamesChart = new Chart(ctx).Line(data, option);
-	});
+var masterGamesChart;
+function getMasterGamesWidget(count, scale){
 
-	$(document).on('click', '.masterGamesTime', function(){
+	count 	= (count) ? count : 24,
+	scale 	= (scale) ? scale : 'month';
 
-		var count = $(this).data('count'),
-			scale = $(this).data('scale');
+	var ctx = $('#masterGamesChart').get(0).getContext('2d');
 
-		idb.getMasterGamesWidget(count, scale).done(function(res){
+
+	idb.getMasterGamesWidget(count, scale).then(function(res){
+		$.get('app_templates/js/dashboard.widget.scheme.json').then((response)=>{
 
 			// Add data to our chart
-			data.labels = res.label; 
-			data.datasets[0].data = res.count;
+			var data 						= response[0];
+				data.data.labels 			= res.label;
+				data.data.datasets[0].data 	= res.count;
 
 			// destroy & create canvas
-			masterGamesChart.destroy();
-			masterGamesChart = new Chart(ctx).Line(data, option);
-
+			if(typeof masterGamesChart !== 'undefined') masterGamesChart.destroy();
+			masterGamesChart = new Chart(ctx, data);
 		});
 	});
 
-});
+}
 
-$(function(){
 
-    /*var data = {
-      datasets: [
-        {
-          label               : 'Count',
-          fillColor           : 'rgba(210, 214, 222, 1)',
-          strokeColor         : 'rgba(210, 214, 222, 1)',
-          pointColor          : 'rgba(210, 214, 222, 1)',
-          pointStrokeColor    : '#c1c7d1',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(220,220,220,1)'
-        },
-        {
-          label               : 'Purchased',
-          fillColor           : 'rgba(60,141,188,0.9)',
-          strokeColor         : 'rgba(60,141,188,0.8)',
-          pointColor          : '#3b8bba',
-          pointStrokeColor    : 'rgba(60,141,188,1)',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(60,141,188,1)'
-        }
-      ]
-    };
-	
-	var options = {
-	  scaleBeginAtZero        : true,
-	  scaleShowGridLines      : true,
-	  scaleGridLineColor      : 'rgba(0,0,0,.05)',
-	  scaleGridLineWidth      : 1,
-	  scaleShowHorizontalLines: true,
-	  scaleShowVerticalLines  : true,
-	  barShowStroke           : true,
-	  barStrokeWidth          : 2,
-	  barValueSpacing         : 5,
-	  barDatasetSpacing       : 1,
-	  responsive              : true,
-	  maintainAspectRatio     : true,
-	  tooltipTemplate: "Level <%if (label){%><%=label%>: <%}%><%= value %>",
-	};
+function getAccountLevelsWidget(){
 
 	idb.getAccountLevelsWidget().done(function(res){
+		$.get('app_templates/js/dashboard.widget.scheme.json').then((response)=>{
+console.log(res);
+			var ctx 						= $('#accountLevelChart').get(0).getContext('2d');
+			var data 						= response[1];
+				data.data.labels 			= res.labels;
+				data.data.datasets[0].data 	= res.data;
+				data.data.datasets[0].backgroundColor = res.backgroundColor,
+				data.options.legendCallback = function(data) {
+		            var legendHtml = [];
+		            legendHtml.push('<ul class="chart-legend">');
+		            var item = data.data.datasets[0];
+		            for (var i=0; i < item.data.length; i++) {
+		                legendHtml.push('<li>');
+		                legendHtml.push('<span style="width: 10px;background-color:' + item.backgroundColor[i] +'"></span>');
+   		                legendHtml.push('<span>'+data.data.labels[i]+'</span>');
+		                legendHtml.push('</li>');
+		            }
 
-		// Add data to our chart
-		data.labels = res.level; 
-		data.datasets[0].data = res.count;
-		data.datasets[1].data = res.activated;
+		            legendHtml.push('</ul>');
+		            return legendHtml.join("");
+		        };
 
-	    // create Canvas
-		var ctx = $('#accountLevelChart').get(0).getContext('2d'),
-		accountLevelChart = new Chart(ctx).Bar(data, options);
-	});*/
 
-    var pieOptions     = {
-      segmentShowStroke    : true,
-      segmentStrokeColor   : '#fff',
-      segmentStrokeWidth   : 2,
-      percentageInnerCutout: 50,
-      animationSteps       : 100,
-      animationEasing      : 'easeOutBounce',
-      animateRotate        : true,
-      animateScale         : false,
-      responsive           : true,
-      maintainAspectRatio  : true,
-      legendTemplate       : '<ul class="chart-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="fa fa-circle-o" style="color:<%=segments[i].fillColor%>;"></span> <%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
-      tooltipTemplate	   : "<%if (label){%><%=label%>: <%}%><%= value %> account(s) \nBla",
-    }
-    //Create pie or doughnut chart
-    // You can switch between pie and douhnut using the method below.
+/*<ul class=\"chart-legend\">
+	<% for (var i=0; i<segments.length; i++){%>
+		<li>
+			<span class=\"fa fa-circle-o\" style=\"color:<%=segments[i].fillColor%>;\"></span>
+			<%if(segments[i].label){%><%=segments[i].label%><%}%>
+		</li>
+	<%}%>
+</ul>*/
 
-	idb.getAccountLevelsWidget().done(function(res){
+console.log(data);
+	    		pieChart 	= new Chart(ctx, data);
+$('#js-legend').html(pieChart.generateLegend());
+			//$('#js-legend').append(pieChart.generateLegend());
 
-	    var ctx = $('#accountLevelChart').get(0).getContext('2d'),
-	    	pieChart = new Chart(ctx).Doughnut(res, pieOptions);
-		$('#js-legend').append(pieChart.generateLegend());
-
+		});
 	});
-});
+}
+

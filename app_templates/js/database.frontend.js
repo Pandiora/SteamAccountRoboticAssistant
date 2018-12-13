@@ -5,10 +5,10 @@ $('head').append(`
 	<script class="ExportJSON-Button" type="text/x-jsrender"><a class="e-toolbaricons e-icon export-json" /></script>
 	<script class="ImportJSON-Button" type="text/x-jsrender"><a class="e-toolbaricons e-icon import-json" /><input type="file" accept=".json" style="display:none;"></script>
 	<script class="ClearTable-Button" type="text/x-jsrender"><a class="e-toolbaricons e-icon clear-table" /></script>
-	<script class="GetDataOfOwnedGames" type="text/x-jsrender"><a class="e-toolbaricons e-icon owned-games" /></script>
-	<script class="GetBadgesAndLevel" type="text/x-jsrender"><a class="e-toolbaricons e-icon owned-badges" /></script>
-	<script class="GetBadgesForUser" type="text/x-jsrender"><a class="e-toolbaricons e-icon users-badges" /></script>
-	<script class="GetAllGamesWithBadges" type="text/x-jsrender"><a class="e-toolbaricons e-icon steam-badges" /></script>
+	<script class="getBotGames" type="text/x-jsrender"><a class="e-toolbaricons e-icon getBotGames" /></script>
+	<script class="getBotBadges" type="text/x-jsrender"><a class="e-toolbaricons e-icon getBotBadges" /></script>
+	<script class="getUsersBadges" type="text/x-jsrender"><a class="e-toolbaricons e-icon getUsersBadges" /></script>
+	<script class="getSteamBadges" type="text/x-jsrender"><a class="e-toolbaricons e-icon getSteamBadges" /></script>
 `);
 
 function loadDatabaseContent(eid){
@@ -177,7 +177,7 @@ $(document).ready(function(){
 // the Syncfusion-Scrollbar has weird bugs, bad performance
 // and makes resizing problematic > just use ::webkit
 // and scroll the gridheader with its content
-$('#db_frontend_content .e-gridcontent').waitUntilExists(function(){
+$(document).arrive('#db_frontend_content .e-gridcontent', { onceOnly: true }, function(){
 	$(this).scroll(function() {
 		$('#db_frontend_content .e-gridheader').scrollLeft($(this).scrollLeft());
 	});
@@ -211,164 +211,77 @@ function saveDB(value){
 
 function onToolBarClick(sender, args) {
 
-	var action = $(sender.target).attr('class').split(' ').pop(),
-		datatable = $('#db_frontend_content').data('table');
+	var datatable 	= $('#db_frontend_content').data('table'),
+		action 		= $(sender.target).attr('class').split(' ').pop(),
+		grid 		= $('#db_frontend_content').ejGrid('instance');
 
-	if(action == 'refresh'){
+	switch(true){
+		case (action === 'refresh'):
 
-		var grid = $('#db_frontend_content').ejGrid('instance');
-		idb.fillGrid(datatable).done(function(data){
-			grid.dataSource(data);
-		});
+			idb.fillGrid(datatable).then(function(data){ grid.dataSource(data); });
+			break;
 
-	} else if(action == 'export-json'){
+		case (action === 'export-json'):
 
-		idb.exportJSON(datatable);
+			idb.exportJSON(datatable);
+			break;
 
-	} else if(action == 'import-json'){
+		case (action === 'import-json'):
 
-		createDialog("warning", "Import '"+datatable+"'", chrome.i18n.getMessage("index_table_import1")+datatable+chrome.i18n.getMessage("index_table_import2"), 2);
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				$(sender.target).next().trigger('click');
-			}
-		});
+			createDialog("warning", "Import '"+datatable+"'", chrome.i18n.getMessage("index_table_import1")+datatable+chrome.i18n.getMessage("index_table_import2"), 2);
+			$("#okai").on("click", function() {
+				if($(this).attr("id") == "okai"){
+					$(sender.target).next().trigger('click');
+				}
+			});
+			break;
 
-	} else if(action == 'clear-table'){
+		case (action === 'clear-table'):
 
-		createDialog("warning", chrome.i18n.getMessage("index_table_clear_table"), chrome.i18n.getMessage("index_table_clear_table_msg"), 2);
+			createDialog("warning", chrome.i18n.getMessage("index_table_clear_table"), chrome.i18n.getMessage("index_table_clear_table_msg"), 2);
 
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				idb.clearTable(datatable);
-			}
-		});
-
-	} else if(action == 'owned-games'){
-
-		createDialog("info", chrome.i18n.getMessage("index_table_get_owend_games"), chrome.i18n.getMessage("index_table_get_owend_games_msg"), 2);
-
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				setTimeout(function(){
-					// Show progress
-					createDialog("info", chrome.i18n.getMessage("index_table_get_owend_games_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
-					// Add loading-Indicator
-					$('.owned-games').addClass('og-active');
-					// Start the worker via background-script
-					chrome.runtime.sendMessage({greeting: 'getDataOfOwnedGames'},function(response){
-						if(response == 'done'){
-							// remove loading-Indicator
-							$('.owned-games').removeClass('og-active');
-							// Close Dialog which holds the progress-bar
-							// wait 5s so the user can read the last message
-							setTimeout(function(){
-								$("#dialog").ejDialog("close");
-							}, 5000);
-							// Reload table
-							var grid = $('#db_frontend_content').ejGrid('instance');
-							idb.fillGrid(datatable).done(function(data){
-								grid.dataSource(data);
-							});
-						}
+			$("#okai").on("click", function() {
+				if($(this).attr("id") == "okai"){
+					idb.clearTable(datatable).then(()=>{
+						// refresh content after deletion
+						// fillGrid 2nd paramaeter for refreshing indices not used currently
+						idb.fillGrid(datatable).then((data)=>{;
+							grid.dataSource(data);
+						});
 					});
-				}, 500);
-			}
-		});
+				}
+			});
+			break;
 
-	} else if(action == 'owned-badges'){
+		case /get/.test(action):
 
-		createDialog("info", chrome.i18n.getMessage("index_table_get_owend_badges"), chrome.i18n.getMessage("index_table_get_owend_badges_msg"), 2);
+			// match ['getBotGames', 'getBotBadges','getSteamBadges', 'getUsersBadges']
+			// action acts as container/string for to be executed functions
+			// as strings for css/local and as process-name
+			createDialog("info", chrome.i18n.getMessage("index_table_"+action), chrome.i18n.getMessage("index_table_get_"+action+"_msg"), 2);
+			$("#okai").on("click", function() {
+				if($(this).attr("id") == "okai"){
+					setTimeout(function(){
+						// Show progress
+						createDialog("info", chrome.i18n.getMessage("index_table_"+action+"_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+						// Add loading-Indicator
+						$('.'+action).addClass('og-active');
+						// Start the worker via background-script
+						chrome.runtime.sendMessage({
+							action: 'start',
+		                    status: 'activate',
+		                    sender: ['index',''],
+		                    target: ['webworker',''],
+		                    process: action,
+		                    message: '',
+		                    percentage: 0,
+		                    parameters: []
+						});
+					}, 500);
+				}
+			});
+			break;
 
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				setTimeout(function(){
-					// Show progress
-					createDialog("info", chrome.i18n.getMessage("index_table_owend_badges_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
-					// Add loading-Indicator
-					$('.owned-badges').addClass('og-active');
-					// Start the worker via background-script
-					chrome.runtime.sendMessage({greeting: 'getDataOfOwnedBadges'},function(response){
-						if(response == 'done'){
-							// remove loading-Indicator
-							$('.owned-badges').removeClass('og-active');
-							// Close Dialog which holds the progress-bar
-							// wait 5s so the user can read the last message
-							setTimeout(function(){
-								$("#dialog").ejDialog("close");
-							}, 5000);
-							// Reload table
-							var grid = $('#db_frontend_content').ejGrid('instance');
-							idb.fillGrid(datatable).done(function(data){
-								grid.dataSource(data);
-							});
-						}
-					});
-				}, 500);
-			}
-		});
-
-	} else if(action == 'users-badges'){
-
-		createDialog("info", chrome.i18n.getMessage("index_table_get_user_badges"), chrome.i18n.getMessage("index_table_get_owend_badges_msg"), 2);
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				setTimeout(function(){
-					// Show progress
-					createDialog("info", chrome.i18n.getMessage("index_table_owend_badges_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
-					// Add loading-Indicator
-					$('.users-badges').addClass('og-active');
-					// Start the worker via background-script
-					chrome.runtime.sendMessage({greeting: 'getDataOfUsersBadges'},function(response){
-						if(response == 'done'){
-							// remove loading-Indicator
-							$('.users-badges').removeClass('og-active');
-							// Close Dialog which holds the progress-bar
-							// wait 5s so the user can read the last message
-							setTimeout(function(){
-								$("#dialog").ejDialog("close");
-							}, 5000);
-							// Reload table
-							var grid = $('#db_frontend_content').ejGrid('instance');
-							idb.fillGrid(datatable).done(function(data){
-								grid.dataSource(data);
-							});
-						}
-					});
-				}, 500);
-			}
-		});
-
-	} else if(action == 'steam-badges'){
-
-		createDialog("info", chrome.i18n.getMessage("index_table_get_steam_badges"), chrome.i18n.getMessage("index_table_get_owend_badges_msg"), 2);
-		$("#okai").on("click", function() {
-			if($(this).attr("id") == "okai"){
-				setTimeout(function(){
-					// Show progress
-					createDialog("info", chrome.i18n.getMessage("index_table_owend_badges_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
-					// Add loading-Indicator
-					$('.steam-badges').addClass('og-active');
-					// Start the worker via background-script
-					chrome.runtime.sendMessage({greeting: 'getDataOfSteamBadges'},function(response){
-						if(response == 'done'){
-							// remove loading-Indicator
-							$('.steam-badges').removeClass('og-active');
-							// Close Dialog which holds the progress-bar
-							// wait 5s so the user can read the last message
-							setTimeout(function(){
-								$("#dialog").ejDialog("close");
-							}, 5000);
-							// Reload table
-							var grid = $('#db_frontend_content').ejGrid('instance');
-							idb.fillGrid(datatable).done(function(data){
-								grid.dataSource(data);
-							});
-						}
-					});
-				}, 500);
-			}
-		});
-
+		default: console.log("action is not implemented (yet)");
 	}
 }

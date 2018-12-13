@@ -31,6 +31,27 @@ for(var i=1;i<keys; i++){
 console.log("Bots: "+arr3.join(", ")); // Bots
 console.log("Main: "+arr4.join(", ")); // Main
 
+
+// DIG - get all keys within up to price X
+var table   = $('#TableKeys tbody tr'),
+    len     = table.length,
+    ele     = 0,
+    cnt     = 0, allcnt = 0,
+    sum     = 0, all = 0,
+    i       = 1;
+
+for(;i<len;i++){
+    ele = $('#TableKeys tbody tr:eq('+i+')').data('price');
+    all++; allcnt+=ele;
+
+    if(ele <= 5){
+        sum++;
+        cnt += ele; 
+    }
+}
+console.log(sum+' items cost '+cnt+' DIG points or '+(cnt/100)+' $\n'+all+' items cost '+allcnt+' DIG points or '+(allcnt/100)+' $');
+
+
 // Get visible Keys from GoGo-Bundle
 var rows = jQuery('fieldset table:eq(2) tbody tr'),
     cnt  = rows.length,

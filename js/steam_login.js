@@ -31,7 +31,7 @@ $(document).ready(function(){
 					$('#login_btn_signin button, #SteamLogin').click();
 
 					// Use Helper to wait until Auth-Window exists/is shown
-					$('.newmodal').waitUntilExists(function(){
+					$(document).arrive('.responsive_page #twofactorcode_entry', function(){
 						if($('.loginTwoFactorCodeModal').is(':visible')){
 							console.log('2FA needed');
 

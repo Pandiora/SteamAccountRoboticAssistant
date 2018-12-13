@@ -1,3 +1,5 @@
+// Imports
+
 // CONFIG
 /////////////////
 // Set up worker
@@ -25,16 +27,16 @@ chrome.runtime.onInstalled.addListener(function(details){
 
   // Set up alarms / cronjob-like tasks
   // ToDo: Alarm has to be set over 60s on release
-  chrome.alarms.create('booster-json',  { delayInMinutes: 0.02, periodInMinutes: 15.00 });
-  chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
+  //chrome.alarms.create('booster-json',  { delayInMinutes: 0.02, periodInMinutes: 15.00 });
+  //chrome.alarms.create('owned-games',   { delayInMinutes: 0.04, periodInMinutes: 60.00 });
   chrome.alarms.create('pending-trades',{ delayInMinutes: 15.06, periodInMinutes:  15.06 });
   // the higher delay is needed due to stalled connections
   chrome.alarms.create('notific-trades',{ delayInMinutes: 15.10, periodInMinutes: 15.10 });
 
   // Check for Alarms/Cronjobs
   chrome.alarms.onAlarm.addListener(function(alarm){
-    if(alarm.name == 'booster-json')  { getBoosterJSON();         } else
-    if(alarm.name == 'owned-games')   { getGameJSON();            } else
+    //if(alarm.name == 'booster-json')  { getBoosterJSON();         } else
+    //if(alarm.name == 'owned-games')   { getGameJSON();            } else
     if(alarm.name == 'notific-trades'){ getNotificationsTrades(); } else
     if(alarm.name == 'pending-trades'){
       idb.getMasterRecord().done(function(master){
@@ -644,6 +646,33 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     });
     // important - otherwise sendResponse throws an error
     return true;
+  } else if(message.target && message.target[0] == 'webworker'){
+
+    message.sender[1] = sender.tab.id;
+
+    worker.postMessage(message);
+    worker.onmessage = function(e){
+      var data = e.data;
+      console.log(data);
+
+      if(message.status === 'done'){
+        worker = new Worker('js/webworkers.js');
+      }
+
+      chrome.windows.getAll({populate:true},function(windows){
+        windows.forEach(function(window){
+          window.tabs.forEach(function(tab){
+            if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
+              chrome.tabs.sendMessage(tab.id, data);
+            } else {
+              console.log('Cannot find index.html! Is it opened?');
+            }
+          });
+        });
+      });
+    }
+    return true;
+
   } else if(message.greeting.indexOf('steamMachineAuth') >= 0){
 
     var steamMachine = message.greeting.toString().split(';')[0];
@@ -727,118 +756,6 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
     sendResponse(chrome.i18n.getMessage("background_item_was_accepted"));
     return false;
-
-  } else if(message.greeting == 'getDataOfOwnedGames'){
-
-    worker.postMessage('getBotGames');
-    worker.onmessage = function(e){
-      var data = e.data;
-      if(data.msg == 'OwnedGamesDone'){
-        worker = new Worker('js/webworkers.js');
-        sendResponse('done');
-      } else if(data.msg == 'UpdateProgress'){
-        chrome.windows.getAll({populate:true},function(windows){
-          windows.forEach(function(window){
-            window.tabs.forEach(function(tab){
-              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
-                chrome.tabs.sendMessage(tab.id,{
-                  greeting: "update-progress",
-                  percent: data.percentage,
-                  message: data.message
-                }, function(response){
-                  //console.log();
-                });
-              }
-            });
-          });
-        });
-      }
-    }
-    return true;
-
-  } else if(message.greeting == 'getDataOfOwnedBadges'){
-
-    worker.postMessage('getBotBadges');
-    worker.onmessage = function(e){
-      var data = e.data;
-      if(data.msg == 'OwnedBadgesDone'){
-        worker = new Worker('js/webworkers.js');
-        sendResponse('done');
-      } else if(data.msg == 'UpdateProgress'){
-        chrome.windows.getAll({populate:true},function(windows){
-          windows.forEach(function(window){
-            window.tabs.forEach(function(tab){
-              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
-                chrome.tabs.sendMessage(tab.id,{
-                  greeting: "update-progress",
-                  percent: data.percentage,
-                  message: data.message
-                }, function(response){
-                  //console.log();
-                });
-              }
-            });
-          });
-        });
-      }
-    }
-    return true;
-
-  } else if(message.greeting == 'getDataOfSteamBadges'){
-
-    worker.postMessage('getSteamBadges');
-    worker.onmessage = function(e){
-      var data = e.data;
-      if(data.msg == 'SteamBadgesDone'){
-        worker = new Worker('js/webworkers.js');
-        sendResponse('done');
-      } else if(data.msg == 'UpdateProgress'){
-        chrome.windows.getAll({populate:true},function(windows){
-          windows.forEach(function(window){
-            window.tabs.forEach(function(tab){
-              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
-                chrome.tabs.sendMessage(tab.id,{
-                  greeting: "update-progress",
-                  percent: data.percentage,
-                  message: data.message
-                }, function(response){
-                  //console.log();
-                });
-              }
-            });
-          });
-        });
-      }
-    }
-    return true;
-
-  } else if(message.greeting == 'getDataOfUsersBadges'){
-
-    worker.postMessage('getUsersBadges');
-    worker.onmessage = function(e){
-      var data = e.data;
-      if(data.msg == 'UsersBadgesDone'){
-        worker = new Worker('js/webworkers.js');
-        sendResponse('done');
-      } else if(data.msg == 'UpdateProgress'){
-        chrome.windows.getAll({populate:true},function(windows){
-          windows.forEach(function(window){
-            window.tabs.forEach(function(tab){
-              if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
-                chrome.tabs.sendMessage(tab.id,{
-                  greeting: "update-progress",
-                  percent: data.percentage,
-                  message: data.message
-                }, function(response){
-                  //console.log();
-                });
-              }
-            });
-          });
-        });
-      }
-    }
-    return true;
 
   } else if(message.greeting == 'sendGiftsBulk'){
 
@@ -1439,7 +1356,7 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
     idb.opendb().then(function(db){
       db.transaction('rw', 'steam_users', function(){
         db.steam_users.each(user => {
-          if(user.login_name == capitalizeFirstLetter(message.user) || user.login_name == message.user)
+          if(user.login_name == fun.capitalizeFirstLetter(message.user) || user.login_name == message.user)
           db.steam_users.update(user.id, {skip: 1});
         });
       }).then(function(){
@@ -1565,7 +1482,4 @@ chrome.browserAction.onClicked.addListener(function(tab){
   pinned: true
 });*/
 
-// 
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+//

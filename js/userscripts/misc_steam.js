@@ -89,8 +89,12 @@ function BulkBoosterUnpack(){
             },
             success: function(){
                 setTimeout(function(){ next(counter, maxLoops); }, 100);
+            },
+            error: function(){
+                setTimeout(function(){ next(counter, maxLoops); }, 100);           	
             }
         });
+
 	})(0, arr.length);
 }
 
