@@ -29,117 +29,12 @@ self.onmessage = (msg)=>{
   }
 }
 
-function getBotGames(message){
+async function getBotGames(message){
 
-  idb.opendb().then((db)=>{
+  const users = await idb.opendb().then((db)=>{
     db.transaction("r", db.steam_users, ()=>{
       db.steam_users.toArray().then((users)=>{
-
-        var master_entry    = $.grep(users, (e)=>{ return e.type == 'Master'; }),
-            master_api_key  = master_entry[0]['apikey'],
-            master_steamid  = master_entry[0]['steam_id'],
-            usermsg         = 'Getting Bot-Games',
-            usercnt         = users.length,
-            apparr          = [];
-
-        // We need a delayed loop to not spam the steam-servers
-        (function next(counter, maxLoops) {
-
-          // Finally start to insert data into table and stop iteration
-          // due to our timeouts we can´t implement this step into this transaction
-          if (counter++ >= maxLoops){
-            setTimeout(()=>{
-              self.postMessage({
-                msg: 'UpdateProgress', 
-                percentage: 99, 
-                message: 'Insert games into database.'
-              });
-              idb.bulkAdd('users_games', apparr);
-            }, 100);
-
-            return;
-          }
-
-          // Update our Progressbar (frontend)
-          self.postMessage({
-            msg: 'UpdateProgress', 
-            percentage: ((99/maxLoops)*counter), 
-            message: (usermsg+'('+counter+'/'+maxLoops+')')
-          });
-
-          // Get data of owned games for this user via steam-api
-          $.ajax({
-            url: 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/',
-            method: 'GET',
-            data: {
-              'key': master_api_key,
-              'steamid': users[counter-1].steam_id,
-              'include_appinfo': 1,
-              'format': 'json'
-            }, 
-            success: (appids)=>{
-
-              var username  = users[counter-1].username,
-                  steam_id  = users[counter-1].steam_id,
-                  created   = fun.dateToIso().res(), // current date
-                  appidarr  = [];
-
-              // We need to check for existence of the key if the ajax-request fails for some reason
-              appidarr = (appids.response.hasOwnProperty('games')) ? appids.response['games'] : [];
-
-              // On Master-Accounts get more detailed data (only first Master-Account is targeted)
-              // since multiple Master-Accounts are not supported - there is a 0 one could change ;)
-              if(master_steamid !== steam_id){
-                // add created objects to existing array of user-games
-                Array.prototype.push.apply(apparr, buildAppArr(username, created, appidarr, steam_id) );
-                setTimeout(()=>{ next(counter, maxLoops) }, 1000);
-              }
-
-              // spare unnecessary loops and match on already existing entries
-              compareArray(db, steam_id).then((e)=>{
-
-                // array should be updated now to represent the diff
-                appidarr = fun
-                .objKeysToArr(appidarr, 'appid')
-                .symDiff(e)
-                .wipeObjByKeyVal(appidarr, 'appid')
-                .res();
-
-                // tell conf amount of loops for progress-updater
-                message.parameters[0] = maxLoops+appidarr.length;
-
-                // to retrieve the detailed timestamps we need an active session for support-site
-                fun.getSession('support').then((s)=>{
-
-                  // set up config for Ajax-Calls
-                  var conf = {
-                      iterateValues: { appid: appidarr },
-                      fetchOptions: {
-                        params: { sessionid: s, wizard_ajax: 1 },
-                        url: 'https://help.steampowered.com/en/wizard/HelpWithGame/',
-                        format: 'json'
-                      },
-                      progress: message
-                  }
-
-                  // seems like there is no active session / user is not logged in
-                  if(!s) setTimeout(()=>{ next(counter, maxLoops); break; }, 1000);
-
-                  // the chained/mapped AJAX-Calls should return their promises and the filled object here
-                  fun.fetchChain(conf).then((s)=>{
-                    s.map((item, index)=>{
-                      var time  = (item) ? convResTime(s.html) : fun.dateToIso().res(),
-                          build = buildAppArr(username, time, conf.iterateValues.appid[index], steam_id);
-                      idb.bulkAdd('users_games', build);
-                    });
-                    // check if all entries got resolved/rejected
-                  });
-
-                });
-              });              
-            }
-          });
-        })(0, usercnt);
+        return users;
       });
     }).catch((err)=>{
       console.log(err);
@@ -148,6 +43,106 @@ function getBotGames(message){
       //console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Update: '+'%c Appids for all users added to "users_games"', '', 'background: silver; color: green; border-radius: 10%', '');
     });
   });
+
+  var master_entry    = $.grep(users, (e)=>{ return e.type == 'Master'; }),
+      master_api_key  = master_entry[0]['apikey'],
+      master_steamid  = master_entry[0]['steam_id'],
+      usermsg         = 'Getting Bot-Games',
+      usercnt         = users.length,
+      apparr          = [];
+
+  // We need a delayed loop to not spam the steam-servers
+  (async function next(counter, maxLoops){
+
+    // Finally start to insert data into table and stop iteration
+    // due to our timeouts we can´t implement this step into this transaction
+    if (counter++ >= maxLoops){
+      setTimeout(()=>{
+        self.postMessage({
+          msg: 'UpdateProgress', 
+          percentage: 99, 
+          message: 'Insert games into database.'
+        });
+        idb.bulkAdd('users_games', apparr);
+      }, 100);
+
+      return;
+    }
+
+    // Update our Progressbar (frontend)
+    self.postMessage({
+      msg: 'UpdateProgress', 
+      percentage: ((99/maxLoops)*counter), 
+      message: (usermsg+'('+counter+'/'+maxLoops+')')
+    });
+
+    // Get data of owned games for this user via steam-api
+    const confGames = {
+        iterateValues: { appid: appidarr },
+        fetchOptions: {
+          params: { key: master_api_key,steamid: users[counter-1].steam_id,include_appinfo: 1,format: 'json'},
+          url: 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/',
+          format: 'json'
+        }
+    }
+    const appids = await fun.fetchData(confGames);
+
+
+    var username  = users[counter-1].username,
+        steam_id  = users[counter-1].steam_id,
+        created   = fun.dateToIso(), // current date
+        appidarr  = [];
+
+    // We need to check for existence of the key if the ajax-request fails for some reason
+    appidarr = (appids.response.hasOwnProperty('games')) ? appids.response['games'] : [];
+
+    // On Master-Accounts get more detailed data (only first Master-Account is targeted)
+    // since multiple Master-Accounts are not supported - there is a 0 one could change ;)
+    if(master_steamid !== steam_id){
+      // add created objects to existing array of user-games
+      Array.prototype.push.apply(apparr, buildAppArr(username, created, appidarr, steam_id) );
+      setTimeout(()=>{ next(counter, maxLoops) }, 1000);
+    }
+
+    // spare unnecessary loops and match on already existing entries
+    const compared = await compareArray(db, steam_id);
+    let build = fun.objKeysToArr(appidarr, 'appid');
+        build = fun.symDiff(appidarr, compared);
+     appidarr = fun.wipeObjByKeyVal(build, appidarr, 'appid');
+    const session = await fun.getSession('support');
+
+    // seems like there is no active session / user is not logged in
+    if(!session) setTimeout(()=>{ next(counter, maxLoops); break; }, 1000);
+
+    const confTimes = {
+        iterateValues: { appid: appidarr },
+        fetchOptions: {
+          params: { sessionid: session, wizard_ajax: 1 },
+          url: 'https://help.steampowered.com/en/wizard/HelpWithGame/',
+          format: 'json'
+        }
+    }
+
+    const promises = fun.fetchChain(confTimes);
+    let timestamp,dbArr,result,results;
+
+    for(const item of promises){
+      result = await fun.fetchData(item);
+
+      time  = (item) ? convResTime(result.html) : fun.dateToIso(),
+      dbArr = buildAppArr(username, time, item.params.appid, steam_id);
+      idb.bulkAdd('users_games', dbArr);
+
+      console.log(result);
+      results.push(result);
+    }
+
+    // check if all entries got resolved/rejected
+    if(results.length !== appidarr.length){
+      console.log("Array mismatch");
+    } else { setTimeout(()=>{ next(counter, maxLoops) }, 1000); }
+        
+  })(0, usercnt);
 
 
 
@@ -161,7 +156,7 @@ function getBotGames(message){
           html = html.replace("&nbsp;-", ""),
           html = (html.length < 6) ? (html+", "+(new Date()).getFullYear().toString()) : html,
           html = html+' GMT', // fix 1 day offset
-          html = fun.dateToIso(html).res();
+          html = fun.dateToIso(html);
 
       return html;
   }
@@ -188,7 +183,7 @@ function getBotGames(message){
   function buildAppArr(username, added, appidarr, steam_id){
     console.log(appidarr);
     var arr     = [],
-        created = fun.dateToIso().res();
+        created = fun.dateToIso();
 
     // Push an entry into our array for every appid of this user
     // make sure to use the same timestamp everytime or detailed timestamp if user-account is Master
@@ -362,9 +357,12 @@ function getUsersBadges(){
 }
 
 
-function addMissingBadgesEntries(arr, post){
+function addMissingBadgesEntries(obj){
   // post=true is used for users_badges action on frontend to fetch users badges
   // post=false is used to distribute cards to bots
+  console.log(obj);
+  const arr = obj.parameters[0];
+  const post = obj.parameters[1] || 0;
   var len = arr.length;
 
   (function next(counter, maxLoops) {
@@ -404,7 +402,7 @@ function getSteamBadges(){
 
   // array with all games having trading-cards
   var arr = [],
-  created = fun.dateToIso().res(); // current datetime
+  created = fun.dateToIso(); // current datetime
 
   // announce process-start
   self.postMessage({msg: 'UpdateProgress', percentage: 0, message: 'Fetching Data ...'});

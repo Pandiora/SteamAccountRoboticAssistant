@@ -81,6 +81,7 @@ const fun = (() => {
         // main handler for requests
         const fetchRetry = async(fetchUrl, fetchOptions, n) => {
             return Promise.race([
+
                 (async() => {
                     const r = await fetch(fetchUrl, fetchOptions);
                     if (format === 'json') {
@@ -90,10 +91,12 @@ const fun = (() => {
                         return r.text();
                     }
                 })(),
+
                 (async() => {
                     await sleep(timeout);
                     throw new Error('timeout');
                 })(),
+
             ]).catch(async(err) => {
 
                 // Abort previous request
@@ -123,7 +126,7 @@ const fun = (() => {
     };
 
 
-    const fetchChain = async(obj) => {
+    const fetchChain = (obj) => {
 
 
         // ToDo: implement self check - obsolete?
@@ -140,9 +143,7 @@ const fun = (() => {
         });
 
         // store fetch-calls promises in array
-        const promises = tempArray.map((item, index)=>{
-            return fetchData(item);
-        });
+
 
         /*return { results } = tempArray.reduce(
           async (accPromise, item) => {
@@ -159,7 +160,7 @@ const fun = (() => {
         );*/
 
         // final return of results
-        return promises;
+        return tempArray;
     };
 
 
@@ -249,6 +250,7 @@ const fun = (() => {
         capFirstLetter,
         consoleRgb,
         dateToIso,
+        fetchData,
         fetchChain,
         getSession,
         objKeysToArr,

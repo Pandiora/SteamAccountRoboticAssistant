@@ -652,23 +652,26 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
     worker.postMessage(message);
     worker.onmessage = function(e){
-      var data = e.data;
+      const data = e.data;
+      let ret = false;
       console.log(data);
 
       if(message.status === 'done'){
         worker = new Worker('js/webworkers.js');
       }
 
+      // ToDo: Update all of these to spare unnecessary loops
       chrome.windows.getAll({populate:true},function(windows){
-        windows.forEach(function(window){
-          window.tabs.forEach(function(tab){
+        windows.some(function(window){
+          window.tabs.some(function(tab){
             if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
               chrome.tabs.sendMessage(tab.id, data);
-            } else {
-              console.log('Cannot find index.html! Is it opened?');
+              return ret=1;
             }
+            return ret;
           });
         });
+        if(!ret) console.log('Cannot find index.html! Is it opened?');
       });
     }
     return true;

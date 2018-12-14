@@ -75,10 +75,22 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
         }
       }).then(function(){
 
+        console.log(gamesNotFound);
+
         if(gamesNotFound.length > 0){
           chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 15, message: "Get missing data" });
           // we need to find missing information for badges
-          worker.postMessage({msg: 'getMissingBadgesEntries', arr: gamesNotFound});
+          worker.postMessage({
+            action: 'start',
+            status: 'active',
+            sender: [],
+            target: 'webworker',
+            process: 'addMissingBadgesEntries',
+            message: '',
+            percentage: '0',
+            parameters: [gamesNotFound],
+          });
+
           worker.onmessage = function(e){
             var data = e.data;
             if(data.msg == 'SteamBadgesDone'){
@@ -192,6 +204,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
         // finally prepare our array and send cards to bots
         chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 35, message: "Prepare to send trades ..." });
         var cleaned = cleanDelArr(tempBots);
+
         sendTrades(sender, tempBots, sessionid, 35);
       })
     });
@@ -203,7 +216,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
 
     db.transaction("r", ['steam_users', 'users_badges'], function(){
       db.steam_users.where('purchased').equals(1).each(function(users){
-        bots.push({
+        if(current_user !== users.steam_id) bots.push({
           steam_id: users.steam_id,
           persona: users.login_name,
           owned_appid: [],

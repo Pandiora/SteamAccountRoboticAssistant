@@ -286,7 +286,7 @@ function processConfirmation(operation, items) {
 								});
 							} else {
 								rcnt = 0;
-
+								console.log('Trade-Confirmation failed - reason unknown');
 								// Start next iteration
 								setTimeout(function(){
 									next(counter, maxLoops);
