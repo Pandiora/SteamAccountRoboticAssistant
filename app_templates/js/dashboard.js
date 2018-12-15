@@ -1,5 +1,5 @@
-getMasterGamesWidget();
 getAccountLevelsWidget();
+getMasterGamesWidget();
 
 $('.dropdown-menu').on('click', '.masterGamesTime', function(){
 
@@ -39,7 +39,7 @@ function getAccountLevelsWidget(){
 
 	idb.getAccountLevelsWidget().done(function(res){
 		$.get('app_templates/js/dashboard.widget.scheme.json').then((response)=>{
-console.log(res);
+
 			var ctx 						= $('#accountLevelChart').get(0).getContext('2d');
 			var data 						= response[1];
 				data.data.labels 			= res.labels;
@@ -60,21 +60,8 @@ console.log(res);
 		            return legendHtml.join("");
 		        };
 
-
-/*<ul class=\"chart-legend\">
-	<% for (var i=0; i<segments.length; i++){%>
-		<li>
-			<span class=\"fa fa-circle-o\" style=\"color:<%=segments[i].fillColor%>;\"></span>
-			<%if(segments[i].label){%><%=segments[i].label%><%}%>
-		</li>
-	<%}%>
-</ul>*/
-
-console.log(data);
 	    		pieChart 	= new Chart(ctx, data);
-$('#js-legend').html(pieChart.generateLegend());
-			//$('#js-legend').append(pieChart.generateLegend());
-
+				$('#js-legend').html(pieChart.generateLegend());
 		});
 	});
 }

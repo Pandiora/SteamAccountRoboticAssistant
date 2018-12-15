@@ -56,7 +56,7 @@ const fun = (() => {
 
 
     const fetchData = async(obj) => {
-
+        //console.log(obj);
         // add switches to make configs more slim
         const timeout = obj.timeout || 10000;
         const retries = obj.retries || 5;
@@ -128,9 +128,6 @@ const fun = (() => {
 
     const fetchChain = (obj) => {
 
-
-        // ToDo: implement self check - obsolete?
-
         const iterateProps = Object.keys(obj.iterateValues);
 
         // Prepare Data-Objects and resolve dynamic vars
@@ -142,23 +139,6 @@ const fun = (() => {
             return tempObject;
         });
 
-        // store fetch-calls promises in array
-
-
-        /*return { results } = tempArray.reduce(
-          async (accPromise, item) => {
-            const acc = await accPromise;
-            const origin = new URL(item.url).origin;
-            const r = acc.retries[origin];
-            const { result, retries } = await fetchData(item);
-            return {
-              results: [...acc.results, result],
-              retries: { ...acc.retries, [origin]: retries },
-            };
-          },
-          { results: [], retries: {}}
-        );*/
-
         // final return of results
         return tempArray;
     };
@@ -168,15 +148,16 @@ const fun = (() => {
 
         // supported sites are:
         // [community, store, support]
-        let url;
+        let url, result;
 
         if (site === 'store') url = 'https://store.steampowered.com/';
         if (site === 'support') url = 'https://help.steampowered.com/';
         if (site === 'community') url = 'https://steamcommunity.com/';
 
-        await fetchData({
-            url,
-        }, {}).then(res => /g_sessionIDs=s"(.*)";/g.exec(res)[1] || 0);
+        result = await fetchData({url: url, format: 'text'}, {});
+        result = /g_sessionID\s=\s"(.*)";/g.exec(result);
+        result = result[1] || 0;
+        return result;
     };
 
 

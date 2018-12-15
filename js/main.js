@@ -88,6 +88,7 @@ $(document).on("ready", function() {
 // Add Listeners for communication with background-page
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
 	if(sender.id == chrome.runtime.id && !("url" in sender)){
+		console.log(message);
 		if(message.greeting == "notifications-trades"){
 
 			addNotificationsTrades();
@@ -104,7 +105,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
 				updateNotificationCnt();
 			});
 
-		} else if(message.sender == "webworker" && message.action == "updateProgress"){
+		} else if(message.action == "UpdateProgress"){
 
 			updateProgress(message.percentage, message.message);
 			if(message.status === 'done'){
@@ -120,7 +121,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
 			}
 
 		} else {
-			console.log(chrome.i18n.getMessage("index_listener_malformed")+message.greeting);
+			console.log(chrome.i18n.getMessage("index_listener_malformed"), message);
 		}
 	}
 });

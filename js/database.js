@@ -272,6 +272,8 @@ idb = {
 
 	getMasterGamesWidget: function(count, scale){
 
+		var startTime = performance.now();
+
 		// Set our language to chrome-locale
 	   	moment.locale(navigator.language);
 
@@ -299,15 +301,17 @@ idb = {
 		idb.getMasterRecord().done(function(user){
 		  idb.opendb().then(function(db){
 			db.transaction('r', 'users_games', function(){
-				db.users_games.where('steam_id').equals(user.steam_id).each(function(date){
+				db.users_games.where('steam_id').equals(user.steam_id).toArray(function(date){
 
-					// Find dates which are part of the past xx [scale] - search by [scale][2]
-					var d = date.added  || date.created,
-						d = d.substr(0, cvn[scale][2]);
-					for(var j=count; j--;){ if(arr[j].dbdate == d) arr[j].count += 1; }
+					date.map(item => {
+						// Find dates which are part of the past xx [scale] - search by [scale][2]
+						var d = item.added  || item.created,
+							d = d.substr(0, cvn[scale][2]);
+						for(var j=count; j--;){ if(arr[j].dbdate == d) arr[j].count += 1; }
+					});
 
 		        }).then(function(){
-
+		        	console.log(performance.now()-startTime);
 		        	// For better handling, write arrays into obj for frontend
 		        	for(var k=0, l=count; k<l;k++){
 		        		obj.label.push(arr[k].label);
@@ -323,6 +327,7 @@ idb = {
 		    	console.log(err);
 		    }).finally(function(){
 		    	db.close();
+		    	console.log(performance.now()-startTime);
 		    });
 		  });
 		});
