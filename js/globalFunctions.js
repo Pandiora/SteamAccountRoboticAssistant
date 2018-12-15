@@ -1,3 +1,5 @@
+// ToDo: Add global variables (source)
+
 const fun = (() => {
 
 

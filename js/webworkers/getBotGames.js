@@ -91,15 +91,12 @@ async function getBotGames(message){
     // Retrieve and insert data for Master
     for(const [i, item] of promises.entries()){
 
-      const titleRes  = /t\s-\s(.*)/.exec("Steam Support - Red Orchestra: Ostfront 41-45")[1];
-      const dbObj     = [{
-        appid: item.params.appid,
-        name: titleRes,
-      }];
-
       const result  = await fun.fetchData(item);
       let   time    = (item) ? convResTime(result.html) : fun.dateToIso();
-      let   dbArr   = buildAppArr(username, time, dbObj, steam_id);
+      let   dbArr   = buildAppArr(username, time, [{
+        appid: item.params.appid,
+        name: /t\s-\s(.*)/.exec(result.title)[1],
+      }], steam_id);
 
       // Update Progress
       self.postMessage(Object.assign(message,{
