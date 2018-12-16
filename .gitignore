@@ -1,4 +1,2 @@
-.old
-.knowledge-base
-.configs
-node_modules
+.*
+!/.gitignore

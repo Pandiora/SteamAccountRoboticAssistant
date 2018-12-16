@@ -29,7 +29,6 @@ function loadDatabaseContent(eid){
 			<script type='text/javascript' src='plugins/globalize/jquery.globalize.min.js'></script>
 			<script type='text/javascript' src='plugins/validate/jquery.validate.min.js'></script>
 			<script type='text/javascript' src='plugins/validate/jquery.validate.unobtrusive.min.js'></script>
-			<script type='text/javascript' src='plugins/easing/jquery.easing.1.3.min.js'></script>
 			<script type='text/javascript' src='plugins/render/jsrender.min.js'></script>
 			<!-- directly add styles, to avoid flashing containers when async loading -->
 			<div class='content' style='background-color: #212121; height: calc(100vh - 50px); padding: 0;'>
@@ -285,6 +284,6 @@ function onToolBarClick(sender, args) {
 			});
 			break;
 
-		default: console.log("action is not implemented (yet)");
+		default: console.log(`Action ${action} is not implemented (yet)`);
 	}
 }

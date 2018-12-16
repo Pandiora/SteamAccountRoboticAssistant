@@ -16,15 +16,9 @@ body {
 	linear-gradient(270deg, transparent 0%, transparent 50%, #462160 50%)100px 200px;
 	background-size: 200px 200px;
 }
-@font-face {
-    font-family: 'HedleyNew-Medium';
-    src: url('/plugins/fonts/HedleyNew-Medium.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
+
 * {
 box-sizing: border-box;
-font-family: 'HedleyNew-Medium';
 color: white;
 margin:0;padding:0;
 -webkit-touch-callout: none;
