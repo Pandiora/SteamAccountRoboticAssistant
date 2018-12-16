@@ -272,8 +272,6 @@ idb = {
 
 	getMasterGamesWidget: function(count, scale){
 
-		var startTime = performance.now();
-
 		// Set our language to chrome-locale
 	   	moment.locale(navigator.language);
 
@@ -311,7 +309,7 @@ idb = {
 					});
 
 		        }).then(function(){
-		        	console.log(performance.now()-startTime);
+		        	
 		        	// For better handling, write arrays into obj for frontend
 		        	for(var k=0, l=count; k<l;k++){
 		        		obj.label.push(arr[k].label);
@@ -327,7 +325,6 @@ idb = {
 		    	console.log(err);
 		    }).finally(function(){
 		    	db.close();
-		    	console.log(performance.now()-startTime);
 		    });
 		  });
 		});
@@ -343,27 +340,30 @@ idb = {
 
 		idb.opendb().then(function(db){
 		    db.transaction('r', 'steam_users', function(){
-		        db.steam_users.each(function(user){
+		        db.steam_users.toArray(function(users){
 
-					activated = user.purchased;
-					color = randomColor({luminosity: 'dark', count: 1});
+					color = randomColor({luminosity: 'bright', format: 'rgba', alpha: 0.5, count: users.length});
 
-					if(!obj[user.level]){
-						obj[user.level] = {
-							'labels': 'Level '+user.level,
-							'data': activated,
-							'backgroundColor': color
-					        /*'value': 1,
-					        'color': color,
-					        'highlight': color,
-					        'label': 'Level '+user.level,
-							'activated': activated*/
-		                };
-		            } else {
-		            	obj[user.level]['data'] += activated;
-						/*obj[user.level]['value'] += 1,
-						obj[user.level]['activated'] += activated;*/
-		            }
+		        	users.map((user, i) => {
+						//activated = user.purchased;
+
+						if(!obj[user.level]){
+							obj[user.level] = {
+								'labels': `Level ${user.level}`,
+								'data': user.active,
+								'backgroundColor': color[i]
+						        /*'value': 1,
+						        'color': color,
+						        'highlight': color,
+						        'label': 'Level '+user.level,
+								'activated': activated*/
+			                };
+			            } else {
+			            	obj[user.level]['data'] += user.active;
+							/*obj[user.level]['value'] += 1,
+							obj[user.level]['activated'] += activated;*/
+			            }
+		        	})
 
 		        }).then(function(){
 

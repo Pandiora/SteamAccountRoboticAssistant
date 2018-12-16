@@ -18,7 +18,13 @@ document.appendChild = function(child) {return child;};
 
 
 // Load Dependencies
-importScripts('/plugins/jQuery/jquery-2.2.3.min.js', '/plugins/Dexie/Dexie.min.js', 'database.js', 'globalFunctions.js');
+importScripts(
+	'/plugins/jQuery/jquery-2.2.3.min.js', 
+	'/plugins/Dexie/Dexie.min.js', 
+	'database.js', 
+	'globalFunctions.js', 
+	'steamFunctions.js'
+);
 
 // Run function based on the message the worker receives
 self.onmessage = (msg)=>{

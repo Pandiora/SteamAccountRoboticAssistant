@@ -114,7 +114,7 @@ const fun = (() => {
 
                 source.origin = fetchUrl.origin;
                 source.params = fetchUrl.search;
-                source.retries = n - 1;
+                source.retries = n-1;
 
                 await sleep(delay);
                 await fetchRetry(fetchUrl, modOptions(options), n - 1);
@@ -146,21 +146,19 @@ const fun = (() => {
     };
 
 
-    const getSession = async(site) => {
-
-        // supported sites are:
-        // [community, store, support]
-        let url, result;
-
-        if (site === 'store') url = 'https://store.steampowered.com/';
-        if (site === 'support') url = 'https://help.steampowered.com/';
-        if (site === 'community') url = 'https://steamcommunity.com/';
-
-        result = await fetchData({url: url, format: 'text'}, {});
-        result = /g_sessionID\s=\s"(.*)";/g.exec(result);
-        result = result[1] || 0;
-        return result;
-    };
+    const waitForEl = (selector, maxTimes = false, callback) => {
+        // wait for selector until it exists and pass it back
+        if (jQuery(selector).length) {
+            callback(selector);
+        } else {
+            if (maxTimes === false || maxTimes > 0) {
+                (maxTimes != false) && maxTimes-- ;
+                setTimeout(function () {
+                    waitForEl(selector, maxTimes, callback);
+                }, 100);
+            }
+        }
+    };    
 
 
     const objKeysToArr = (array, keyname) => {
@@ -235,9 +233,9 @@ const fun = (() => {
         dateToIso,
         fetchData,
         fetchChain,
-        getSession,
         objKeysToArr,
         symDiff,
+        waitForEl,
         wipeObjByKeyVal,
     };
 })();

@@ -34,9 +34,15 @@
 		"options": {
 			"legend": false,
 			"legendCallback": "",
-			"tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %> account(s)"
-		}
-	}
+			"tooltips": {
+				"enabled": true,
+				"callbacks": {
+					"label": "",
+					"title": ""
+				}
+			}
+        }
+    }
 
 
 

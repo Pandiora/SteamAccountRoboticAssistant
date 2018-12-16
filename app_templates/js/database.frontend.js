@@ -64,6 +64,7 @@ function loadDatabaseContent(eid){
 								create: "create"
 							});
 						});
+						scrollHeaders(); // fix the scroll-bug
 					</script>
 				</div>
 			</div>
@@ -177,11 +178,13 @@ $(document).ready(function(){
 // the Syncfusion-Scrollbar has weird bugs, bad performance
 // and makes resizing problematic > just use ::webkit
 // and scroll the gridheader with its content
-$(document).arrive('#db_frontend_content .e-gridcontent', { onceOnly: true }, function(){
-	$(this).scroll(function() {
-		$('#db_frontend_content .e-gridheader').scrollLeft($(this).scrollLeft());
+function scrollHeaders(){
+	fun.waitForEl('#db_frontend_content .e-gridcontent', 10, function(that){
+		$(that).scroll(function() {
+			$('#db_frontend_content .e-gridheader').scrollLeft($(that).scrollLeft());
+		});
 	});
-});
+}
 function actionBegin(args) { window.userScrollLeft = $('#db_frontend_content .e-gridcontent').scrollLeft(); }
 function actionComplete(args) { $('#db_frontend_content .e-gridcontent').scrollLeft(window.userScrollLeft); }
 

@@ -125,3 +125,21 @@ for(var i=0;i<25;i++){
 }
 
 console.log(arr);
+
+
+// check for added licenses for specific date (date-string style can be different depending on your language)
+async function checkLicenses(date){
+	const result = await fun.fetchData({url: 'https://store.steampowered.com/account/licenses/'});
+    let licenses = '';
+	$(result).find('tr td.license_date_col').map((index,item) => { 
+        if(jQuery(item).text() === date){
+            licenses += `
+Count: ${index+1}
+Added: ${jQuery(item).text().replace(/\s+/g, ' ')}
+Title: ${jQuery(item).next().text().replace(/\s+/g, ' ')}\n
+			`;
+        }
+    })
+	console.log(licenses);
+}
+checkLicenses("15. Dez. 2018");

@@ -66,17 +66,22 @@ async function getBotGames(message){
        since multiple Master-Accounts are not supported
     ***********************************************************************************/
     const compared  = await compareArray(steam_id);
-    const session   = await fun.getSession('support');
+    const session   = await stm.getSession('support', steam_id);
     let   results   = [];
 
-    if(!compared){ // only if there are entries in db
+    if(compared.length > 0){ // only if there are entries in db
       let build     = fun.objKeysToArr(appidarr, 'appid');
-          build     = fun.symDiff(appidarr, compared);
+          build     = fun.symDiff(build, compared);
           appidarr  = fun.wipeObjByKeyVal(appidarr, build, 'appid');
     }
 
     // no user logged in or no session + no appids to iterate
-    if(!session || appidarr.length<=0) continue;
+    // this can happen even if one is logged in on Steam -> relogin
+    if(!session || appidarr.length<=0){
+      fun.consoleRgb('warn', `Your account isn't logged in on support site
+      or there are no more games to get detailed timestamps for. Aborting
+      getting data for Master.`, 1); continue; 
+    }
 
     // turn each iterateValue into object
     const promises = fun.fetchChain({
@@ -125,7 +130,7 @@ async function getBotGames(message){
       let html = response;
           html = (html.match(reg1) && html.match(reg1)[1]) ? reg1.exec(html.match(reg1)[1])[1] : reg2.exec(html.match(reg2)[0])[1],
           html = html.replace("&nbsp;-", ""),
-          html = (html.length < 6) ? (html+", "+(new Date()).getFullYear().toString()) : html,
+          html = (html.length <= 6) ? (html+", "+(new Date()).getFullYear().toString()) : html,
           html = html+' GMT', // fix 1 day offset
           html = fun.dateToIso(html);
 

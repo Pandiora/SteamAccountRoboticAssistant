@@ -40,28 +40,31 @@ function getAccountLevelsWidget(){
 	idb.getAccountLevelsWidget().done(function(res){
 		$.get('app_templates/js/dashboard.widget.scheme.json').then((response)=>{
 
-			var ctx 						= $('#accountLevelChart').get(0).getContext('2d');
-			var data 						= response[1];
-				data.data.labels 			= res.labels;
-				data.data.datasets[0].data 	= res.data;
-				data.data.datasets[0].backgroundColor = res.backgroundColor,
-				data.options.legendCallback = function(data) {
-		            var legendHtml = [];
-		            legendHtml.push('<ul class="chart-legend">');
-		            var item = data.data.datasets[0];
-		            for (var i=0; i < item.data.length; i++) {
-		                legendHtml.push('<li>');
-		                legendHtml.push('<span style="width: 10px;background-color:' + item.backgroundColor[i] +'"></span>');
-   		                legendHtml.push('<span>'+data.data.labels[i]+'</span>');
-		                legendHtml.push('</li>');
-		            }
+			const ctx 					= $('#accountLevelChart').get(0).getContext('2d');
+			let data 					= response[1];
+			let item 					= data.data.datasets[0];
+				item.data 				= res.data;
+			let legendHtml 				= '';
+				data.data.labels 		= res.labels;
+				item.backgroundColor 	= res.backgroundColor;
+				item.borderColor 		= "rgba(34,36,42,1)";
 
-		            legendHtml.push('</ul>');
-		            return legendHtml.join("");
-		        };
+			data.options.legendCallback = (data)=>{
+	            for (var i=0; i < item.data.length; i++) {
+	            	legendHtml +=`<li><span style="width:10px;background-color:
+	            	${item.backgroundColor[i]}"></span><span>${data.data.labels[i]}</span></li>`;
+	            }
+	            return `<ul class="chart-legend">${legendHtml}</ul>`;
+	        };
+	        data.options.tooltips.callbacks.title = (tooltipItem, data)=>{
+				return data['labels'][tooltipItem[0]['index']];
+			}
+	        data.options.tooltips.callbacks.label = (tooltipItem, data)=>{ 
+	        	return ` ${data['datasets'][0]['data'][tooltipItem['index']]} account(s)`;
+	        };
 
-	    		pieChart 	= new Chart(ctx, data);
-				$('#js-legend').html(pieChart.generateLegend());
+    		pieChart = new Chart(ctx, data);
+			$('#js-legend').html(pieChart.generateLegend());
 		});
 	});
 }

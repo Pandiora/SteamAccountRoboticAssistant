@@ -18,6 +18,7 @@
 			"js/acceptTrades.js",
 			"js/database.js",
 			"js/globalFunctions.js",
+			"js/steamFunctions.js",
 			"js/mobileAuth.js",
 			"js/mod_headers.js",
 			"js/distributeSetsToBots.js",
