@@ -45,6 +45,7 @@ function downloadManifest(){
 ///////////////////////////////////////////////////////////////////////
 
 // Fix for warnings about sync requests (we are loading scripts inside html-templates)
+// ToDo: remove when using fetch - since it shouldn't error out
 $.ajaxPrefilter(function( options, original_Options, jqXHR ){ options.async = true; });
 
 /*************************************************

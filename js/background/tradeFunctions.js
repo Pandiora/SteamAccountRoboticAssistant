@@ -105,3 +105,75 @@ function getTradeOffers(masterid){
 		}
 	});
 }
+
+function sendTrades(sender, arr, sessionid, percentage){
+
+  /* awaiting array with at least following structure
+  [{ assets: [], steam_id: <partner_steamid> }, {}, ...]
+  */
+
+  (function next(counter, maxLoops){
+
+    if (counter++ >= maxLoops){
+      // Tell frontend we're done
+      setTimeout(function(){
+        chrome.tabs.sendMessage(sender.tab.id,{
+          msg: 'UpdateProgress',
+          percentage: 100,
+          message: "All trades sent"
+        });
+        // and last but not least get our our trades for 2fa
+        getNotificationsTrades();
+
+      }, 100);
+      return;
+    }
+
+    // Update the progressbar at frontend
+    chrome.tabs.sendMessage(sender.tab.id,{
+      msg: 'UpdateProgress',
+      percentage: (((99-35)/maxLoops)*counter),
+      message: "Sending trade to "+arr[counter-1].persona+" ..."
+    });
+
+    // console.log(sessionid);
+    // Prepare the important json-part related to tradeoffer-id's
+    var json = {
+      "newversion": true,
+      "version": 6,
+      "me": { "assets": [],"currency": [],"ready": false },
+      "them": { "assets": [],"currency": [],"ready": false }
+    };
+
+    var assets = arr[counter-1].assets,
+        len = assets.length;
+
+    // Generate JSON for all cards
+    for(var i=0;i<len;i++){
+      json['me']['assets'].push({
+        "appid": "753",
+        "contextid": "6",
+        "amount": 1,
+        "assetid": assets[i]
+      });
+    }
+
+    // Finally send our trade
+    $.ajax({
+      url: 'https://steamcommunity.com/tradeoffer/new/send',
+      type: 'POST',
+      data: {
+        'sessionid': sessionid,
+        'serverid': '1',
+        'partner': arr[counter-1].steam_id,
+        'tradeoffermessage': '',
+        'json_tradeoffer': JSON.stringify(json),
+        'captcha': '',
+        'trade_offer_create_params': {}
+      },
+      success: function(data){
+        setTimeout(function(){ next(counter, maxLoops) }, 100);
+      }
+    });
+  })(0, arr.length);
+}

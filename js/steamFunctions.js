@@ -64,7 +64,25 @@ const stm = (() => {
     };
 
 
+    const getInventory = async() => {
+
+        // some requests need the correct inventory-link and since we're modifying
+        // the headers for market-listings steam would throw an error if we won't set
+        // the right origin-url
+        const  url = 'https://steamcommunity.com/my/inventory/',
+               alt = 'https://steamcommunity.com';
+        let regex  = /f="(.*)"\sclass="user/g;
+        let result = await fun.fetchData({url:url}, {});
+
+        // ensure variable is set
+        result = regex.exec(result) || null;
+        result = (result) ? result[1] : alt;
+        return result;
+    };
+
+
 	return {
-		getSession
+		getSession,
+        getInventory
 	};
 })();

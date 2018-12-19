@@ -23,31 +23,32 @@ function modConfirmationHeaders(details){
 
 }
 
+function modLoginHeaders(details){
 
-function modGiftBulkHeaders(details){
+  /* E X A M P L E
+    Host: store.steampowered.com
+    Origin: https://store.steampowered.com
+    Referrer: https://store.steampowered.com/login/
+  */
+  const headers          = details.requestHeaders;
+  const seturl           = /(.*\.com)\//.exec(details.url)[1];
+  let   blockingResponse = {};
 
-  // Add Origin and Referer to emulate site-request
-  /////////////////////////////////////////////////
-  var headers = details.requestHeaders,
-  blockingResponse = {};
-
-  for( var i = 0, l = headers.length; i < l; ++i ) {
+  for(let i = 0, l = headers.length; i < l; ++i ) {
     if(headers[i].name == 'Origin'){
-      headers[i].value = 'https://store.steampowered.com';
+      headers[i].value = seturl;
     } else if(headers[i].name == 'Accept'){
       headers[i].value = 'text/javascript, text/html, application/xml, text/xml, */*';
     }
   }
 
-  headers.push({name: 'Referer', value: 'https://store.steampowered.com/checkout/sendgift/'+bulk_gid});
-  headers.push({name: 'X-Prototype-Version', value: '1.7'});
+  headers.push({name: 'Referer', value: `${seturl}/login/?redir=&redir_ssl=1`});
   headers.push({name: 'X-Requested-With', value: 'XMLHttpRequest'});
 
   blockingResponse.requestHeaders = headers;
   return blockingResponse;
 
 }
-
 
 //
 // Replace Header-Origin and -Referer to accept trades automatically

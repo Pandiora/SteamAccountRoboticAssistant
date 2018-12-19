@@ -13,15 +13,14 @@ document.addEventListener("animationstart", function(e) {
       <div class="names-container"></div> \
       <div> \
         <select id="login_tasks"> \
-          <option id="reset_skip_login">'+chrome.i18n.getMessage("steam_login_input_reset_skip")+'</option> \
-          <option id="reset_community_skip">'+chrome.i18n.getMessage("steam_login_input_skip_community")+'</option> \
-          <option id="set_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_skip_purchase")+'</option> \
-          <option id="set_non_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_skip_nonpurchase")+'</option> \
-          <option id="set_under_eight_purchased_skip">'+chrome.i18n.getMessage("steam_login_input_under_eight")+'</option> \
-          <option id="start_discovery_queue">'+chrome.i18n.getMessage("steam_login_input_disc_queue")+'</option> \
-          <option id="adding_free_license">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
-          <option id="craft_sticker_badge">Craft Sticker-Badge</option> \
-          <option id="automated_nomination">Automated Nomination</option> \
+          <option id="loginSkip">'+chrome.i18n.getMessage("steam_login_input_reset_skip")+'</option> \
+          <option id="communitySkip">'+chrome.i18n.getMessage("steam_login_input_skip_community")+'</option> \
+          <option id="purchasedSkip">'+chrome.i18n.getMessage("steam_login_input_skip_purchase")+'</option> \
+          <option id="nonPurchasedSkip">'+chrome.i18n.getMessage("steam_login_input_skip_nonpurchase")+'</option> \
+          <option id="underEightPurchasedSkip">'+chrome.i18n.getMessage("steam_login_input_under_eight")+'</option> \
+          <option id="discoveryQueue">'+chrome.i18n.getMessage("steam_login_input_disc_queue")+'</option> \
+          <option id="addFreeLicense">'+chrome.i18n.getMessage("steam_login_input_license_bulk")+'</option> \
+          <option id="automatedNomination">Automated Nomination</option> \
         </select> \
         <div id="tasks_inputs"> \
           <div class="tasks_inputs"> \
@@ -35,15 +34,16 @@ document.addEventListener("animationstart", function(e) {
 
     } else if (e.animationName == "namesReady") {
 
-      chrome.runtime.sendMessage({greeting: 'getNamesForLogin'},function(response){
+      chrome.runtime.sendMessage({process: 'getNamesForLogin'},function(res){
+
     		// Append div´s including the names
         // Use doc.fragment for faster iteration
         var frag = document.createDocumentFragment();
 
-        for(var i=0;i<response.names.length;i++){
+        for(var i=0;i<res.parameters.length;i++){
         	var div = document.createElement('div');
           div.className = 'names';
-        	div.innerHTML = response.names[i];
+        	div.innerHTML = res.parameters[i];
         	frag.appendChild(div);
         }
 

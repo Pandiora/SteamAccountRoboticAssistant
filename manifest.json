@@ -7,22 +7,27 @@
 	"background": {
 		"scripts": [
 			"plugins/jQuery/jquery-3.3.1.min.js",
-			"plugins/Dexie/Dexie.min.js",
-			"plugins/MomentJS/moment.min.js",
-			"plugins/randomColor/randomColor.js",
 			"plugins/validate/jquery.validate.min.js",
 			"plugins/validate/jquery.validate.unobtrusive.min.js",
+			"plugins/randomColor/randomColor.js",
+			"plugins/bigInteger/bigInteger.js",
+			"plugins/MomentJS/moment.min.js",
 			"plugins/jsSha/jsSha-1.6.min.js",
-			"js/background.js",
-			"js/confirmations_2fa.js",
-			"js/acceptTrades.js",
-			"js/database.js",
+			"plugins/Dexie/Dexie.min.js",
+			"plugins/RSA/rsa.js",
+			"js/background/distributeSetsToBots.js",
+			"js/background/mobileConfirmation.js",
+			"js/background/tradeFunctions.js",
+			"js/background/marketListings.js",
+			"js/background/mobileAuth.js",
+			"js/background/modHeaders.js",
+			"js/chromeExtensionAsync.js",
+			"js/backgroundFunctions.js",
 			"js/globalFunctions.js",
 			"js/steamFunctions.js",
-			"js/mobileAuth.js",
-			"js/mod_headers.js",
-			"js/distributeSetsToBots.js",
-			"dev/hot-reload.js"
+			"js/database.js",
+			"dev/hot-reload.js",
+			"js/background.js"
 		],
 		"persistent": true
 	},
@@ -45,10 +50,10 @@
 				"*://store.steampowered.com/login/*"
 			],
 			"css": [
-				"css/steam_login.css"
+				"css/steamLogin.css"
 			],
 			"js": [
-				"js/steam_login.start.js"
+				"js/contentscripts/steamLoginStart.js"
 			],
 			"run_at": "document_start"
 		},
@@ -62,9 +67,7 @@
 			],
 			"js": [
 				"plugins/arrive/arrive.min.js",
-				"js/steam_login.js",
-				"plugins/jsSha/jsSha-1.6.min.js",
-				"js/mobileAuth.js"
+				"js/contentscripts/steamLogin.js"
 			]
 		},
 		{
@@ -72,19 +75,7 @@
 				"*://store.steampowered.com/*"
 			],
 			"js": [
-				"js/autoDiscoveryQueue.js"
-			]
-		},
-		{
-			"matches": [
-				"*://steamcommunity.com/login*",
-				"*://steamcommunity.com/id/*/stickers*",
-				"*://steamcommunity.com/id/*/stickers/*",
-				"*://steamcommunity.com/profiles/*/stickers*",
-				"*://steamcommunity.com/profiles/*/stickers/*"
-			],
-			"js": [
-				"js/craftStickerBadge.js"
+				"js/contentscripts/autoDiscoveryQueue.js"
 			]
 		},
 		{
@@ -92,7 +83,7 @@
 				"*://store.steampowered.com/*"
 			],
 			"js": [
-				"js/licenseBulkActivation.js"
+				"js/contentscripts/licenseBulkActivation.js"
 			]
 		},
 		{
@@ -100,7 +91,7 @@
 				"*://store.steampowered.com/*"
 			],
 			"js": [
-				"js/steamNomination.js"
+				"js/contentscripts/steamNomination.js"
 			]
 		},
 		{
@@ -119,7 +110,7 @@
 			],
 			"js": [
 				"plugins/waitUntilExists/jquery.waitUntilExists.min.js",
-				"js/inventory.js"
+				"js/contentscripts/inventory.js"
 			]
 		},
 		{
@@ -135,7 +126,7 @@
 				"*://steamcommunity.com//chat/"
 			],
 			"js": [
-				"js/badges.js"
+				"js/contentscripts/craftCommunityBadge.js"
 			]
 		}
 	],
@@ -165,5 +156,5 @@
 		"<all_urls>",
 		"storage"
 	],
-	"content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-vaBoTr950yDl5+anMYJVHYZMqgI4XRGyfWJSxlOs+Qc=' 'sha256-tTwmJ9+rkK30wTkOchpPT/AwziFqEPBkz0/qTxfBqV4=' 'sha256-oISksri0jE2Rqz1Zk9MVjg9WBGJNMGVV6bKd6DjmYAM=' 'sha256-RX649Xjtt/uYiICO8FKzTHfSgq8P7wYF6Di+a3Ywrhw=' 'sha256-pZOSDRbpffO92zHEy0R3rHXYa6y8UGpWkdQifkl7/BI=' 'sha256-6dC9CVT0MCNx08/24za2KyFjnbiBGaa87GE2Iw3Z81E=' 'sha256-dwX+4TQXIp1xjxSUfphg1bsrJb0VyfXNg08lRce60KY=' 'sha256-4xJOkIkaeBplN5tlcvxnCbBz34o5/kzpXcpjNkonVos=' 'sha256-rD86dXv7/J2SvI9ebmNi5dSuQdvzzrrN2puPca/ILls=' 'sha256-kYEMHX4um3ZfsQwwHHbxWhRUZtHYuByumKzZJp9016E=' 'sha256-r/xQLl0iyoPsKkiu8FuPhA8YWU9gh7YIjvuudlggWEs=' 'sha256-5sP1t2yB1Opsq2n5Aer54Db3ypc4WIukd564Q+Nty2c=' 'sha256-RfXnu2ysb0+uMZVGRMB/94yW4ydvzhsBTSNbh/OiqUY=' 'sha256-ZMtEGxNtyaGRlikesxPoNfZFCIldtiK/+SeD6fnMlhs=';object-src 'self'"
+	"content_security_policy": "script-src 'self' 'unsafe-eval';object-src 'self'"
 }

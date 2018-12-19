@@ -24,7 +24,7 @@ $(document).ready(function(){
         if(quests.length >= 1){
 
           // Set Bit for Community-Badge
-          chrome.runtime.sendMessage({greeting: 'activateCommunityBadge'});
+          chrome.runtime.sendMessage({action:'start', process: 'craftCommunityBadgeBit'});
 
           // Set Agecheck-Cookies for Steam-Store YO
           $.ajax({
@@ -59,7 +59,7 @@ $(document).ready(function(){
                     if (i++ >= maxLoops){
                       console.log('Iterated all quests now.');
                       // Unset Bit for Community-Badge
-                      chrome.runtime.sendMessage({greeting: 'deactivateCommunityBadge'});
+                      chrome.runtime.sendMessage({action:'stop', process: 'craftCommunityBadgeBit'});
                       // reload page ...
                       location.reload();
                       // quit loop ... not needed anymore
@@ -450,8 +450,8 @@ $(document).ready(function(){
 
 // all Stuff related to quests which need another tab to complete
 $(document).ready(function(){
-  chrome.runtime.sendMessage({greeting: 'statusCommunityBadge'},function(response){
-    if(response == 1){
+  chrome.runtime.sendMessage({action:'status', process: 'craftCommunityBadgeBit'},function(r){
+    if(r.status === 1){
       var loc = location.href;
 
       if(loc == "https://steamcommunity.com//chat/"){

@@ -1,6 +1,9 @@
 var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
 
-chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, function(res){
+chrome.runtime.sendMessage({
+  action: 'status',
+  process: 'LicenseBulkActivationBit'
+}, function(res){
   if(res.status == 1){
 
     if(document.location.href == "https://store.steampowered.com/login/?redir=app%2F"+res.appid+"%2F") {
@@ -10,7 +13,10 @@ chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, functio
           $('.names:eq(0)').click();
         } else {
           // When finished reset queue-status or list of names couldn't get loaded
-          chrome.runtime.sendMessage({greeting: 'setLicenseBulkActivationInactive'});
+          chrome.runtime.sendMessage({
+            action: 'stop',
+            process: 'LicenseBulkActivationBit'
+          });
         }
       }, 1500);
     } else if(document.location.href.indexOf("http://store.steampowered.com/app/"+res.appid+"/") !== -1){
@@ -19,8 +25,8 @@ chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, functio
           // User already owns this game >> set skip for this user and log out
           var user = $('#account_pulldown').text();
           chrome.runtime.sendMessage({
-            greeting: 'setSkipForLogin',
-            user: user
+            process: 'setSkipForLogin',
+            parameters: user
           }, function(response) {
             if (response == 1) {
               $.post('https://store.steampowered.com/logout/', {
@@ -40,8 +46,8 @@ chrome.runtime.sendMessage({greeting: 'getLicenseBulkActivationStatus'}, functio
       // Alright we added the free license - set skip-flag for this user and log out
       var user = $('#account_pulldown').text();
       chrome.runtime.sendMessage({
-        greeting: 'setSkipForLogin',
-        user: user
+        process: 'setSkipForLogin',
+        parameters: user
       }, function(response) {
         if (response == 1) {
           $.post('https://store.steampowered.com/logout/', {

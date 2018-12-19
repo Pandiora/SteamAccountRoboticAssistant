@@ -62,13 +62,34 @@ const fun = (() => {
         // add switches to make configs more slim
         const timeout = obj.timeout || 10000;
         const retries = obj.retries || 5;
-        const format = obj.format || 'text';
-        const delay = obj.delay || 1000;
+        const format  = obj.format || 'text';
+        const delay   = (obj.delay >= 0) ? obj.delay : 1000;
 
         // build parameters for fetch
         const url = new URL(obj.url);
-        const options = (obj.options) ? obj.options[0] : { method: 'GET', };
-        url.search = (obj.params) ? new URLSearchParams(obj.params) : '';
+        const options = (obj.options) ? obj.options : { method: 'GET' };
+
+        // normally not neccessary but well let's add it, since Steam's
+        // servers only accept urlencoded bodys or url-parameters
+        if(format === 'json'){
+            options.headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            };
+        } else {
+            options.headers = {
+                'Accept': 'text/html'
+            };            
+        }
+
+        // Build Data-Object based on method
+        // Ref: https://github.com/github/fetch/issues/635
+        if(options.method === 'POST'){
+            if(obj.params) options.body = new URLSearchParams(obj.params);
+        } else {
+            if(obj.params) url.search = new URLSearchParams(obj.params);
+        }
+
 
         const modOptions = (options) => {
             const controller = new AbortController();
@@ -106,7 +127,7 @@ const fun = (() => {
 
                 if (n === 0) {
                     consoleRgb('error',
-                        `Request to ${fetchUrl.origin} failed. The process gets 
+                        `Request to ${fetchUrl} failed. The process gets 
                         aborted after ${retries} retries.`, 1);
 
                     return null;
@@ -220,6 +241,7 @@ const fun = (() => {
         return final;
     };
 
+
     const capFirstLetter = (string) => {
 
         // self-explaining function
@@ -239,3 +261,10 @@ const fun = (() => {
         wipeObjByKeyVal,
     };
 })();
+
+function trn(str){
+    // using a shorter fn-name for translation
+    // since the below string appears to long to me
+    const translated = chrome.i18n.getMessage(str);
+    return translated;
+}
