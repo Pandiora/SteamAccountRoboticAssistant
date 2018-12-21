@@ -1,4 +1,4 @@
-function getUsersBadges(){
+function getUsersBadges(message){
 
   var master_api_key = '',
       usercnt        = 0,
@@ -27,14 +27,22 @@ function getUsersBadges(){
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
             setTimeout(()=>{
-              self.postMessage({msg: 'UpdateProgress', percentage: 98, message: 'Insert games into database.'});
-              processUser(badgesarr);
+              self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress', 
+                percentage: 98, 
+                message: 'Insert games into database.'
+              }));
+              processUser(badgesarr, message);
             }, 100);
             return;
           }
 
           // Update our Progressbar (frontend)
-          self.postMessage({msg: 'UpdateProgress', percentage: ((98/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
+          self.postMessage(Object.assign(message,{
+            action: 'UpdateProgress', 
+            percentage: ((98/maxLoops)*counter), 
+            message: (usermsg+' ('+counter+'/'+maxLoops+')')
+          }));
 
           // Get data of owned games for this user via steam-api
           $.get('https://api.steampowered.com/IPlayerService/GetBadges/v1/?key='+master_api_key+'&steamid='+userarr[counter-1].steam_id+'&format=json', (res)=>{
@@ -78,7 +86,7 @@ function getUsersBadges(){
     });
   });
 
-  function processUser(arr){
+  function processUser(arr, message){
 
     var len   = arr.length,
         sbarr = [],
@@ -103,9 +111,17 @@ function getUsersBadges(){
         }).then(()=>{
 
           db.users_badges.bulkAdd(arr).then((lastKey)=> {
-            self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Search for missing entries'});
+            self.postMessage(Object.assign(message,{
+              action: 'UpdateProgress', 
+              percentage: 99, 
+              message: 'Search for missing entries'
+            }));
           }).catch(Dexie.BulkError, (e)=>{
-            self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Duplicate-Entrys: '+e.failures.length});
+            self.postMessage(Object.assign(message,{
+              action: 'UpdateProgress', 
+              percentage: 99, 
+              message: `Duplicate-Entrys: ${e.failures.length}`
+            }));
           });
 
         }).then(()=>{
@@ -130,10 +146,19 @@ function getUsersBadges(){
 
             // if we found missing entries process them else finish
             if(ubarr.length > 0){
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: ubarr.length+' entries missing - adding them ...'});
+              self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress', 
+                percentage: 99, 
+                message: `${ubarr.length} entries missing - adding them ...`
+              }));
               addMissingBadgesEntries(ubarr, true);
             } else {
-              self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'No missing entries found - Done!'});           
+              self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress', 
+                percentage: 100, 
+                message: 'No missing entries found - Done!',
+                status: 'done'
+              }));
             }
 
           });
@@ -141,11 +166,8 @@ function getUsersBadges(){
       }).catch((err)=>{
         console.error(err);
       }).finally(()=>{
-        if(ubarr.length < 1){
-          self.postMessage({msg: 'UsersBadgesDone'});
-          self.close();
-        }
         db.close();
+        self.close();
       });
     });
   }

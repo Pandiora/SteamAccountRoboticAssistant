@@ -1,11 +1,15 @@
-function getSteamBadges(){
+function getSteamBadges(message){
 
   // array with all games having trading-cards
   var arr = [],
   created = fun.dateToIso(); // current datetime
 
   // announce process-start
-  self.postMessage({msg: 'UpdateProgress', percentage: 0, message: 'Fetching Data ...'});
+  self.postMessage(Object.assign(message,{
+    action: 'UpdateProgress',
+    message: 'Fetching Data ...',
+    percentage: 0
+  }));
 
   // temporarily there is no good alternative, without using external APIs for retrieving all games with
   // cards from steam and the total cards needed to craft a badge for chosen games
@@ -30,10 +34,19 @@ function getSteamBadges(){
         });
       }
 
-      self.postMessage({msg: 'UpdateProgress', percentage: 50, message: 'Inserting into Database ...'});
+      self.postMessage(Object.assign(message,{
+        action: 'UpdateProgress',
+        message: 'Inserting into Database ...',
+        percentage: 50
+      }));
     },
     error: (err)=>{
-      console.log("Can't get data from steam.tools"+err);
+      self.postMessage(Object.assign(message,{
+        action: 'UpdateProgress',
+        message: "Can't get data from steam.tools"+err,
+        percentage: 100,
+        status: 'done'
+      }));
     }
 
   }).done(()=>{
@@ -41,15 +54,24 @@ function getSteamBadges(){
     idb.opendb().then((db)=>{
       db.transaction('rw', db.steam_badges, function*(){
         db.steam_badges.bulkAdd(arr).then((lastKey)=> {
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
+          self.postMessage(Object.assign(message,{
+            action: 'UpdateProgress',
+            message: 'Process finished',
+            percentage: 100,
+            status: 'done'
+          }));
         }).catch(Dexie.BulkError, (e)=>{
-          self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
+          self.postMessage(Object.assign(message,{
+            action: 'UpdateProgress',
+            message: `Duplicates-Entrys: ${e.failures.length}`,
+            percentage: 100,
+            status: 'done'
+          }));
         });
       }).catch((err)=>{
         console.log(err);
         console.error(err.length);
       }).finally(()=>{
-        self.postMessage({msg: 'SteamBadgesDone'});
         self.close();
         db.close();
       });

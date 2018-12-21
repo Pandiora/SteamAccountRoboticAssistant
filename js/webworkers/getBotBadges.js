@@ -34,11 +34,12 @@ function getBotBadges(message){
           }
 
           // Update our Progressbar (frontend)
-          self.postMessage({
+          self.postMessage(Object.assign(message,{
             action: 'UpdateProgress', 
             percentage: ((99/maxLoops)*counter), 
             message: (usermsg+'('+counter+'/'+maxLoops+')')
-          });
+          }));
+
           // Push current user to array
           userarr.steamid.push(users[counter-1].steam_id);
 
@@ -94,18 +95,19 @@ function getBotBadges(message){
           });
         }
       }).then(()=>{
-        self.postMessage({
+        self.postMessage(Object.assign(message,{
           action: 'UpdateProgress', 
           percentage: 100, 
-          message: 'Process finished'
-        });
+          message: 'Process finished',
+          status: 'done'
+        }));
       }).catch((err)=>{
-        self.postMessage({
+        self.postMessage(Object.assign(message,{
           action: 'UpdateProgress', 
           percentage: 100, 
-          message: 'Error while getting badges'+err
-        });
-        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Error while getting badges'+err});
+          message: 'Error while getting badges'+err,
+          status: 'done'
+        }));
       }).finally(()=>{
         self.close();
         db.close();
