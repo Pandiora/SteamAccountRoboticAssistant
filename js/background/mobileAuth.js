@@ -94,7 +94,6 @@ function getServerTime(){
 			var serverTime = data.response["server_time"];
 			var localTime = Math.floor(Date.now() / 1000);
 			var timeOffset = serverTime - localTime;
-			console.log('TimeOffset: '+timeOffset);
 			var time = Math.floor(Date.now() / 1000) + timeOffset;
 
 			dfd.resolve(time);

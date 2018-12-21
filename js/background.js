@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
   ///////////////////////////////////////////////////////////////////////////////////
 
   if(msg.target && msg.target[0] == 'webworker'){
-
+    console.log(msg);
     bg.startWebworker(snd, msg);
     return true;
 
@@ -70,6 +70,11 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
 
     bg.setActionBits(msg, sendResponse);
     return false;
+
+  } else if(msg.process && msg.process.substr(-4) === "Skip"){
+
+    bg.setSkipForDb(snd, msg, sendResponse);
+    return true;
 
   } else if(msg.process && msg.process === 'getNamesForLogin'){
 
@@ -97,15 +102,16 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
     return false;
 
   } else if(msg.process && msg.process == 'getItemMarketPrices'){
-    console.log('here');
+
     // ToDo: Update functions
-    getItemMarketPrices(snd, msg, sendResponse)
+    getItemMarketPrices(snd, msg, sendResponse);
     return true;
 
   } else if(msg.process && msg.process == 'createMarketListingOrders'){
 
     // ToDo: Update functions
-    createMarketListing(snd, msg, sendResponse);
+    createMarketListing(snd, msg);
+    // must return false or we get port errors
     return true;
 
   } else if(msg.process && msg.process == 'gimmeMasterSteamID'){
@@ -115,47 +121,30 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
     });
     return true;
 
-  } else if(msg.process && msg.process.substr(-4) === "Skip"){
-
-    bg.setSkipForDb(snd, msg, sendResponse);
-    return true;
-
-  } else if(msg.process && msg.process == "setSkipForLogin"){
-
-    idb.opendb().then(function(db){
-      db.transaction('rw', 'steam_users', function(){
-        db.steam_users.each(user => {
-          if(user.login_name == fun.capitalizeFirstLetter(msg.user) 
-            || user.login_name == msg.user)
-          db.steam_users.update(user.id, {skip: 1});
-        });
-      }).then(function(){
-        sendResponse(1);
-      }).catch(function(err){
-        console.log(err);
-      }).finally(function(){
-        db.close();
-      });
-    });
-    return true;
-
   } else if(msg.process && msg.process == "sendAllCardsToBot"){ 
 
+    // ToDo: alter to use process
     sendAllCardsToBot(snd, msg.ast_ids,msg.cur_user, msg.ssid);
     return true;
 
   } else if(msg.process && msg.process == 'stopListingMarketItems'){
+
+    // ToDo: implement this one elsewhere
     stop_listing_items = 1;
     return false;
+
   } else if(msg.process && msg.process == 'stopGetMarketPrices'){
+
+    // ToDo: implement this one elsewhere    
     stop_get_market_prices = 1;
     return false;
 
   } else {
     // This Listener don´t know what to do with this msg
-    console.log(chrome.i18n.getMessage("background_missing_listener_function"), msg);
+    console.log(trn("background_missing_listener_function"), msg);
     return false;
   }
+  // shut up - https://github.com/mozilla/webextension-polyfill/issues/130  
   return true;
 });
 

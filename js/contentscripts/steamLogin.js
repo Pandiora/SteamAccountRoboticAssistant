@@ -107,8 +107,9 @@ $(document).ready(function(){
 				if(r.status === 1){
 					location.reload();
 				}
-				return;
+
 			});
+			return;
 		}
 
 

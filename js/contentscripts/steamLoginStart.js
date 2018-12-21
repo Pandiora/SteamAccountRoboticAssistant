@@ -1,6 +1,6 @@
 // Action: i18n-translation-placeholder
 const options = {
-  loginSkip: 'steam_login_input_reset_skip',
+  resetLoginSkip: 'steam_login_input_reset_skip',
   communitySkip: 'steam_login_input_skip_community',
   purchasedSkip: 'steam_login_input_skip_purchase',
   nonPurchasedSkip: 'steam_login_input_skip_nonpurchase',

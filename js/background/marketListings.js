@@ -1,4 +1,5 @@
 function processMarketListings(){
+  // ToDO: Add settings-stuff
   // Only execute if the user set this ON in settings
   var value = 'confirmation';
   chrome.storage.sync.get([value], function(obj){
@@ -192,7 +193,7 @@ function getItemMarketPrices(snd, msg, sendResponse){
                               error: function(xhr, textStatus, errorThrown){
                                 if(xhr.status == 503 || xhr.status == 502){
                                   // Sometimes Steam-Servers are temporarily unavailable - execute retries
-                                  console.log(chrome.i18n.getMessage("background_error_steam_not_available")+xhr.status);
+                                  console.log(trn("background_error_steam_not_available")+xhr.status);
                                   setTimeout(function(){ processAjaxNameID(); }, scnt*5000);
                                 } else if(xhr.status == 429){
                                   // process needs to get aborted / Rate-Limit reached!
@@ -200,18 +201,18 @@ function getItemMarketPrices(snd, msg, sendResponse){
                                   // remove from array
                                   removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                                   // too many attempts
-                                  console.log(chrome.i18n.getMessage("background_error_too_many_attempts")+xhr.status);
+                                  console.log(trn("background_error_too_many_attempts")+xhr.status);
                                   setTimeout(function(){ next(counter, maxLoops) }, 1000);
                                 } else if(xhr.status == 401){
                                   // process needs to get aborted -> user not logged in
                                   stop_get_market_prices = 1;
-                                  console.log(chrome.i18n.getMessage("background_error_not_logged_in")+xhr.status);
+                                  console.log(trn("background_error_not_logged_in")+xhr.status);
                                   setTimeout(function(){ next(counter, maxLoops) }, 1000);
                                 }  else {
                                   // aaand remove from array too
                                   removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                                   // In case other errors occur just start next iteration
-                                  console.log(chrome.i18n.getMessage("background_error_steam_server")+xhr.status);
+                                  console.log(trn("background_error_steam_server")+xhr.status);
                                   setTimeout(function(){ next(counter, maxLoops) }, 1000);
                                 }
                               }
@@ -225,7 +226,7 @@ function getItemMarketPrices(snd, msg, sendResponse){
                       error: function(xhr, textStatus, errorThrown) {
                         if(xhr.status == 503 || xhr.status == 502){
                           // Sometimes Steam-Servers are temporarily unavailable - execute retries
-                          console.log(chrome.i18n.getMessage("background_error_steam_not_available")+xhr.status);
+                          console.log(trn("background_error_steam_not_available")+xhr.status);
                           setTimeout(function(){ processAjaxNameID(); }, scnt*5000);
                         } else if(xhr.status == 429){
                           // process needs to get aborted / Rate-Limit reached!
@@ -233,18 +234,18 @@ function getItemMarketPrices(snd, msg, sendResponse){
                           // remove from array
                           removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                           // too many attempts
-                          console.log(chrome.i18n.getMessage("background_error_too_many_attempts")+xhr.status);
+                          console.log(trn("background_error_too_many_attempts")+xhr.status);
                           setTimeout(function(){ next(counter, maxLoops) }, 1000);
                         } else if(xhr.status == 401){
                           // process needs to get aborted -> user not logged in
                           stop_get_market_prices = 1;
-                          console.log(chrome.i18n.getMessage("background_error_not_logged_in")+xhr.status);
+                          console.log(trn("background_error_not_logged_in")+xhr.status);
                           setTimeout(function(){ next(counter, maxLoops) }, 1000);
                         }  else {
                           // aaand remove from array too
                           removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                           // In case other errors occur just start next iteration
-                          console.log(chrome.i18n.getMessage("background_error_steam_server")+xhr.status);
+                          console.log(trn("background_error_steam_server")+xhr.status);
                           setTimeout(function(){ next(counter, maxLoops) }, 1000);
                         }
                       }
@@ -280,18 +281,18 @@ function getItemMarketPrices(snd, msg, sendResponse){
                 // Remove from array since we couldn't get the market-price for this item
                 removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                 // too many attempts
-                console.log(chrome.i18n.getMessage("background_error_too_many_attempts")+xhr.status);
+                console.log(trn("background_error_too_many_attempts")+xhr.status);
                 setTimeout(function(){ next(counter, maxLoops) }, 1000);
               } else if(xhr.status == 401){
                 // process needs to get aborted -> user not logged in
                 stop_get_market_prices = 1;
-                console.log(chrome.i18n.getMessage("background_error_not_logged_in")+xhr.status);
+                console.log(trn("background_error_not_logged_in")+xhr.status);
                 setTimeout(function(){ next(counter, maxLoops) }, 1000);
               } else {
                 // aaaand remove it from array here too
                 removeClassID(cardsObj[[cardsArr[counter-1]]].classid);
                 // In case other errors occur just start next iteration
-                console.log(chrome.i18n.getMessage("background_error_steam_server")+xhr.status);
+                console.log(trn("background_error_steam_server")+xhr.status);
                 setTimeout(function(){ next(counter, maxLoops) }, 1000);
               }
             }
@@ -313,10 +314,10 @@ function getItemMarketPrices(snd, msg, sendResponse){
       chrome.tabs.sendMessage(snd.tab.id,{
         msg: 'UpdateProgress',
         percentage: 100,
-        message: chrome.i18n.getMessage("background_bulksell_user_stopped"),
+        message: trn("background_bulksell_user_stopped"),
         error: true
       });
-      console.log(chrome.i18n.getMessage("background_bulksell_user_stopped_msg"));
+      console.log(trn("background_bulksell_user_stopped_msg"));
     }
   })(0, cardsArr.length);
 }
@@ -330,6 +331,9 @@ function createMarketListing(snd, msg, sendResponse){
   var cards = msg.cards;
   var loops = cards.length;
 
+  // sendResponse to not block the port
+  // else chromeExtensionAsync will error
+  //sendResponse({ action: 'start' });
 
   (function next(counter, maxLoops){
 
@@ -341,10 +345,8 @@ function createMarketListing(snd, msg, sendResponse){
           chrome.tabs.sendMessage(snd.tab.id,{
             msg: 'UpdateProgress',
             percentage: 100,
-            message: chrome.i18n.getMessage("background_bulksell_listing_msg")
+            message: trn("background_bulksell_listing_msg")
           });
-          // SendResponse to close dialog/reload page etc.
-          sendResponse({ success: true });
       }, 10000);
 
       return;
@@ -373,7 +375,7 @@ function createMarketListing(snd, msg, sendResponse){
               chrome.tabs.sendMessage(snd.tab.id,{
                 msg: 'UpdateProgress',
                 percentage: ((99/maxLoops)*counter),
-                message: chrome.i18n.getMessage("background_bulksell_listing")+' ('+counter+'/'+maxLoops+')'
+                message: trn("background_bulksell_listing")+' ('+counter+'/'+maxLoops+')'
               });
 
               // Reset retry-counter
@@ -386,7 +388,7 @@ function createMarketListing(snd, msg, sendResponse){
                 chrome.tabs.sendMessage(snd.tab.id,{
                   msg: 'UpdateProgress',
                   percentage: ((99/maxLoops)*counter),
-                  message: chrome.i18n.getMessage("background_bulksell_confirmation_bg")
+                  message: trn("background_bulksell_confirmation_bg")
                 });
                 // Start confirmation-process for market-items
                 processMarketListings();
@@ -408,7 +410,7 @@ function createMarketListing(snd, msg, sendResponse){
           error: function(xhr, textStatus, errorThrown) {
             if(xhr.status == 503){
               // Sometimes Steam-Servers are temporarily unavailable - execute retries
-              console.log(chrome.i18n.getMessage("background_error_steam_not_available")+xhr.status);
+              console.log(trn("background_error_steam_not_available")+xhr.status);
               setTimeout(function(){ processAjax(); }, rcnt*5000);
             } else if(xhr.status == 502){
               // Probably this means the item is already on sell & not confirmed yet
@@ -418,22 +420,22 @@ function createMarketListing(snd, msg, sendResponse){
                 setTimeout(function(){ next(counter, maxLoops); }, 500);
               } else {
                  // Sometimes Steam-Servers are temporarily unavailable - execute retries
-                console.log(chrome.i18n.getMessage("background_error_steam_not_available")+xhr.status);
+                console.log(trn("background_error_steam_not_available")+xhr.status);
                 setTimeout(function(){ processAjax(); }, rcnt*5000);                 
               }
             } else if(xhr.status == 429){
               // process needs to get aborted / Rate-Limit reached!
               stop_listing_items = 1;
-              console.log(chrome.i18n.getMessage("background_error_too_many_attempts")+xhr.status);
+              console.log(trn("background_error_too_many_attempts")+xhr.status);
               setTimeout(function(){ next(counter, maxLoops) }, 100);
             } else if(xhr.status == 401){
               // process needs to get aborted -> user not logged in or 
               stop_get_market_prices = 1;
-              console.log(chrome.i18n.getMessage("background_error_not_logged_in")+xhr.status);
+              console.log(trn("background_error_not_logged_in")+xhr.status);
               setTimeout(function(){ next(counter, maxLoops) }, 100);
             }  else {
               // In case other errors occur just start next iteration
-              console.log(chrome.i18n.getMessage("background_error_steam_server")+xhr.status);
+              console.log(trn("background_error_steam_server")+xhr.status);
               setTimeout(function(){ next(counter, maxLoops) }, 5000);
             }
           }

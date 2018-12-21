@@ -294,7 +294,7 @@ const bg = (() => {
 
 	const startWebworker = (snd, msg) => {
 
-		msg.snd[1] = snd.tab.id;
+		msg.sender[1] = snd.tab.id;
 
 	    worker.postMessage(msg);
 	    worker.onmsg = function(e){
@@ -387,9 +387,9 @@ const bg = (() => {
 				});
 
 		    if(proc === 'resetLoginSkip')
-				db.steam_users.where('skip').equals(0)
+				db.steam_users.where('skip').equals(1)
 				.modify(user =>{
-					user.skip = 1;
+					user.skip = 0;
 				});
 
 		    if(proc === 'purchasedSkip')

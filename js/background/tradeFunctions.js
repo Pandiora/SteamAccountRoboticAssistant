@@ -96,7 +96,7 @@ function getTradeOffers(masterid){
 					}
 				} else {
 					// Don't do anything if master isn't logged in
-					console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Info: '+'%c '+chrome.i18n.getMessage("background_trades_not_master"), '', 'background: silver; color: blue; border-radius: 10%', '');
+					console.log(('%c'+new Date().toLocaleString()+' | ')+'%c Info: '+'%c '+chrome.i18n.getMessage("background_trades_not_master")+' '+steamIDMaster[1], '', 'background: silver; color: blue; border-radius: 10%', '');
 				}
 			} else {
 				// Do Stuff
