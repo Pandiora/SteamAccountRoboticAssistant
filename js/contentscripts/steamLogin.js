@@ -101,6 +101,17 @@ $(document).ready(function(){
 			}
 		};
 
+		// uncatched options are used for skips
+		if(Object.keys(objSelected).indexOf(option) < 0){
+			chrome.runtime.sendMessage({process: option},function(r){
+				if(r.status === 1){
+					location.reload();
+				}
+				return;
+			});
+		}
+
+
 		// use object for data to be send, action+process is mandatory
 		let message = {
 		  action: 'start',
@@ -113,17 +124,9 @@ $(document).ready(function(){
 			else 			{ alert('Input is empty!'); return; }
 		}
 
-		// uncatched options are used for skips
-		if(Object.keys(objSelected).indexOf(option) > -1){
-			chrome.runtime.sendMessage(message, function(r){
-				if(r.status === 1) document.location.href = objSelected[option].redirectTo;
-			});
-		} else {
-			chrome.runtime.sendMessage({process: selected_option},function(r){
-				if(r.status === 1){
-					location.reload();
-				}
-			});
-		}
+		chrome.runtime.sendMessage(message, function(r){
+			if(r.status === 1) document.location.href = objSelected[option].redirectTo;
+		});
+		
 	});
 });
