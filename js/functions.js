@@ -155,11 +155,11 @@ function sendConfirmation(items, action){
 
 	// Determine if entry has to be accepted or declined
 	if(action == 'confirm' || action == 'nia-ok'){
-		chrome.runtime.sendMessage({greeting: 'acceptConfirmation', items:items},function(response){
+		chrome.runtime.sendMessage({process: 'acceptConfirmation', items:items},function(response){
 			console.log(response);
 		});
 	} else if(action == 'decline' || action == 'nia-br'){
-		chrome.runtime.sendMessage({greeting: 'declineConfirmation', items:items},function(response){
+		chrome.runtime.sendMessage({process: 'declineConfirmation', items:items},function(response){
 			console.log(response);
 		});
 	}

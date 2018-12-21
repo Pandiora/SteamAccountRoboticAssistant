@@ -97,13 +97,15 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
     return false;
 
   } else if(msg.process && msg.process == 'getItemMarketPrices'){
-
-    // ToDo: implement this functions again
+    console.log('here');
+    // ToDo: Update functions
+    getItemMarketPrices(snd, msg, sendResponse)
     return true;
 
   } else if(msg.process && msg.process == 'createMarketListingOrders'){
 
-    // ToDo: implement this function again
+    // ToDo: Update functions
+    createMarketListing(snd, msg, sendResponse);
     return true;
 
   } else if(msg.process && msg.process == 'gimmeMasterSteamID'){

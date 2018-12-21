@@ -24,40 +24,6 @@ $(document).ready(function(){
 				console.log(res);
 			}
 		});
-		/*chrome.runtime.sendMessage({process: 'getUserDataFor'+name},function(user){
-			chrome.runtime.sendMessage({process: 'deleteCookies'},function(response){
-				console.log(response.farewell);
-			});
-
-			$('#steamAccountName, #input_username').val(name);
-			$('#steamPassword, #input_password').val(user[0]['pw']);
-
-			// Set the Cookie for this user to avoid Trade-Restrictions
-			if(typeof user[0]['steamMachine'] != 'undefined' && user[0]['steamMachine'] != ''){
-				chrome.runtime.sendMessage({greeting: 'steamMachineAuth'+user[0]['steamid']+';'+user[0]['steamMachine']}, function(cookieres) {
-					console.log(cookieres.farewell);
-
-					// Now Log In
-					$('#login_btn_signin button, #SteamLogin').click();
-
-					// Use Helper to wait until Auth-Window exists/is shown
-					$(document).arrive('.responsive_page #twofactorcode_entry', function(){
-						if($('.loginTwoFactorCodeModal').is(':visible')){
-							console.log('2FA needed');
-
-							$('#twofactorcode_entry').val(generateAuthCode(user[0]['secret'], 0));
-							$('div[data-modalstate="submit"]').click();
-
-						} else {
-							// Removed SteamGuard-Code Treatment
-						}
-					});
-
-				});
-			} else {
-				console.log(chrome.i18n.getMessage("steam_login_error_no_cookie"));
-			}
-		});*/
 	});
 
 	// Prevent scrolling of body if list is scrolled with mousewheel

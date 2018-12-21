@@ -105,7 +105,7 @@ addListenerMulti(document, AoE, function(d){
     });
 
     chrome.runtime.sendMessage({
-      greeting: 'getItemMarketPrices', 
+      process: 'getItemMarketPrices', 
       cards: selected_cards, 
       sessionid: sessionid,
       country: walletInfo[0].countryCode,
@@ -494,7 +494,7 @@ function listItemsBulk(cards){
   });
 
   chrome.runtime.sendMessage({
-    greeting: 'createMarketListingOrders', 
+    process: 'createMarketListingOrders', 
     cards: cards, 
     sessionid: sessionid,
     country: walletInfo[0].countryCode,

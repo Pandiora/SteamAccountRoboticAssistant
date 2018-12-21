@@ -31,9 +31,9 @@ function processMarketListings(){
   });
 }
 
-function getItemMarketPrices(){
+function getItemMarketPrices(snd, msg, sendResponse){
   stop_get_market_prices = 0;
-  var cards = message.cards;
+  var cards = msg.cards;
   // we need this array based on cards-Array to concatenate same items by classid
   var cardsObj = [];
   // cardsArr will just help at finding the right positions in cardsObj
@@ -98,9 +98,9 @@ function getItemMarketPrices(){
               if(nameid !== null){
                 // Construct URL and get lowest_sell_order by nameid
                 var d = 'http://steamcommunity.com/market/itemordershistogram';
-                var e = '?country='+message.country;
-                var f = '&language='+message.language;
-                var g = '&currency='+message.eCurrency;
+                var e = '?country='+msg.country;
+                var f = '&language='+msg.language;
+                var g = '&currency='+msg.eCurrency;
                 var h = '&item_nameid='+nameid[1]+'&two_factor=0';
 
                 var scnt = 0; // retry-counter
@@ -116,7 +116,7 @@ function getItemMarketPrices(){
                             var price = dat.lowest_sell_order/100;
 
                             // Update the progressbar at frontend
-                            chrome.tabs.sendMessage(sender.tab.id,{
+                            chrome.tabs.sendMessage(snd.tab.id,{
                               msg: 'UpdateProgress',
                               percentage: ((99/maxLoops)*counter),
                               price_add: price,
@@ -139,8 +139,8 @@ function getItemMarketPrices(){
 
                             // Our last chance to get the price
                             var uri = 'http://steamcommunity.com/market/priceoverview/';
-                            var i = '?country='+message.country;
-                            var j = '&currency='+message.eCurrency;
+                            var i = '?country='+msg.country;
+                            var j = '&currency='+msg.eCurrency;
                             var k = '&appid='+cardsObj[[cardsArr[counter-1]]].appid;
                             var l = '&market_hash_name='+encodeURIComponent(cardsObj[[cardsArr[counter-1]]].hash);
 
@@ -154,7 +154,7 @@ function getItemMarketPrices(){
                                     dathash = dathash.lowest_price.replace(/[^0-9\.\,]+/g,"").replace(',','.');
 
                                     // Update the progressbar at frontend
-                                    chrome.tabs.sendMessage(sender.tab.id,{
+                                    chrome.tabs.sendMessage(snd.tab.id,{
                                       msg: 'UpdateProgress',
                                       percentage: ((99/maxLoops)*counter),
                                       price_add: price,
@@ -310,7 +310,7 @@ function getItemMarketPrices(){
       if(rcnt <= 1) processAjax();
 
     } else {
-      chrome.tabs.sendMessage(sender.tab.id,{
+      chrome.tabs.sendMessage(snd.tab.id,{
         msg: 'UpdateProgress',
         percentage: 100,
         message: chrome.i18n.getMessage("background_bulksell_user_stopped"),
@@ -324,10 +324,10 @@ function getItemMarketPrices(){
 
 
 
-function createMarketListing(){
+function createMarketListing(snd, msg, sendResponse){
   // if the process was stopped by user, we should reset our bit
   stop_listing_items = 0;
-  var cards = message.cards;
+  var cards = msg.cards;
   var loops = cards.length;
 
 
@@ -338,7 +338,7 @@ function createMarketListing(){
       processMarketListings();
       // Tell the user we're done now and processing the confirmations in background
       setTimeout(function(){
-          chrome.tabs.sendMessage(sender.tab.id,{
+          chrome.tabs.sendMessage(snd.tab.id,{
             msg: 'UpdateProgress',
             percentage: 100,
             message: chrome.i18n.getMessage("background_bulksell_listing_msg")
@@ -358,7 +358,7 @@ function createMarketListing(){
           url: 'https://steamcommunity.com/market/sellitem/',
           type: 'POST',
           data: {
-            sessionid: message.sessionid,
+            sessionid: msg.sessionid,
             appid: cards[counter-1].appid,
             contextid: cards[counter-1].contextid,
             assetid: cards[counter-1].assetid,
@@ -370,7 +370,7 @@ function createMarketListing(){
             if(data.success === true){
 
               // Update the progressbar at frontend
-              chrome.tabs.sendMessage(sender.tab.id,{
+              chrome.tabs.sendMessage(snd.tab.id,{
                 msg: 'UpdateProgress',
                 percentage: ((99/maxLoops)*counter),
                 message: chrome.i18n.getMessage("background_bulksell_listing")+' ('+counter+'/'+maxLoops+')'
@@ -383,7 +383,7 @@ function createMarketListing(){
               // but just leave some space to other confirmations like trades and so on
               if(((Math.ceil((counter-1)/200.0)*200)/(counter-1)) == 1){
                 // Tell the user we're retrieving trades
-                chrome.tabs.sendMessage(sender.tab.id,{
+                chrome.tabs.sendMessage(snd.tab.id,{
                   msg: 'UpdateProgress',
                   percentage: ((99/maxLoops)*counter),
                   message: chrome.i18n.getMessage("background_bulksell_confirmation_bg")
@@ -402,7 +402,7 @@ function createMarketListing(){
               rcnt = 0;
               // Probably this item was already sold or we have some other problem
               // start next iteration
-              setTimeout(function(){ processAjax(); }, (Math.round(Math.random()*(5-3)+3)*1000));
+              setTimeout(function(){ next(counter, maxLoops) }, 100);
             }
           },
           error: function(xhr, textStatus, errorThrown) {
