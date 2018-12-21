@@ -144,11 +144,9 @@ var nom = (() => {
           	console.log("All possible votes are done! Logging out ...");
             jQuery.post('https://store.steampowered.com/logout/', {
             	sessionid: sessionid()
+            }).done(()=>{
+              document.location = 'https://store.steampowered.com/login/';
             });
-
-            setTimeout(function(){
-              location.reload();
-            }, 1000);
           }
         });
 
