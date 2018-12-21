@@ -125,7 +125,8 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
     idb.opendb().then(function(db){
       db.transaction('rw', 'steam_users', function(){
         db.steam_users.each(user => {
-          if(user.login_name == fun.capitalizeFirstLetter(msg.user) || user.login_name == msg.user)
+          if(user.login_name == fun.capitalizeFirstLetter(msg.user) 
+            || user.login_name == msg.user)
           db.steam_users.update(user.id, {skip: 1});
         });
       }).then(function(){

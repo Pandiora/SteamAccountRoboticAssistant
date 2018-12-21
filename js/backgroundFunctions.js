@@ -340,12 +340,14 @@ const bg = (() => {
 
 
 	const setActionBits = (msg, sendResponse) => {
+
 	    /* 
 	      Handler for actions on oneclick-login or other content-scripts unrelated
 	      to inventory to only execute the scripts if needed and to track progress
 	      [discoveryQueueBit, addFreeLicenseBit, automatedNomination, craftCommunityBadge]
 	      use "Bit" as unique identifier for starting actions from oneclick-login
 	    */
+
 	    const actions = {
 	      stop:0,
 	      start:1,
@@ -385,8 +387,9 @@ const bg = (() => {
 				});
 
 		    if(proc === 'resetLoginSkip')
-				db.steam_users.each(user => {
-					db.steam_users.update(user.id, {skip: 0});
+				db.steam_users.where('skip').equals(0)
+				.modify(user =>{
+					user.skip = 1;
 				});
 
 		    if(proc === 'purchasedSkip')
@@ -397,6 +400,12 @@ const bg = (() => {
 
 		    if(proc === 'communitySkip')
 				db.steam_users.where('community').aboveOrEqual(2)
+				.modify(user => {
+					user.skip = 1;
+				});
+
+			if(proc === 'userSkip')
+				db.steam_users.where('login_name').equalsIgnoreCase(msg.parameters)
 				.modify(user => {
 					user.skip = 1;
 				});

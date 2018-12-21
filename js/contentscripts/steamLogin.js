@@ -79,6 +79,9 @@ $(document).ready(function(){
 			C O N F I G
 			should send [actionname]+'Bit'
 		*/
+		const option = $('#login_tasks option:selected').attr('id'),
+			  input  = $('.tasks_inputs1').val();
+
 		const objSelected = {
 			discoveryQueue: {
 				getTaskInput: 0,
@@ -86,17 +89,17 @@ $(document).ready(function(){
 			},
 			addFreeLicense: {
 				getTaskInput: 1,
-				redirectTo: `https://store.steampowered.com/login/?redir=app%2F${license_appid}%2F`
+				redirectTo: `https://store.steampowered.com/login/?redir=app%2F${input}%2F`
 			},
 			automatedNomination: {
 				getTaskInput: 1,
 				redirectTo: 'https://store.steampowered.com//login/?redir=SteamAwardNominations%2F%3Fl%3Denglish'
+			},
+			winterNomination: {
+				getTaskInput: 0,
+				redirectTo: 'https://store.steampowered.com//login/'				
 			}
 		};
-
-		//console.log('clicked');
-		const option = $('#login_tasks option:selected').attr('id'),
-			  input  = $('.tasks_inputs1').val();
 
 		// use object for data to be send, action+process is mandatory
 		let message = {
@@ -111,9 +114,9 @@ $(document).ready(function(){
 		}
 
 		// uncatched options are used for skips
-		if(Object.keys(objSelected).indexOf(option)){
+		if(Object.keys(objSelected).indexOf(option) > -1){
 			chrome.runtime.sendMessage(message, function(r){
-				if(r === 1) document.location.href = objSelected[option].redirectTo;
+				if(r.status === 1) document.location.href = objSelected[option].redirectTo;
 			});
 		} else {
 			chrome.runtime.sendMessage({process: selected_option},function(r){

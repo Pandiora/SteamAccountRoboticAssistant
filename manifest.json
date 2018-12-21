@@ -83,7 +83,8 @@
 				"*://store.steampowered.com/*"
 			],
 			"js": [
-				"js/contentscripts/licenseBulkActivation.js"
+				"js/contentscripts/licenseBulkActivation.js",
+				"js/contentscripts/winterNomination.js"
 			]
 		},
 		{
