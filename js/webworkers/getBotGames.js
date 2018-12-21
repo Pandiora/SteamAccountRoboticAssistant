@@ -55,6 +55,7 @@ async function getBotGames(message){
           action: 'UpdateProgress',
           message: `Action completed. Entries added to database.`,
           percentage: 100,
+          status: 'done'
         }));
         return;    
       }

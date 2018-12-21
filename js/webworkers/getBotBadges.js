@@ -1,4 +1,4 @@
-function getBotBadges(){
+function getBotBadges(message){
 
   idb.opendb().then((db)=>{
     db.transaction("r", db.steam_users, ()=>{
@@ -6,7 +6,7 @@ function getBotBadges(){
 
         var master_api_key = $.grep(users, (e)=>{ return e.type == 'Master'; });
         var usercnt = users.length;
-        var usermsg = 'Getting Bot-Games';
+        var usermsg = 'Getting Bot-Badges';
         var userarr = {
           steamid: [],
           csgo: [],
@@ -21,7 +21,12 @@ function getBotBadges(){
           // due to our timeouts we can´t implement this step into this transaction
           if (counter++ >= maxLoops){
             setTimeout(()=>{
-              self.postMessage({msg: 'UpdateProgress', percentage: 99, message: 'Add games to Database'});
+              self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress',
+                message: 'Add Badges to Database',
+                percentage: 99,
+                status: 'done'
+              }));
               //console.log(userarr);
               processUser(userarr);
             }, 100);
@@ -29,7 +34,11 @@ function getBotBadges(){
           }
 
           // Update our Progressbar (frontend)
-          self.postMessage({msg: 'UpdateProgress', percentage: ((99/maxLoops)*counter), message: (usermsg+'('+counter+'/'+maxLoops+')')});
+          self.postMessage({
+            action: 'UpdateProgress', 
+            percentage: ((99/maxLoops)*counter), 
+            message: (usermsg+'('+counter+'/'+maxLoops+')')
+          });
           // Push current user to array
           userarr.steamid.push(users[counter-1].steam_id);
 
@@ -85,11 +94,19 @@ function getBotBadges(){
           });
         }
       }).then(()=>{
-        self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Process finished'});
+        self.postMessage({
+          action: 'UpdateProgress', 
+          percentage: 100, 
+          message: 'Process finished'
+        });
       }).catch((err)=>{
+        self.postMessage({
+          action: 'UpdateProgress', 
+          percentage: 100, 
+          message: 'Error while getting badges'+err
+        });
         self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Error while getting badges'+err});
       }).finally(()=>{
-        self.postMessage({msg: 'OwnedBadgesDone'});
         self.close();
         db.close();
       });

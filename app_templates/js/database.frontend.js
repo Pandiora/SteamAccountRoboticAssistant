@@ -80,8 +80,8 @@ function createDialog(type, title, content, btncnt){
 	var btn_list = "";
 
 	// Set up buttons for inserting them into dialog
-	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button></td>'; }
-	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+chrome.i18n.getMessage("inventory_okay_btn")+'</button><button id="cancel">'+chrome.i18n.getMessage("inventory_cancel_btn")+'</button></td>'; }
+	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+trn("inventory_okay_btn")+'</button></td>'; }
+	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+trn("inventory_okay_btn")+'</button><button id="cancel">'+trn("inventory_cancel_btn")+'</button></td>'; }
 
 	// Set up Modal parameters
 	$("#dialog").ejDialog({
@@ -230,7 +230,7 @@ function onToolBarClick(sender, args) {
 
 		case (action === 'import-json'):
 
-			createDialog("warning", "Import '"+datatable+"'", chrome.i18n.getMessage("index_table_import1")+datatable+chrome.i18n.getMessage("index_table_import2"), 2);
+			createDialog("warning", "Import '"+datatable+"'", trn("index_table_import1")+datatable+trn("index_table_import2"), 2);
 			$("#okai").on("click", function() {
 				if($(this).attr("id") == "okai"){
 					$(sender.target).next().trigger('click');
@@ -240,7 +240,7 @@ function onToolBarClick(sender, args) {
 
 		case (action === 'clear-table'):
 
-			createDialog("warning", chrome.i18n.getMessage("index_table_clear_table"), chrome.i18n.getMessage("index_table_clear_table_msg"), 2);
+			createDialog("warning", trn("index_table_clear_table"), trn("index_table_clear_table_msg"), 2);
 
 			$("#okai").on("click", function() {
 				if($(this).attr("id") == "okai"){
@@ -260,12 +260,12 @@ function onToolBarClick(sender, args) {
 			// match ['getBotGames', 'getBotBadges','getSteamBadges', 'getUsersBadges']
 			// action acts as container/string for to be executed functions
 			// as strings for css/local and as process-name
-			createDialog("info", chrome.i18n.getMessage("index_table_"+action), chrome.i18n.getMessage("index_table_get_"+action+"_msg"), 2);
+			createDialog("info", trn("index_table_"+action), trn("index_table_get_"+action+"_msg"), 2);
 			$("#okai").on("click", function() {
 				if($(this).attr("id") == "okai"){
 					setTimeout(function(){
 						// Show progress
-						createDialog("info", chrome.i18n.getMessage("index_table_"+action+"_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+						createDialog("info", trn("index_table_"+action+"_progress"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
 						// Add loading-Indicator
 						$('.'+action).addClass('og-active');
 						// Start the worker via background-script

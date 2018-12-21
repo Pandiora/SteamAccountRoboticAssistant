@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((msg,snd,sendResponse)=>{
   ///////////////////////////////////////////////////////////////////////////////////
 
   if(msg.target && msg.target[0] == 'webworker'){
-    console.log(msg);
+
     bg.startWebworker(snd, msg);
     return true;
 

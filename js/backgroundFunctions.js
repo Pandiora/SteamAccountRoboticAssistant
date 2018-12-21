@@ -297,19 +297,17 @@ const bg = (() => {
 		msg.sender[1] = snd.tab.id;
 
 	    worker.postMessage(msg);
-	    worker.onmsg = function(e){
+	    worker.onmessage = function(e){
 	      const data = e.data;
 	      let ret = false;
 
 	      if(msg.status === 'done'){
 	        worker = new Worker('js/webworkers.js');
 	      }
-	      console.log(data);
 	      // ToDo: Update all of these to spare unnecessary loops
 	      chrome.windows.getAll({populate:true},function(windows){
 	        windows.some(function(window){
 	          window.tabs.some(function(tab){
-	            console.log(tab);
 	            if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
 	              chrome.tabs.sendMessage(tab.id, data);
 	              return ret=1;
