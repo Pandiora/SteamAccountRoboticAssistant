@@ -24,8 +24,7 @@ function getBotBadges(message){
               self.postMessage(Object.assign(message,{
                 action: 'UpdateProgress',
                 message: 'Add Badges to Database',
-                percentage: 99,
-                status: 'done'
+                percentage: 99
               }));
               //console.log(userarr);
               processUser(userarr);

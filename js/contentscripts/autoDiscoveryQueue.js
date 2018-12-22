@@ -3,11 +3,11 @@ $(document).ready(function() {
   // Detect if Script is active
   /////////////////////////////
   chrome.runtime.sendMessage({
-    process: 'discoveryQueue',
+    process: 'discoveryQueueBit',
     action: 'status'
-  }, function(stopme){
+  }, function(r){
 
-    if(stopme === 0) return;
+    if(r.status === 0) return;
 
     if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish" ||
       document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish&redir_ssl=1") {
@@ -18,7 +18,7 @@ $(document).ready(function() {
         } else {
           // When finished reset queue-status
           chrome.runtime.sendMessage({
-            process: 'discoveryQueue'
+            process: 'discoveryQueueBit',
             action: 'stop'
           });
         }
@@ -81,8 +81,8 @@ $(document).ready(function() {
 
         } else if(typeof cards_dropped == 'undefined'){
           chrome.runtime.sendMessage({
-            greeting: 'discoveryQueue'
-            action: 'ŝtop'
+            greeting: 'discoveryQueueBit',
+            action: 'stop'
           });
           alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
         } else {
@@ -90,8 +90,8 @@ $(document).ready(function() {
           chrome.runtime.sendMessage({
             process: 'userSkip',
             parameters: user
-          }, function(response) {
-            if (response == 1) {
+          }, function(r) {
+            if (r.status === 1) {
               jQuery.post('https://store.steampowered.com/logout/', {
                 sessionid: sessionID
               }).done((r)=>{

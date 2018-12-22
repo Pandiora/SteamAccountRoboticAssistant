@@ -1,17 +1,31 @@
 $(document).ready(function(){
 
-	$('body').css({opacity: 0.0, visibility: "visible"}).animate({opacity: 1.0}, 200);
 	$('.names:odd').css("background-color","rgba(0,0,0,0.2)");
 
 	// Autologin with one click on accountname
 	///////////////////////////////////////////////////////
-	$(document).on('click', '.names', function(){
+	$(document).on('click', '.names', function(e){
 
-		// Use clicked name for further processing
-		var name = $(this).text();
+		var name = $(this).text(),
+			that = $(this);
+
+		// remove name from list
+		if(!e.target.className){
+			chrome.runtime.sendMessage({
+			  action: 'start',
+			  process: 'userSkip',
+			  parameters: name
+			}, function(r){
+				if(r.status == 1) $(that).remove();
+			});
+			return;
+		}
 
 		$('.names').removeClass('active-green');
 		$(this).addClass('active-green');
+
+		// display loading-indicator
+		$('#gwrapper').css('visibility', 'visible');
 
 		// login User via background-page
 		chrome.runtime.sendMessage({
@@ -73,7 +87,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$(document).on('click', '#task_action_btn', function(){
+	$(document).on('click', '#task_action_btn', function(e){
 
 		/*
 			C O N F I G
@@ -97,7 +111,11 @@ $(document).ready(function(){
 			},
 			winterNomination: {
 				getTaskInput: 0,
-				redirectTo: 'https://store.steampowered.com//login/'				
+				redirectTo: 'https://store.steampowered.com//login/'
+			},
+			cozyCottage: {
+				getTaskInput: 0,
+				redirectTo: 'https://store.steampowered.com//login/'
 			}
 		};
 
@@ -107,7 +125,6 @@ $(document).ready(function(){
 				if(r.status === 1){
 					location.reload();
 				}
-
 			});
 			return;
 		}

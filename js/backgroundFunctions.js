@@ -155,7 +155,10 @@ const bg = (() => {
 		// do all login-stuff in this function
 		const login = await loginCrypto(user, baseurl);
 		if(login.action !== 'done'){
-			sendResponse({action: 'stop', message: login.message});
+			sendResponse({
+				action: 'stop', 
+				message: login.message
+			});
 			return;
 		}
 
@@ -195,8 +198,8 @@ const bg = (() => {
 		if(!rsa.success) return {action: 'stop', message: rsa};
 
 		// ToDo: add static-offset to spare one request
-		//const time 		= await getServerTime();
-		const authCode 			= generateAuthCode(user['shared_secret'], 0);
+		const time 		= await getServerTime();
+		const authCode 			= generateAuthCode(user['shared_secret'], time);
 		const pubKey 			= RSA.getPublicKey(rsa.publickey_mod, rsa.publickey_exp);
 		const password 			= user['login_pw'].replace(/[^\x00-\x7F]/g, ''); // remove non-ASCII chars
 		const encryptedPassword = RSA.encrypt(password, pubKey);

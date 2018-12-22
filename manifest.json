@@ -53,6 +53,7 @@
 				"css/steamLogin.css"
 			],
 			"js": [
+				"plugins/arrive/arrive.min.js",
 				"js/contentscripts/steamLoginStart.js"
 			],
 			"run_at": "document_start"
@@ -66,7 +67,6 @@
 				"*://store.steampowered.com/login/*"
 			],
 			"js": [
-				"plugins/arrive/arrive.min.js",
 				"js/contentscripts/steamLogin.js"
 			]
 		},
@@ -84,15 +84,8 @@
 			],
 			"js": [
 				"js/contentscripts/licenseBulkActivation.js",
-				"js/contentscripts/winterNomination.js"
-			]
-		},
-		{
-			"matches": [
-				"*://store.steampowered.com/*"
-			],
-			"js": [
-				"js/contentscripts/steamNomination.js"
+				"js/contentscripts/winterNomination.js",
+				"js/contentscripts/cozyCottageOpen.js"
 			]
 		},
 		{

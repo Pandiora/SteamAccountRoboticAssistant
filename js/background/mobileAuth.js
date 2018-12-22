@@ -82,36 +82,25 @@ function getConfirmationKey(identitySecret, time, tag) {
 	return dfd.promise();
 };
 
-function getServerTime(){
+async function getServerTime(){
 
-	var dfd = $.Deferred();
-
-	$.ajax({
-		type:"POST",
-		url: "https://api.steampowered.com/ITwoFactorService/QueryTime/v1/",
-		success: function(data){
-
-			var serverTime = data.response["server_time"];
-			var localTime = Math.floor(Date.now() / 1000);
-			var timeOffset = serverTime - localTime;
-			var time = Math.floor(Date.now() / 1000) + timeOffset;
-
-			dfd.resolve(time);
+	const startTime = Date.now(); 
+	const fetchData = await fun.fetchData({
+	  	delay: 0,
+		options: { 
+			method: 'POST',
+			credentials: 'include' 
 		},
-    	error: function (xhr, textStatus, errorThrown){
-			if (xhr.status == 503) {
-				// TODO: Add Retry
-				// This is service unavailable
-			} else if (xhr.status == 504) {
-				// TODO: Add Retry
-				// This is a gateway timeout
-			} else {
-				console.log('getting servertime failed - xhr-status: '+xhr.status+' xhr: '+xhr);
-			}
-		}
+		url: 'https://api.steampowered.com/ITwoFactorService/QueryTime/v1/',
+		format: 'json'
 	});
+	
+	const localTime = Date.now(); // also used as "endTime"
+	const latency 	= Math.floor(((localTime - startTime) + localTime)/1000);
+	const tOffset 	= fetchData.response.server_time - latency;
 
-	return dfd.promise();
+	return tOffset;
+
 }
 /*
 

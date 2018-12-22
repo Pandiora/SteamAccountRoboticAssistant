@@ -1,9 +1,9 @@
-function addMissingBadgesEntries(obj){
+function addMissingBadgesEntries(message){
   // post=true is used for users_badges action on frontend to fetch users badges
   // post=false is used to distribute cards to bots
-  console.log(obj);
-  const arr = obj.parameters[0];
-  const post = obj.parameters[1] || 0;
+  console.log(message);
+  const arr = message.parameters[0];
+  const post = message.parameters[1] || 0;
   var len = arr.length;
 
   (function next(counter, maxLoops) {
@@ -14,14 +14,23 @@ function addMissingBadgesEntries(obj){
         idb.opendb().then((db)=>{
           db.transaction("rw", 'steam_badges', ()=>{
             db.steam_badges.bulkAdd(arr).then((lastKey)=> {
-              if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Added missing entries. Done!'});
+              if(post) self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress',
+                message: 'Added missing entries. Done!',
+                percentage: 100,
+                status: 'done'
+              }));
             }).catch(Dexie.BulkError, (e)=>{
-              if(post) self.postMessage({msg: 'UpdateProgress', percentage: 100, message: 'Duplicates-Entrys: '+e.failures.length});
+              if(post) self.postMessage(Object.assign(message,{
+                action: 'UpdateProgress',
+                message: `Duplicates-Entrys: ${e.failures.length}`,
+                percentage: 100,
+                status: 'done'
+              }));
             });
           }).catch((err)=>{
             console.error(err);
           }).finally(()=>{
-            post ? self.postMessage({msg: 'UsersBadgesDone'}) : self.postMessage({msg: 'SteamBadgesDone'});
             self.close();
             db.close();
           });
