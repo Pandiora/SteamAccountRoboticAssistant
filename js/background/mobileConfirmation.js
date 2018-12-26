@@ -130,11 +130,10 @@ async function processConfirmation(operation, items) {
 	    // We need to modify the Referer dynamically
 	    mod.execModConfHeader(confurl,'start');
 
-	    const fetchData = fun.fetchData({
+	    const fetchData = await fun.fetchData({
 	    	url: opurl,
 	    	format: 'json'
 	    });
-
 	    // don't forget to remove the listener
     	mod.execModConfHeader(confurl,'start');
 
@@ -145,17 +144,19 @@ async function processConfirmation(operation, items) {
 	    }
 
 	    // remove the item on frontend
-		if(tab) browser.tabs.sendMessage(tab, {
+		if(tab) browser.tabs.sendMessage(tab.id, {
 			process: 'removeNotification',
 			status: 'active', 
-			cid: item.cid,
-			ck: item.ck
+			parameters: {
+				cid: item.cid,
+				ck: item.ck
+			}
 		});
 
 	}
 
 	// stop spinner on frontend
-	if(tab) browser.tabs.sendMessage(tab, {
+	if(tab) browser.tabs.sendMessage(tab.id, {
 		process: 'removeNotification',
 		status: 'done'
 	});
