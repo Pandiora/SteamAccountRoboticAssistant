@@ -1,3 +1,5 @@
+jQuery(document).ready(()=> coz.start());
+
 const coz = (() =>{
 
 	const sessionid  = () => {
@@ -72,65 +74,66 @@ const coz = (() =>{
 
 
 
-	var doorsDone = () => {
+	var doorsDone = async() => {
 
         const user = jQuery('#account_pulldown').text();
 
-        chrome.runtime.sendMessage({
+        const r = await browser.runtime.sendMessage({
           process: 'userSkip',
           parameters: user
-        }, function(r) {
-          if (r.status === 1) {
-
-          	console.log("All closed doors are opened! Logging out ...");
-            jQuery.post('https://store.steampowered.com/logout/', {
-            	sessionid: sessionid()
-            }).done(()=>{
-              document.location = 'https://store.steampowered.com/login/';
-            });
-          }
         });
+        
+		if (r.status === 1) {
+			console.log("All closed doors are opened! Logging out ...");
+			jQuery.post('https://store.steampowered.com/logout/', {
+				sessionid: sessionid()
+			}).done(()=>{
+			  document.location = 'https://store.steampowered.com/login/';
+			});
+		}
 
 	};
 
 
 
-	return {
-		openDoors
-	}
+	const start = async() => {
 
-})();
-
-jQuery(document).ready(function(){
-
-	chrome.runtime.sendMessage({
-		process: 'cozyCottageBit',
-		action: 'status'
-	}, function(res){
+		const href = document.location.href;
+		const res = await browser.runtime.sendMessage({
+			process: 'cozyCottageBit',
+			action: 'status'
+		});
 
 		if(res.status === 0) return;
 
-		if(document.location.href.indexOf("login") > -1){
+		if(href.indexOf("login") > -1){
 
 			setTimeout(function(){
 				if (jQuery('.names').length > 0) {
 					jQuery('.names:eq(0)').click();
 				} else {
-					chrome.runtime.sendMessage({
+					browser.runtime.sendMessage({
 						process: 'cozyCottageBit',
 						action: 'stop'
 					});
 				}
 			}, 500);
 
-		} else if(document.location.href.indexOf("store") > -1){
+		} else if(href.indexOf("store") > -1){
 
 			if(jQuery('#account_pulldown').text() === ""){
 				document.location = "https://store.steampowered.com/login/";
 			} else {
-				coz.openDoors();
+				openDoors();
 			}
 
 		}
-	});
-});
+	}
+
+
+
+	return {
+		start
+	}
+
+})();

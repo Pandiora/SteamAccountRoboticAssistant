@@ -9,7 +9,7 @@
 			"plugins/jQuery/jquery-3.3.1.min.js",
 			"plugins/validate/jquery.validate.min.js",
 			"plugins/validate/jquery.validate.unobtrusive.min.js",
-			"plugins/cEA/chromeExtensionAsync.js",
+			"plugins/webextensionPolyfill/browser-polyfill.min.js",
 			"plugins/randomColor/randomColor.js",
 			"plugins/bigInteger/bigInteger.js",
 			"plugins/MomentJS/moment.min.js",
@@ -43,11 +43,19 @@
 		},
 		{
 			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"plugins/webextensionPolyfill/browser-polyfill.min.js"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://steamcommunity.com/login*",
-				"*://store.steampowered.com//login*",
-				"*://store.steampowered.com//login/*",
+				"*://steamcommunity.com//login*",
 				"*://store.steampowered.com/login*",
-				"*://store.steampowered.com/login/*"
+				"*://store.steampowered.com//login*"
 			],
 			"css": [
 				"css/steamLogin.css"
@@ -61,10 +69,9 @@
 		{
 			"matches": [
 				"*://steamcommunity.com/login*",
-				"*://store.steampowered.com//login*",
-				"*://store.steampowered.com//login/*",
+				"*://steamcommunity.com//login*",
 				"*://store.steampowered.com/login*",
-				"*://store.steampowered.com/login/*"
+				"*://store.steampowered.com//login*"
 			],
 			"js": [
 				"js/contentscripts/steamLogin.js"
@@ -75,15 +82,8 @@
 				"*://store.steampowered.com/*"
 			],
 			"js": [
-				"js/contentscripts/autoDiscoveryQueue.js"
-			]
-		},
-		{
-			"matches": [
-				"*://store.steampowered.com/*"
-			],
-			"js": [
 				"js/contentscripts/licenseBulkActivation.js",
+				"js/contentscripts/autoDiscoveryQueue.js",
 				"js/contentscripts/winterNomination.js",
 				"js/contentscripts/cozyCottageOpen.js"
 			]
@@ -127,10 +127,6 @@
 	"web_accessible_resources": [
 		"js/webworkers.js"
 	],
-	"sandbox": {
-		"pages": [],
-		"content_security_policy": "sandbox allow-scripts; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-	},
 	"icons": {
 		"16": "images/icon-16x16.png",
 		"48": "images/icon-48x48.png",

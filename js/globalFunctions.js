@@ -256,6 +256,7 @@ const fun = (() => {
         fetchData,
         fetchChain,
         objKeysToArr,
+        sleep,
         symDiff,
         waitForEl,
         wipeObjByKeyVal,
@@ -268,3 +269,5 @@ function trn(str){
     const translated = chrome.i18n.getMessage(str);
     return translated;
 }
+
+          

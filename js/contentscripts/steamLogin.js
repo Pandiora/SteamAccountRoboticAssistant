@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-	$('.names:odd').css("background-color","rgba(0,0,0,0.2)");
-
 	// Autologin with one click on accountname
 	///////////////////////////////////////////////////////
 	$(document).on('click', '.names', function(e){
@@ -9,46 +7,41 @@ $(document).ready(function(){
 		var name = $(this).text(),
 			that = $(this);
 
+		handleActions(name, e, that);
+	});
+
+	async function handleActions(name, e, that){
+
 		// remove name from list
 		if(!e.target.className){
-			chrome.runtime.sendMessage({
+			const b = await browser.runtime.sendMessage({
 			  action: 'start',
 			  process: 'userSkip',
 			  parameters: name
-			}, function(r){
-				if(r.status == 1) $(that).remove();
 			});
+			if(b.status == 1) $(that).remove();
 			return;
 		}
 
 		$('.names').removeClass('active-green');
-		$(this).addClass('active-green');
+		$(that).addClass('active-green');
 
 		// display loading-indicator
 		$('#gwrapper').css('visibility', 'visible');
 
 		// login User via background-page
-		chrome.runtime.sendMessage({
+		const res = await browser.runtime.sendMessage({
 			process: 'loginUser',
 			parameters: name
-		}, (res)=>{
-			if(res.action === 'done'){
-				document.location.reload();
-			} else {
-				console.log(res);
-			}
 		});
-	});
 
-	// Prevent scrolling of body if list is scrolled with mousewheel
-	///////////////////////////////////////////////////////
-	/*$('.loginbox_right').on('mouseover mouseout', function(e){
-		if(e.type == 'mouseover'){
-			$('body').css({'overflow': 'hidden'});
+		if(res.action === 'done'){
+			document.location.reload();
 		} else {
-			$('body').css({'overflow': 'auto'});
+			console.log(res);
 		}
-	});*/
+
+	}
 
 
 	// SEARCH-FUNCTION N STUFF FOR AUTOLOGIN
@@ -88,6 +81,10 @@ $(document).ready(function(){
 	});
 
 	$(document).on('click', '#task_action_btn', function(e){
+		handleTasks();
+	});
+
+	async function handleTasks(){
 
 		/*
 			C O N F I G
@@ -121,11 +118,10 @@ $(document).ready(function(){
 
 		// uncatched options are used for skips
 		if(Object.keys(objSelected).indexOf(option) < 0){
-			chrome.runtime.sendMessage({process: option},function(r){
-				if(r.status === 1){
-					location.reload();
-				}
-			});
+			const s = await browser.runtime.sendMessage({process: option});
+			if(s.status === 1){
+				location.reload();
+			}
 			return;
 		}
 
@@ -137,14 +133,15 @@ $(document).ready(function(){
 		  parameters: { appid: '' }
 		};
 
+		// action requires input
 		if(objSelected[option].getTaskInput === 1){
 			if(input !== ''){ message.parameters.appid = input; } 
 			else 			{ alert('Input is empty!'); return; }
 		}
 
-		chrome.runtime.sendMessage(message, function(r){
-			if(r.status === 1) document.location.href = objSelected[option].redirectTo;
-		});
-		
-	});
+		const k = await browser.runtime.sendMessage(message);
+		if(k.status == 1) document.location.href = objSelected[option].redirectTo;
+
+	}
+
 });

@@ -75,38 +75,6 @@ function loadDatabaseContent(eid){
 	}
 }
 
-function createDialog(type, title, content, btncnt){
-
-	var btn_list = "";
-
-	// Set up buttons for inserting them into dialog
-	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+trn("inventory_okay_btn")+'</button></td>'; }
-	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+trn("inventory_okay_btn")+'</button><button id="cancel">'+trn("inventory_cancel_btn")+'</button></td>'; }
-
-	// Set up Modal parameters
-	$("#dialog").ejDialog({
-		title: title,
-		allowDraggable: false,
-		enableResize: false,
-		faviconCSS: type
-	});
-
-	// Fill Modal with content
-	$("#dialog").ejDialog("setContent", '<td>'+content+'</td>'+btn_list);
-
-	// Open Modal
-	$("#dialog").ejDialog("open");
-
-	// Wait for action / button-click
-	$("#okai, #cancel, #dialog_closebutton").on("click", function() {
-
-		// Close Modal on button-clicks
-		$("#dialog").ejDialog("close");
-
-	});
-
-}
-
 $(document).ready(function(){
 
 	$(document).on('change', '#accounts-json', function(){
@@ -172,6 +140,38 @@ $(document).ready(function(){
 
 
 });
+
+function createDialog(type, title, content, btncnt){
+
+	var btn_list = "";
+
+	// Set up buttons for inserting them into dialog
+	if(btncnt == 1){ btn_list = '<td style="width:100%; float:left;"><button id="cancel">'+trn("inventory_okay_btn")+'</button></td>'; }
+	else if(btncnt == 2){	btn_list = '<td style="width:100%; float:left;"><button id="okai">'+trn("inventory_okay_btn")+'</button><button id="cancel">'+trn("inventory_cancel_btn")+'</button></td>'; }
+
+	// Set up Modal parameters
+	$("#dialog").ejDialog({
+		title: title,
+		allowDraggable: false,
+		enableResize: false,
+		faviconCSS: type
+	});
+
+	// Fill Modal with content
+	$("#dialog").ejDialog("setContent", '<td>'+content+'</td>'+btn_list);
+
+	// Open Modal
+	$("#dialog").ejDialog("open");
+
+	// Wait for action / button-click
+	$("#okai, #cancel, #dialog_closebutton").on("click", function() {
+
+		// Close Modal on button-clicks
+		$("#dialog").ejDialog("close");
+
+	});
+
+}
 
 // Fix the Scrollbar-Crap with built-in (browser) scrollbar-feature
 // the Syncfusion-Scrollbar has weird bugs, bad performance

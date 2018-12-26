@@ -5,11 +5,11 @@
 
 	Generate below object with this script when on nominations-page
 
-	var cat = $J('.category_nominations_ctn').map(function(){ return $J(this).data('voteid')});
-	var obj = {};
+	const cat = $J('.category_nominations_ctn').map(function(){ return $J(this).data('voteid')});
+	const obj = {};
 
-	for(var i=0;i<cat.length;i++){
-		var appids = $J('.category_nominations_ctn:eq('+i+') div.category_nomination')
+	for(const i=0;i<cat.length;i++){
+		const appids = $J('.category_nominations_ctn:eq('+i+') div.category_nomination')
 		.map(function(e){
 			return {
 				appid: $J(this).data('vote-appid'),
@@ -23,7 +23,7 @@
 */
 
 // Object contains all possible to be voted games/devs (Winter 2018)
-var nominations = {
+const nominations = {
 	"26":[
 		{"appid":578080,"title":"PLAYERUNKNOWNS_BATTLEGROUNDS"},
 		{"appid":582010,"title":"MONSTER_HUNTER_WORLD"},
@@ -86,25 +86,27 @@ var nominations = {
 	]
 };
 
-var nom = (() => {
+jQuery(document).ready(() =>{ nom.start(); });
 
-	var categories = () => {
+const nom = (() => {
+
+	const categories = () => {
 		return Object.keys(nominations);
 	};
 
-	var sessionid  = () => {
+	const sessionid  = () => {
 		return /sessionid=(.{24})/.exec(document.cookie)[1];
 	};
 
-	var nominate = (count, retries) => {
+	const nominate = (count, retries) => {
 
 		retries++;
 		if(count++ >= categories().length){ nominateDone(); return; }
 
 		// maybe change original object to provide info about if dev or app
-		var arr = rndValFromArr(nominations[ categories()[count-1] ]);
-		var id  = (categories()[count-1] != 29) ? arr.appid : 0;
-		var params = {
+		const arr = rndValFromArr(nominations[ categories()[count-1] ]);
+		const id  = (categories()[count-1] != 29) ? arr.appid : 0;
+		const params = {
 			sessionid: sessionid(),
 			voteid: categories()[count-1],
 			appid: id,
@@ -131,43 +133,37 @@ var nom = (() => {
 
 	};
 
-	var nominateDone = () => {
+	const nominateDone = async() => {
 
-        var user = jQuery('#account_pulldown').text();
+	    const user = jQuery('#account_pulldown').text();
 
-        chrome.runtime.sendMessage({
-          process: 'userSkip',
-          parameters: user
-        }, function(r) {
-          if (r.status === 1) {
-
-          	console.log("All possible votes are done! Logging out ...");
-            jQuery.post('https://store.steampowered.com/logout/', {
-            	sessionid: sessionid()
-            }).done(()=>{
-              document.location = 'https://store.steampowered.com/login/';
-            });
-          }
-        });
+	    const r = await browser.runtime.sendMessage({
+	      process: 'userSkip',
+	      parameters: user
+	    });
+          
+		if (r.status === 1) {
+			console.log("All possible votes are done! Logging out ...");
+			jQuery.post('https://store.steampowered.com/logout/', {
+				sessionid: sessionid()
+			}).done(()=>{
+			  document.location = 'https://store.steampowered.com/login/';
+			});
+		}
 
 	};
 
-	var rndValFromArr = (arr) => {
+	const rndValFromArr = (arr) => {
 		return arr[Math.floor(Math.random() * arr.length)];
 	};
 
-	return {
-		nominate
-	};
 
-})();
+	const start = async() => {
 
-jQuery(document).ready(function(){
-
-	chrome.runtime.sendMessage({
-		process: 'winterNominationBit',
-		action: 'status'
-	}, function(res){
+		const res = await browser.runtime.sendMessage({
+			process: 'winterNominationBit',
+			action: 'status'
+		});
 
 		if(res.status === 0) return;
 
@@ -177,7 +173,7 @@ jQuery(document).ready(function(){
 				if (jQuery('.names').length > 0) {
 					jQuery('.names:eq(0)').click();
 				} else {
-					chrome.runtime.sendMessage({
+					browser.runtime.sendMessage({
 						process: 'winterNominationBit',
 						action: 'stop'
 					});
@@ -189,9 +185,16 @@ jQuery(document).ready(function(){
 			if(jQuery('#account_pulldown').text() === ""){
 				document.location = "https://store.steampowered.com/login/";
 			} else {
-				nom.nominate(0,0);
+				nominate(0,0);
 			}
 
 		}
-	});
-});
+
+	}
+
+
+	return {
+		start
+	};
+
+})();

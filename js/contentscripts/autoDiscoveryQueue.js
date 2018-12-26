@@ -1,113 +1,122 @@
-$(document).ready(function() {
+
+$(document).ready(function(){
+  startDiscovery();
+});
+
+async function startDiscovery(){
 
   // Detect if Script is active
   /////////////////////////////
-  chrome.runtime.sendMessage({
+  const r = await browser.runtime.sendMessage({
     process: 'discoveryQueueBit',
     action: 'status'
-  }, function(r){
+  });
+  
+  if(r.status == 0) return;
 
-    if(r.status === 0) return;
+  if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish" ||
+    document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish&redir_ssl=1") {
+    // Click first entry until none is left
+    setTimeout(function(){
+      if ($('.names').length > 0) {
+        $('.names:eq(0)').click();
+      } else {
+        // When finished reset queue-status
+        browser.runtime.sendMessage({
+          process: 'discoveryQueueBit',
+          action: 'stop'
+        });
+      }
+    }, 500);
+  } else if (document.location.href == "https://store.steampowered.com/explore/?l=english"){
 
-    if(document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish" ||
-      document.location.href == "https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish&redir_ssl=1") {
-      // Click first entry until none is left
-      setTimeout(function(){
-        if ($('.names').length > 0) {
-          $('.names:eq(0)').click();
-        } else {
-          // When finished reset queue-status
-          chrome.runtime.sendMessage({
-            process: 'discoveryQueueBit',
-            action: 'stop'
-          });
-        }
-      }, 500);
-    } else if (document.location.href == "https://store.steampowered.com/explore/?l=english"){
+    var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
+    discQueue();
 
-      var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
-      discQueue();
+    async function discQueue(){
 
-      function discQueue(){
+      var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/[+-]?\b\d+\b/g,'');
+      var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/[+-]?\b\d+\b/g,'');
 
-        var cards_dropped = jQuery('.discovery_queue_winter_sale_cards_header h3').text().replace(/[+-]?\b\d+\b/g,'');
-        var cards_remaining = jQuery('.discovery_queue_winter_sale_cards_header .subtext').text().replace(/[+-]?\b\d+\b/g,'');
+      // cards_dropped == '' for the beginning of the sale when there is no number on cards dropped
+      // ((cards_dropped%3 == 0) && (cards_remaining != '')) for day 2 and next days of sale
+      // ((cards_remaining != '') && (cards_remaining >= 2)) for day 2 and next days of sale
 
-        // cards_dropped == '' for the beginning of the sale when there is no number on cards dropped
-        // ((cards_dropped%3 == 0) && (cards_remaining != '')) for day 2 and next days of sale
-        // ((cards_remaining != '') && (cards_remaining >= 2)) for day 2 and next days of sale
+      if(
+        (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
+      ){
 
-        if(
-          (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
-        ){
+        var GenerateQueue = function(queueNumber) {
+        console.log('Queue #' + ++queueNumber);
 
-          var GenerateQueue = function(queueNumber) {
-          console.log('Queue #' + ++queueNumber);
+        jQuery.post('https://store.steampowered.com/explore/generatenewdiscoveryqueue', {
+          sessionid: sessionID,
+          queuetype: 0
+        }).done(function(data) {
+          var requests = [];
 
-          jQuery.post('https://store.steampowered.com/explore/generatenewdiscoveryqueue', {
-            sessionid: sessionID,
-            queuetype: 0
-          }).done(function(data) {
-            var requests = [];
+          for (var i = 0; i < data.queue.length; i++) {
+            requests.push(jQuery.post('https://store.steampowered.com/app/10', {
+              appid_to_clear_from_queue: data.queue[i],
+              sessionid: sessionID
+            }));
+          }
 
-            for (var i = 0; i < data.queue.length; i++) {
-              requests.push(jQuery.post('https://store.steampowered.com/app/10', {
-                appid_to_clear_from_queue: data.queue[i],
-                sessionid: sessionID
-              }));
-            }
-
-            jQuery.when.apply(jQuery, requests).done(function() {
-              if (queueNumber < 3) {
-                GenerateQueue(queueNumber);
-              } else {
-                location.reload();
-              }
-            });
-          }).fail(function() {
-            setTimeout(function() {
-              GenerateQueue(0);
-            }, 1000);
-          });
-          };
-          setTimeout(function() {
-          GenerateQueue(0);
-          }, 1000);
-
-          setTimeout(function() {
-          location.reload();
-          }, 10000);
-
-
-        } else if(typeof cards_dropped == 'undefined'){
-          chrome.runtime.sendMessage({
-            greeting: 'discoveryQueueBit',
-            action: 'stop'
-          });
-          alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
-        } else {
-          var user = $('#account_pulldown').text();
-          chrome.runtime.sendMessage({
-            process: 'userSkip',
-            parameters: user
-          }, function(r) {
-            if (r.status === 1) {
-              jQuery.post('https://store.steampowered.com/logout/', {
-                sessionid: sessionID
-              }).done((r)=>{
-                document.location = 'https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish';
-              });
+          jQuery.when.apply(jQuery, requests).done(function() {
+            if (queueNumber < 3) {
+              GenerateQueue(queueNumber);
             } else {
-              alert("There is a problem with your username!");
+              location.reload();
             }
           });
-        }
+        }).fail(function() {
+          setTimeout(function() {
+            GenerateQueue(0);
+          }, 1000);
+        });
+        };
+        setTimeout(function() {
+        GenerateQueue(0);
+        }, 1000);
 
+        setTimeout(function() {
+        location.reload();
+        }, 10000);
+
+
+      } else if(typeof cards_dropped == 'undefined'){
+        browser.runtime.sendMessage({
+          greeting: 'discoveryQueueBit',
+          action: 'stop'
+        });
+        alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
+      } else {
+        var user = $('#account_pulldown').text();
+        const s = await browser.runtime.sendMessage({
+          process: 'userSkip',
+          parameters: user
+        });
+        
+        if (s.status === 1) {
+          jQuery.post('https://store.steampowered.com/logout/', {
+            sessionid: sessionID
+          }).done((s)=>{
+            document.location = 'https://store.steampowered.com/login/?redir=explore%2F%3Fl%3Denglish';
+          });
+        } else {
+          alert("There is a problem with your username!");
+        }
       }
 
     }
-  });
-});
+
+  }
+
+
+}
+
+
+
 
 
 // Awards
@@ -221,11 +230,11 @@ function discQueue(){
 
 
   } else if(typeof cards_left == 'undefined'){
-    chrome.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
+    browser.runtime.sendMessage({greeting: 'setDiscoveryQueueStatusInactive'});
     alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
   } else if(cards_left == ''){
     var user = $('#account_pulldown').text();
-    chrome.runtime.sendMessage({
+    browser.runtime.sendMessage({
       greeting: 'setSkipForLogin',
       user: user
     }, function(response) {

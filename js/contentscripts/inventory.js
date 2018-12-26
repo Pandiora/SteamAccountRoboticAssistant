@@ -190,6 +190,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
       }, 5000);
     }
 	}
+  return true;
 });
 
 function updateProgress(percent, message, price_add, amount){

@@ -61,7 +61,7 @@ Now using Mutation Observer for better performance
 $(document).on("ready", function() {
 	$('[data-i18n]').each(function() {
 		var datavalue = $(this).data('i18n');
-		$(this).prepend(chrome.i18n.getMessage(datavalue));
+		$(this).prepend(browser.i18n.getMessage(datavalue));
 	});
 
 	// Listen for added elements and iterate over nodelist
@@ -75,7 +75,7 @@ $(document).on("ready", function() {
 				var nodes = $(index).find('[data-i18n]');
 				$(nodes).each(function() {
 					var datavalue = $(this).data('i18n');
-					$(this).prepend(chrome.i18n.getMessage(datavalue));
+					$(this).prepend(browser.i18n.getMessage(datavalue));
 				});
 
 			});
@@ -86,46 +86,7 @@ $(document).on("ready", function() {
 	observer.observe(target, config);
 });
 
-// Add Listeners for communication with background-page
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
-	if(sender.id == chrome.runtime.id && !("url" in sender)){
-		console.log(message);
-		if(message.greeting == "notifications-trades"){
 
-			addNotificationsTrades();
-
-		} else if(message.greeting == "update-progress"){
-
-			updateProgress(message.percent, message.message);
-
-		} else if(message.greeting == "remove-notification"){
-
-			// Remove the latest removed item when it was succesfully confirmed
-			$('.notifications-item-container[data-confid="'+message.cid+'"][data-key="'+message.ck+'"]').fadeOut(400, function(){
-				$(this).remove();
-				updateNotificationCnt();
-			});
-
-		} else if(message.action == "UpdateProgress"){
-
-			updateProgress(message.percentage, message.message);
-			if(message.status === 'done'){
-				setTimeout(()=>{
-					$("#dialog").ejDialog("close");
-					$(message.process).removeClass('og-active');
-
-					var grid = $('#db_frontend_content').ejGrid('instance');
-					idb.fillGrid(datatable).done(function(data){
-						grid.dataSource(data);
-					});
-				}, 5000);	
-			}
-
-		} else {
-			console.log(chrome.i18n.getMessage("index_listener_malformed"), message);
-		}
-	}
-});
 
 $(document).ready(function(){
 
@@ -212,3 +173,4 @@ function updateProgress(percent, message){
 	}
 
 }
+

@@ -24,7 +24,8 @@
   <script type='text/javascript' src="plugins/AdminLTE/app.min.js"></script>
   <script type='text/javascript' src='plugins/Dexie/Dexie.min.js'></script>
   <script type='text/javascript' src='plugins/MomentJS/moment.min.js'></script>
-  <script type='text/javascript' src='plugins/jsCookie/cookie.min.js'></script>
+  <script type='text/javascript' src='plugins/Bootbox/bootbox.min.js'></script>
+  <script type='text/javascript' src='plugins/webextensionPolyfill/browser-polyfill.min.js'></script>
 
   <!-- SYNCFUSION - needs to be loaded very early to avoid ej being undefined -->
   <script type='text/javascript' src='plugins/syncfusion/ej.widget.all.min.js'></script>
@@ -32,6 +33,7 @@
   <!-- JS-SARA -->
   <script type='text/javascript' src='js/database.js'></script>
   <script type='text/javascript' src='js/globalFunctions.js'></script>
+  <script type='text/javascript' src="js/mainNotifications.js"></script>
   <script type='text/javascript' src="js/main.js"></script>
   <script type='text/javascript' src='app_templates/js/database.frontend.js'></script>
 
@@ -57,38 +59,64 @@
         </a>
         <div class="navbar-custom-menu">
           <ul class="nav navbar-nav">
+
+
             <li class="dropdown messages-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <a data-target="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-envelope-o"></i>
-                <span class="label label-success">4</span>
+                <span class="label label-success">0</span>
               </a>
-              <ul class="dropdown-menu">
-                <li class="header">You have 4 messages</li>
-                <li>
-                  <ul class="menu">
+              <ul id="notifications" class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+
+                  <ul class="nav nav-tabs nav-justified">
                     <li>
-                      <a href="#">
-                        <div class="pull-left">
-                          <img src="" class="img-circle" alt="User Image">
-                        </div>
-                        <h4>
-                          Support Team
-                          <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
+                      <a data-target="#market" data-toggle="tab">
+                        <i class="fa fa-line-chart"></i>
+                        <span>Market</span>
+                        <span class="label label-success">0</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a data-target="#trades" data-toggle="tab">
+                        <i class="fa fa-exchange"></i>
+                        <span>Trades</span>
+                        <span class="label label-success">0</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a data-target="#gifts" data-toggle="tab">
+                        <i class="fa fa-gift"></i>
+                        <span>Gifts</span>
+                        <span class="label label-success">0</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a id="reloadNotifications">
+                        <i class="fa fa-refresh"></i>
+                        <span></span>
                       </a>
                     </li>
                   </ul>
-                </li>
-                <li class="footer"><a href="#">See All Messages</a></li>
+
+                  <div class="btn-group btn-group-justified notifications-controls noti-all" role="group">
+                    <a class="btn btn-default confirm" data-action="allow" role="button">Accept all</a>
+                    <a class="btn btn-default decline" data-action="cancel" role="button">Decline all</a>
+                  </div>
+                  
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="market"></div>
+                    <div class="tab-pane"        id="trades"></div>
+                    <div class="tab-pane"        id="gifts"></div>
+                  </div>
+
               </ul>
             </li>
 
-            <li class="dropdown user user-menu">
+            <!--<li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-sign-out"></i><span class="hidden-xs">Logout</span>
               </a>
-            </li>
+            </li>-->
 
           </ul>
         </div>

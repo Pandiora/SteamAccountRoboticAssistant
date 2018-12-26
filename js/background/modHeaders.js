@@ -1,27 +1,55 @@
-function modConfirmationHeaders(details){
+const mod = (() => {
 
-  // Add Referer to emulate site-request
-  //////////////////////////////////////
-  var headers = details.requestHeaders,
-  blockingResponse = {};
+  let vars = {
+    confLink: ''
+  };
 
-  for( var i = 0, l = headers.length; i < l; ++i ) {
-    if(headers[i].name == 'Cookie'){
-      headers[i].value = headers[i].value+" mobileClientVersion=0 (2.1.3); mobileClient=android; Steam_Language=english; dob=;";
-    } else if(headers[i].name == 'User-Agent'){
-      headers[i].value = "Mozilla/5.0 (Linux; Android 6.0; Nexus 6P Build/XXXXX; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/47.0.2526.68 Mobile Safari/537.36";
+  const modConfirmationHeaders = (details) => {
+    // Add Referer to emulate site-request
+    //////////////////////////////////////
+    var headers = details.requestHeaders,
+    blockingResponse = {};
+
+    for( var i = 0, l = headers.length; i < l; ++i ) {
+      if(headers[i].name == 'Cookie'){
+        headers[i].value = headers[i].value+" mobileClientVersion=0 (2.1.3); mobileClient=android; Steam_Language=english; dob=;";
+      } else if(headers[i].name == 'User-Agent'){
+        headers[i].value = "Mozilla/5.0 (Linux; Android 6.0; Nexus 6P Build/XXXXX; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/47.0.2526.68 Mobile Safari/537.36";
+      }
     }
+
+    var b = new Object();
+    b.name = 'Referer';
+    b.value = vars.confLink;
+    headers.push(b);
+
+    blockingResponse.requestHeaders = headers;
+    return blockingResponse;
+  };
+
+  const execModConfHeader = (url, action) => {
+
+      vars.confLink = url;
+
+      if(action === 'start')
+        browser.webRequest.onBeforeSendHeaders
+        .addListener(modConfirmationHeaders, {
+          urls: ["https://steamcommunity.com/mobileconf/ajaxop?*"]
+        }, ['requestHeaders', 'blocking']);
+
+      if(action === 'stop')
+        browser.webRequest.onBeforeRequest
+        .removeListener(modConfirmationHeaders);
+
+  };
+
+
+  return {
+    execModConfHeader
   }
 
-  var b = new Object();
-  b.name = 'Referer';
-  b.value = conf_link;
-  headers.push(b);
+})();
 
-  blockingResponse.requestHeaders = headers;
-  return blockingResponse;
-
-}
 
 function modLoginHeaders(details){
 
@@ -49,6 +77,26 @@ function modLoginHeaders(details){
   return blockingResponse;
 
 }
+
+//
+// Replace Headers to retrieve mobile-conf
+////////////////////////////////////////////////////////////////////
+chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
+  var headers = details.requestHeaders,
+  blockingResponse = {};
+
+  //console.log('Replacing Headers for Tradeoffer.');
+
+  for( var i = 0, l = headers.length; i < l; ++i ) {
+    if(headers[i].name == 'Origin') headers[i].value = 'https://steamcommunity.com';
+  }
+
+  headers.push({name: 'X-Requested-With', value: 'com.valvesoftware.android.steam.community'});
+
+  blockingResponse.requestHeaders = headers;
+  return blockingResponse;
+},{urls: [ "https://steamcommunity.com/mobileconf/*" ]},['requestHeaders','blocking']);
+
 
 //
 // Replace Header-Origin and -Referer to accept trades automatically

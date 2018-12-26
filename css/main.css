@@ -32,6 +32,8 @@ ul.chart-legend {
 */
 .content-wrapper {
     background-color: #2e3b41;
+    max-height: calc(100vh - 50px);
+    overflow-y: auto;
 }
 .box {
     border-color: #1d222e;
@@ -99,3 +101,180 @@ body, .box-header {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Notifications Area */
+#notifications {
+  width: 350px;
+  max-height: calc(100vh - 65px);
+  min-height: 200px;
+}
+#notifications .nav-justified>li>a, 
+#notifications .nav-tabs>li>a,
+#notifications .nav-tabs>li.active>a
+#notifications .nav-tabs>li>a:hover {
+  border-width: 0;
+  border-radius: 0;
+}
+#notifications .nav-tabs {
+  border-bottom: 1px solid #086fac;
+}
+#notifications .nav-tabs>li:not(.active)>a:hover,
+#notifications .nav-tabs>li.active>a {
+  background-color: #086fac;
+}
+#notifications .nav-tabs>li:not(.active)>a:hover {
+  cursor: pointer;
+}
+.tab-content {
+  padding: 5px;
+  overflow-y: auto;
+  max-height: calc(100vh - 145px);
+}
+
+
+
+.media {
+  cursor: pointer;
+  margin-top: 3px;
+}
+.media, .notifications-controls:not(noti-all) {
+  background-color: #22242a;
+}
+.notifications-item-description:not(:first-child) {
+  height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.notifications-item-description:first-child {
+  font-weight: bold;
+  width: 290px;
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.notifications-item-description small {
+  float: right;
+  line-height: 21px;
+}
+.notifications-controls {
+  display: none;
+}
+.noti-all {
+  display: none;
+  padding: 5px;
+  background: none !important;
+}
+.noti-all .btn {
+  border: 0 !important;
+}
+.notifications-controls .btn {
+  border-color: #22242a;
+  border-width: 5px;
+  padding: 0px;
+  line-height: 25px;
+  color: #fff !important;
+  background-color: #403e3e;
+}
+.confirm:hover,
+.nia-ok:hover {
+  opacity: 0.8;
+  background-color: #00a65a;
+}
+.nia-det:hover {
+  opacity: 0.8;
+  background-color: #a5a52f;
+}
+.decline:hover,
+.nia-br:hover {
+  opacity: 0.8;
+  background-color: #914586;
+}
+
+
+/* Dialog-Box Icons and Styling */
+#dialog_wrapper:before {
+  content: "";
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  display: block;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0,0,0,0.70);
+}
+.e-close:before { padding-top: 3px; }
+.e-close { outline:0; }
+.e-title { padding-top: 2px; }
+.e-dialog-favicon .e-dialog-custom { background-size: 100% auto; }
+.info { background-image: url('../../../images/info.png'); }
+.warning { background-image: url('../../../images/warning.png'); }
+.error { background-image: url('../../../images/error.png'); }
+#okai, #cancel {
+  height: 25px;
+  width: 40%;
+  margin: 5%;
+  outline: 0;
+  background-color: #212121;
+  border: 2px solid #179BD7;
+  -webkit-transition: all 0.1s;
+  -moz-transition: all 0.1s;
+  transition: all 0.1s;
+}
+#okai:hover, #cancel:hover {
+  border-color: #56C1F2;
+  cursor: pointer;
+}
+#okai:active, #cancel:active {
+  background-color: #56C1F2;
+}
+/* Progressbar for dialog_wrapper */
+#progress-bar {
+  background-color: #1a1a1a;
+  height: 35px;
+  padding: 5px;
+  width: 370px;
+  margin: 10px 0;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+}
+#progress-bar span::after {
+  content: attr(data-value) "%";
+  height: 25px;
+  line-height: 25px;
+  font-size: 17px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+  font-family: 'Helvetica';
+  display: table;
+  margin: 0 auto;
+}
+#progress-bar span {
+  display: inline-block;
+  overflow: visible;
+  height: 25px;
+  border-radius: 3px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .5) inset, 0 1px 0 #444;
+  transition: width .4s ease-in-out;
+  background-color: #34c2e3;
+  background-size: 30px 30px;
+  background-image: linear-gradient(135deg,
+    rgba(255, 255, 255, .15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, .15) 50%,
+    rgba(255, 255, 255, .15) 75%,
+    transparent 75%
+  );
+  animation: animate-stripes 3s linear infinite;
+}
+#progress-bar + div {
+  width: 370px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 15px;
+}
+@keyframes animate-stripes { 100% {background-position: 60px 0;} }

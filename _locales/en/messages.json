@@ -757,6 +757,10 @@
     "message":"Accept",
     "description":""
   },
+  "notification_details":{
+    "message":"Details",
+    "description":""
+  },
   "notification_cancel":{
     "message":"Cancel",
     "description":""

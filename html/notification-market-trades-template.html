@@ -1,10 +1,14 @@
-<div class='notifications-item-container {0}' data-confid='{1}' data-key='{2}'>
-  <div class='notifications-item-image' style='background-image:url({3})'></div>
-  <div class='notifications-item-description'>{4}</div>
-  <div class='notifications-item-description'>{5}</div>
-  <div class='notifications-item-description'>{6}</div>
-  <div class='notifications-item-actions-wrapper'>
-    <div class='notifications-item-actions nia-ok' data-i18n="notification_accept"></div>
-    <div class='notifications-item-actions nia-br' data-i18n="notification_cancel"></div>
-  </div>
+<div class="media" data-confid='{1}' data-key='{2}'>
+	<div class="media-left"><img class="media-object" src="{3}"></div>
+	<div class="media-body">
+	  <div class='notifications-item-description'>
+	    <small title="{6}"><i class="fa fa-clock-o"></i></small>{4}
+	  </div>
+	  <div class='notifications-item-description'>{5}</div>
+	</div>
+	</div>
+	<div class="btn-group btn-group-justified notifications-controls" role="group">
+	<a class="btn btn-default nia-ok" role="button" data-action="allow" data-i18n="notification_accept"></a>
+	<a class="btn btn-default nia-det" role="button" data-action="details" data-i18n="notification_details" data-link="{7}"></a>
+	<a class="btn btn-default nia-br" role="button" data-action="cancel" data-i18n="notification_cancel"></a>
 </div>

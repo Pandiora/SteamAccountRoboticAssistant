@@ -2,100 +2,89 @@ const bg = (() => {
 
 	const updateCookies = async(snd, currentUser) =>{
 
-		const cookies = await chrome.cookies.getAll({url: snd.tab.url});
+		const cookies = await browser.cookies.getAll({url: snd.tab.url});
 		const master = await idb.getMasterRecord();
 		const db = await idb.opendb();
-	    const user = await db.steam_users
+	    var user = await db.steam_users
 	    	.where('login_name')
 	    	.equals(currentUser)
 	    	.first();	
 
 		let cookieExists = 0;
 
-        return db.transaction('rw', db.steam_users, function(){
+        // ToDo: Add Bit to force storing new cookies - sara-settings
+        // Iterate all existing cookies and store their values
+        await cookies.map(async(cookie) => {
 
-	        // ToDo: Add Bit to force storing new cookies - sara-settings
-	        // Iterate all existing cookies and store their values
-	        cookies.map(cookie => {
+          // Update steamMachine-Cookies for every account
+          if(cookie.name.indexOf('steamMachineAuth') >= 0){
 
-	          // Update steamMachine-Cookies for every account
-	          if(cookie.name.indexOf('steamMachineAuth') >= 0){
+            const curcookiesteamid = cookie.name.replace('steamMachineAuth', '');
+            const curcookievalue = cookie.value;
 
-	            const curcookiesteamid = cookie.name.replace('steamMachineAuth', '');
-	            const curcookievalue = cookie.value;
+            // Update Cookies based on steamid
+            await db.steam_users
+            .where('steam_id')
+            .equals(curcookiesteamid)
+            .modify({steamMachine: curcookievalue});
 
-	            // Update Cookies based on steamid
-	            db.steam_users
-	            .where('steam_id')
-	            .equals(curcookiesteamid)
-	            .modify({steamMachine: curcookievalue});
+            fun.consoleRgb('info',`
+			SteamID64: ${curcookiesteamid}\n
+			SteamMachineAuth: ${cookie.name}\n
+			Message: Cookie stored in Database
+            `, 1);
+          }
 
-	            fun.consoleRgb('info',`
-				SteamID64: ${curcookiesteamid}\n
-				SteamMachineAuth: ${cookie.name}\n
-				Message: Cookie stored in Database
-	            `, 1);
-	          }
+          /* 
+          	When we iterate multiple accounts it could be possible we need
+          	a cookie again - just tell loginUser to not set the cookie again
+          */
+          if(cookie.name === `steamMachineAuth${master['steam_id']}`
+          	|| cookie.name === `steamMachineAuth${user['steam_id']}`)
+          {
+          	cookieExists++;
+          }
 
-	          /* 
-	          	When we iterate multiple accounts it could be possible we need
-	          	a cookie again - just tell loginUser to not set the cookie again
-	          */
-	          if(cookie.name === `steamMachineAuth${master['steam_id']}`
-	          	|| cookie.name === `steamMachineAuth${user['steam_id']}`)
-	          {
-	          	cookieExists++;
-	          }
+          /* Don´t remove master-cookie, and Cookies related to age-check
+          	 Additionally don´t remove steamLogin-Cookies when getting logged 
+          	 out due to a purchase and by deleting them we would quit the 
+          	 redirect for the purchase otherwise
+          	 Additonally don't delete current to be logged in cookie if exists
+          */
+          if([
+          	`steamMachineAuth${master['steam_id']}`,
+          	`steamMachineAuth${user['steam_id']}`,
+          	'sessionid',
+          	'lastagecheckage',
+          	'birthtime',
+          	'steamLoginSecure',
+          	'steamLogin',
+          	'stopme'
+          	].indexOf(cookie.name) == -1)
+          {
 
-	          /* Don´t remove master-cookie, and Cookies related to age-check
-	          	 Additionally don´t remove steamLogin-Cookies when getting logged 
-	          	 out due to a purchase and by deleting them we would quit the 
-	          	 redirect for the purchase otherwise
-	          	 Additonally don't delete current to be logged in cookie if exists
-	          */
-	          if([
-	          	`steamMachineAuth${master['steam_id']}`,
-	          	`steamMachineAuth${user['steam_id']}`,
-	          	'sessionid',
-	          	'lastagecheckage',
-	          	'birthtime',
-	          	'steamLoginSecure',
-	          	'steamLogin',
-	          	'stopme'
-	          	].indexOf(cookie.name) == -1)
-	          {
+            browser.cookies.remove({
+            	url: snd.tab.url+cookie.path, 
+            	name: cookie.name
+            });
 
-	            chrome.cookies.remove({
-	            	url: snd.tab.url+cookie.path, 
-	            	name: cookie.name
-	            });
+            fun.consoleRgb('info',`
+			${trn('login_msg_cookies_deleted_short')}
+			${cookie.name}
+            `, 1);
 
-	            fun.consoleRgb('info',`
-				${trn('login_msg_cookies_deleted_short')}
-				${cookie.name}
-	            `, 1);
+          }
 
-	          }
-
-	        });
-        }).then(function(){
-        	return {
-        		action: 'start',
-        		parameters: cookieExists
-        	};
-        }).catch(function(err) {
-        	return {
-        		action: 'stop',
-        		message: err
-        	};
-        }).finally(function(){
-          db.close();
         });
 
+    	return {
+    		action: 'start',
+    		parameters: cookieExists
+    	};
 	};
 
 
-	const loginUser = async(snd, msg, sendResponse) => {
+	const loginUser = async(snd, msg) => {
 
 		/*
 			Host: store.steampowered.com
@@ -113,8 +102,7 @@ const bg = (() => {
 			fun.consoleRgb('error', `
 			An error occured while storing/deleting cookies
 			${storeCookies.message}`, 1)
-			sendResponse({action: 'stop'});
-			return;
+			return {action: 'stop'};
 		}
 
 		// call the db again - just in case cookies got set
@@ -130,8 +118,7 @@ const bg = (() => {
 			We couldn't find SteamAuth-cookie for user ${user['login_name']}
 			in our database. Aborting now.
             `, 1);
-            sendResponse({action: 'stop'});
-            return;
+            return {action: 'stop'};
 		}
 
 		// we need to set cookie before logging in - if needed
@@ -144,7 +131,7 @@ const bg = (() => {
 		}
 
 		// Add a listener to change origin and referrer
-		chrome.webRequest.onBeforeSendHeaders
+		browser.webRequest.onBeforeSendHeaders
 		.addListener(modLoginHeaders, {
 			urls: [ 
 				"https://store.steampowered.com/login*",
@@ -155,18 +142,17 @@ const bg = (() => {
 		// do all login-stuff in this function
 		const login = await loginCrypto(user, baseurl);
 		if(login.action !== 'done'){
-			sendResponse({
+			return {
 				action: 'stop', 
 				message: login.message
-			});
-			return;
+			};
 		}
 
 		// remove the request-listener
-		chrome.webRequest.onBeforeRequest.removeListener(modLoginHeaders);
+		browser.webRequest.onBeforeRequest.removeListener(modLoginHeaders);
 
 		// return results
-		sendResponse({action: login.action, message: login.message});
+		return {action: login.action, message: login.message};
 	};
 
 
@@ -198,8 +184,7 @@ const bg = (() => {
 		if(!rsa.success) return {action: 'stop', message: rsa};
 
 		// ToDo: add static-offset to spare one request
-		const time 		= await getServerTime();
-		const authCode 			= generateAuthCode(user['shared_secret'], time);
+		const authCode 			= await mob.getAuthKey(user['shared_secret']);
 		const pubKey 			= RSA.getPublicKey(rsa.publickey_mod, rsa.publickey_exp);
 		const password 			= user['login_pw'].replace(/[^\x00-\x7F]/g, ''); // remove non-ASCII chars
 		const encryptedPassword = RSA.encrypt(password, pubKey);
@@ -272,10 +257,7 @@ const bg = (() => {
 
 	const setSteamAuthCookie = (snd, authcookie) => {
 
-	    const steamMachine 		 = msg.process.toString().split(';')[0];
-	    const steamMachine_value = msg.process.toString().split(';')[1];
-
-	    chrome.cookies.set({
+	    browser.cookies.set({
 	      url: snd.tab.url,
 	      name: authcookie.name,
 	      value: authcookie.value,
@@ -287,39 +269,29 @@ const bg = (() => {
 
 	    //Debug cookies not being set
 	    fun.consoleRgb('info', `
-    	Cookie has been set. Name: ${steamMachine}
-    	Value: ${steamMachine_value}`,0);
+    	Cookie has been set. Name: ${authcookie.name}
+    	Value: ${authcookie.value}`,0);
 
-	    sendResponse({message: trn("login_msg_cookie_exists")});
+	    return {message: trn("login_msg_cookie_exists")};
 
 	};
 
 
-	const startWebworker = (snd, msg) => {
+	const startWebworker = async(snd, msg) => {
 
 		msg.sender[1] = snd.tab.id;
 
 	    worker.postMessage(msg);
-	    worker.onmessage = function(e){
+	    worker.onmessage = async(e) => {
 	      const data = e.data;
 	      let ret = false;
 
 	      if(msg.status === 'done'){
 	        worker = new Worker('js/webworkers.js');
 	      }
-	      // ToDo: Update all of these to spare unnecessary loops
-	      chrome.windows.getAll({populate:true},function(windows){
-	        windows.some(function(window){
-	          window.tabs.some(function(tab){
-	            if(tab.url.indexOf(chrome.extension.getURL('index.html')) >= 0){
-	              chrome.tabs.sendMessage(tab.id, data);
-	              return ret=1;
-	            }
-	            return ret;
-	          });
-	        });
-	        if(!ret) console.log('Cannot find index.html! Is it opened?');
-	      });
+
+	      const tab = await bg.getExtensionTab();
+	      browser.tabs.sendMessage(tab.id, data);
 	    }
 	};
 
@@ -335,12 +307,12 @@ const bg = (() => {
 	          return n['login_name']; 
 	        })
 	    });
-	    sendResponse({parameters: names});
+	    return {parameters: names};
 
 	};
 
 
-	const setActionBits = (msg, sendResponse) => {
+	const setActionBits = (msg) => {
 
 	    /* 
 	      Handler for actions on oneclick-login or other content-scripts unrelated
@@ -359,21 +331,26 @@ const bg = (() => {
 	    window[msg.process+'Appid'] = (msg.parameters) ? msg.parameters.appid : null;
 	    window[msg.process] = actions[msg.action];
 
-
 	    // return results
-	    sendResponse({
+	    return Promise.resolve({
 	      status: window[msg.process], 
 	      appid: window[msg.process+'Appid']
 	    });
 	};
 
 
-	const setSkipForDb = async(snd, msg, sendResponse) => {
+	const getMasterSteamId = async() => {
+		const user = await idb.getMasterRecord();
+		return user.steam_id;
+	};
+
+
+	const setSkipForDb = async(snd, msg) => {
 
 	    const db = await idb.opendb();
 	    const proc = msg.process;
 
-	    db.transaction('rw', 'steam_users', function(){
+	    return db.transaction('rw', 'steam_users', function(){
 
 		    if(proc === 'underEightPurchasedSkip')
 				db.steam_users.each(user => {
@@ -413,12 +390,12 @@ const bg = (() => {
 
 	    }).then(function(){ 
 
-	    	sendResponse({status: 1}); 
+	    	return {status: 1}; 
 	    
 	    }).catch(function(err){
 
 			console.log('Setting Skip failed',err);
-			sendResponse({status: 0});
+			return {status: 0};
 
 	    }).finally(function(){
 	      db.close();
@@ -427,8 +404,28 @@ const bg = (() => {
 	};	
 
 
+	const getExtensionTab = async() => {
+		let ret = 0;
+
+		const windows = await browser.windows.getAll({populate:true});
+	    const windowa = await windows.some((window)=>{
+	      return window.tabs.some((tab)=>{
+	        if(tab.url.indexOf(browser.extension.getURL('index.html')) >= 0){
+				ret=tab;
+				return ret;
+	        }
+	        return ret;
+	      });
+	    });
+
+		return ret;
+	};
+
+
 	return {
+		getExtensionTab,
 		getNamesForLogin,
+		getMasterSteamId,
 		loginUser,
 		setActionBits,
 		setSkipForDb,
