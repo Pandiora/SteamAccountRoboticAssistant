@@ -57,6 +57,7 @@ const bg = (() => {
           	'sessionid',
           	'lastagecheckage',
           	'birthtime',
+          	'shoppingCartGID',
           	'steamLoginSecure',
           	'steamLogin',
           	'stopme'
@@ -279,20 +280,28 @@ const bg = (() => {
 
 	const startWebworker = async(snd, msg) => {
 
-		msg.sender[1] = snd.tab.id;
+		// put sender-data into our message-object
+		msg.sender[1] = snd.tab;
 
-	    worker.postMessage(msg);
+		// Set up worker
+		const worker = new Worker('js/webworkers.js');
+	    
+	    worker.postMessage(msg); // exec function inside webworker
 	    worker.onmessage = async(e) => {
-	      const data = e.data;
-	      let ret = false;
+			const data = e.data;
 
-	      if(msg.status === 'done'){
-	        worker = new Worker('js/webworkers.js');
-	      }
+			// Target the sender-tab for updates ToDo: update if needed
+			// we need to check if background-page is openend to avoid errors
+			const tab = (data.sender[0] === 'index')
+					? await bg.getExtensionTab()
+					: data.sender[1];
 
-	      const tab = await bg.getExtensionTab();
-	      browser.tabs.sendMessage(tab.id, data);
-	    }
+			// only send message if tab exists
+			if(tab) browser.tabs.sendMessage(tab.id, data);
+
+			// close the worker to prevent memory-leaks
+			if(data.status === 'done') worker.terminate();
+		}
 	};
 
 

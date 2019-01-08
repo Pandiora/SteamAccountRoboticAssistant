@@ -1,7 +1,5 @@
 // CONFIG
 /////////////////
-// Set up worker
-var worker = new Worker('js/webworkers.js');
 
 // Get actual inventory-link and store it into variable
 var inventoryLink; (async()=>{ inventoryLink = await stm.getInventory()})();

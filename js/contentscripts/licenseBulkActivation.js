@@ -1,6 +1,6 @@
 var sessionID = /sessionid=(.{24})/.exec(document.cookie)[1];
 
-$(document).ready(()=>);
+$(document).ready(()=>{ start(); });
 
 async function start(){
 

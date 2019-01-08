@@ -325,7 +325,7 @@ function getItemMarketPrices(snd, msg, sendResponse){
 
 
 
-function createMarketListing(snd, msg, sendResponse){
+function createMarketListing(snd, msg){
   // if the process was stopped by user, we should reset our bit
   stop_listing_items = 0;
   var cards = msg.cards;
@@ -342,11 +342,11 @@ function createMarketListing(snd, msg, sendResponse){
       processMarketListings();
       // Tell the user we're done now and processing the confirmations in background
       setTimeout(function(){
-          chrome.tabs.sendMessage(snd.tab.id,{
-            msg: 'UpdateProgress',
-            percentage: 100,
-            message: trn("background_bulksell_listing_msg")
-          });
+          browser.tabs.sendMessage(snd.tab.id, Object.assign(message,{
+            action: 'UpdateProgress',
+            message: trn("background_bulksell_listing_msg"),
+            percentage: 100
+          }));
       }, 10000);
 
       return;
@@ -372,11 +372,11 @@ function createMarketListing(snd, msg, sendResponse){
             if(data.success === true){
 
               // Update the progressbar at frontend
-              chrome.tabs.sendMessage(snd.tab.id,{
-                msg: 'UpdateProgress',
-                percentage: ((99/maxLoops)*counter),
-                message: trn("background_bulksell_listing")+' ('+counter+'/'+maxLoops+')'
-              });
+              browser.tabs.sendMessage(snd.tab.id, Object.assign(message,{
+                action: 'UpdateProgress',
+                message: trn("background_bulksell_listing")+' ('+counter+'/'+maxLoops+')',
+                percentage: ((99/maxLoops)*counter)
+              }));
 
               // Reset retry-counter
               rcnt = 0;
@@ -385,11 +385,12 @@ function createMarketListing(snd, msg, sendResponse){
               // but just leave some space to other confirmations like trades and so on
               if(((Math.ceil((counter-1)/200.0)*200)/(counter-1)) == 1){
                 // Tell the user we're retrieving trades
-                chrome.tabs.sendMessage(snd.tab.id,{
-                  msg: 'UpdateProgress',
-                  percentage: ((99/maxLoops)*counter),
-                  message: trn("background_bulksell_confirmation_bg")
-                });
+                browser.tabs.sendMessage(snd.tab.id, Object.assign(message,{
+                  action: 'UpdateProgress',
+                  message: trn("background_bulksell_confirmation_bg"),
+                  percentage: ((99/maxLoops)*counter)
+                }));
+
                 // Start confirmation-process for market-items
                 processMarketListings();
                 // execute our function anyway

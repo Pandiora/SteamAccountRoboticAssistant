@@ -4,7 +4,7 @@ var selectedItem, selectedPage, GiftData, walletInfo;
 var STCardsData = [];
 var steamID = jQuery('#filter_options div:eq(0)').attr('id').split("_")[1]; /*/g_steamID\s\=\s"(.*)"\;/.exec($('#global_header + script')[0].innerHTML)[1];*/
 var sessionid = /sessionid=(.{24})/.exec(document.cookie)[1];
-var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo', 'AllCards']; // Array of Events
+var AoE = ['GiftData', 'CSGOCardsData', 'STCardsData', 'WalletInfo', 'AllCards', 'DupesToGems']; // Array of Events
 
 /************************************************
 
@@ -20,7 +20,7 @@ $(document).on("ready", function(){
   // Replace placeholders on load
   for(i=0;i < $('[data-i18n]').length;i++){
     var datavalue = $('[data-i18n]:eq('+i+')').data('i18n');
-    $('[data-i18n]:eq('+i+')').prepend(chrome.i18n.getMessage(datavalue));
+    $('[data-i18n]:eq('+i+')').prepend(browser.i18n.getMessage(datavalue));
   }
 
   // Listen for added elements and iterate over nodelist
@@ -34,7 +34,7 @@ $(document).on("ready", function(){
         var nodes = $(index).find('[data-i18n]');
         $(nodes).each(function() {
           var datavalue = $(this).data('i18n');
-          $(this).prepend(chrome.i18n.getMessage(datavalue));
+          $(this).prepend(browser.i18n.getMessage(datavalue));
         });
 
       });
@@ -69,12 +69,12 @@ addListenerMulti(document, AoE, function(d){
 
     // We need to make sure, that we have at least one set of cards to craft 1 badge - else stop
     if(min < 1){
-      updateProgress(100, chrome.i18n.getMessage("inventory_msg_not_enough_csgo"));
+      updateProgress(100, browser.i18n.getMessage("inventory_msg_not_enough_csgo"));
     } else {
       // We got the card-data - give the user some information
-      updateProgress(1, chrome.i18n.getMessage("inventory_msg_sending_trades"));
+      updateProgress(1, browser.i18n.getMessage("inventory_msg_sending_trades"));
       // Send the card-data to background-page
-      chrome.runtime.sendMessage({greeting: 'sendCsgoCardsBulk', cards: cards, sessionid: sessionid},function(response){
+      browser.runtime.sendMessage({greeting: 'sendCsgoCardsBulk', cards: cards, sessionid: sessionid},function(response){
         //console.log(response);
       });
     }
@@ -137,11 +137,26 @@ addListenerMulti(document, AoE, function(d){
     
     updateProgress(10, "Fetched all needed data from Inventory ...");
 
-    chrome.runtime.sendMessage({
-      greeting: 'sendAllCardsToBot',
+    browser.runtime.sendMessage({
+      process: 'sendAllCardsToBot',
       ast_ids: d.detail, 
       cur_user: steamID,
       ssid: /sessionid=(.{24})/.exec(document.cookie)[1]
+    });
+
+  } else if(d.type == 'DupesToGems'){
+
+    updateProgress(1, "Fetched Inventory, getting goo amounts ...");
+
+    browser.runtime.sendMessage({
+      action: 'start',
+      status: 'activate',
+      sender: ['content',document.location.href],
+      target: ['webworker',''],
+      process: 'getDupesIntoGems',
+      message: '',
+      percentage: 0,
+      parameters: [d.detail, /sessionid=(.{24})/.exec(document.cookie)[1]]
     });
 
   }
@@ -168,15 +183,15 @@ $('body').append("\
   </div> \
 ");
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
-  if(sender.id == chrome.runtime.id && !("url" in sender)){
+browser.runtime.onMessage.addListener(function(message, sender, sendResponse){
+  if(sender.id == browser.runtime.id && !("url" in sender)){
     if(message.msg == "UpdateProgress"){
       if(message["price_add"] === undefined) message["price_add"] = 0;
       if(message["amount"] === undefined) message["amount"] = 0;
       if(message["error"] !== undefined){
         if(message["error"] === true){
           $("#dialog_wrapper").hide();
-          createDialog("error", chrome.i18n.getMessage("inventory_dialog_error_process_aborted"), message.message, 0);
+          createDialog("error", browser.i18n.getMessage("inventory_dialog_error_process_aborted"), message.message, 0);
         } else {
           updateProgress(message.percentage, message.message, message.price_add, message.amount);
         }
@@ -188,6 +203,15 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
       setTimeout(function(){
         document.location.reload();
       }, 5000);
+    } else if(message.action === 'UpdateProgress'){
+      updateProgress(message.percentage, message.message);
+      if(message.status === 'done'){
+        setTimeout(function(){
+          document.location.reload();
+        }, 5000);       
+      }
+    } else {
+      console.log('Listener not implemented for', message);
     }
 	}
   return true;
@@ -274,7 +298,13 @@ $(document).ready(function(){
     <a class="btn_small btn_green_white_innerfade" id="send_all_cards" style="margin-left: 12px; margin-top: 5px;"> \
       <span data-i18n="inventory_send_all_cards"></span> \
     </a> \
+    <a class="btn_small btn_green_white_innerfade" id="dupes_to_gems" style="margin-left: 12px; margin-top: 5px;"> \
+      <span data-i18n="">Dupes to Gems</span> \
+    </a> \
   ');
+
+
+
 
   // Append buttons and functions based on hashes
   // --------------------------------------------
@@ -323,17 +353,50 @@ $(document).ready(function(){
   // Rewrite Button-State and selection-bit on click
   $('#multi_items span').on('click', function(event){
     if(multi_selection_bit == 0){
-      $(this).text(chrome.i18n.getMessage("inventory_cancel_btn"));
+      $(this).text(browser.i18n.getMessage("inventory_cancel_btn"));
       multi_selection_bit = 1;
       $('#multi_sell_items').css('visibility', 'visible');
     } else {
-      $(this).text(chrome.i18n.getMessage("inventory_select_multiple_items"));
+      $(this).text(browser.i18n.getMessage("inventory_select_multiple_items"));
       multi_selection_bit = 0;
       $('.itemHolder').removeClass('multi-select');
       $('#multi_sell_items').css('visibility', 'hidden');
       // Must be reset to 0 since cancelling the action deselects all items
       $('#item_count').text('0');
     }
+  });
+
+  // Turn given item types into gems respecting the to be kept amount
+  $('#dupes_to_gems span').on('click', function(event){
+      createDialog(
+        "warn", 
+        "Do you want to turn duplicates into gems?", 
+        `<div>
+          <div><label><span>Keep x of each item: </span><input id='keepcnt' type='number' step='1' value='2' /></label></div>
+          <div><label><input data-value='1' class='dupesOption' type='checkbox' checked><span>Wallpapers</span></label></div>
+          <div><label><input data-value='2' class='dupesOption' type='checkbox' checked><span>Emoticons</span></label></div>
+          <div><label><input data-value='4' class='dupesOption' type='checkbox' checked><span>Even items (Steam Sale)</span></label></div>
+        </div>`,
+      2);
+
+      $("#yoyo").one("click", function(){
+
+        var sum = $('.dupesOption:checked').map((e,i)=>{return $(i).data('value')}).toArray().reduce((a,b)=>a+b,0);
+        var keepCnt = $('#keepcnt').val();
+        console.log('Using option '+sum+' and keeping '+keepCnt+' items of each!');
+
+        // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
+        setTimeout(function(){
+          createDialog("info", 
+            "Preparing data", 
+            `<div id='progress-bar'>
+              <span style='width: 0%' data-value='0'></span>
+            </div>
+            <div>This may take some time, since we need to load your whole inventory!</div>`
+          , 0);
+          turnDupesIntoGems(keepCnt,sum);
+        }, 500);
+      });
   });
 
   // Send all cards to a given bot-instance
@@ -355,7 +418,7 @@ $(document).ready(function(){
 
   // Remove multi_select from all items if filters are applied
   $(document).on('click', '.econ_tag_filter_checkbox', function(){
-      $('#multi_items span').text(chrome.i18n.getMessage("inventory_select_multiple_items"));
+      $('#multi_items span').text(browser.i18n.getMessage("inventory_select_multiple_items"));
       multi_selection_bit = 0;
       $('.itemHolder').removeClass('multi-select');
       $('#multi_sell_items').css('visibility', 'hidden');
@@ -380,7 +443,7 @@ $(document).ready(function(){
     // Get our data from pages JS-Scope
     injectScriptSTCards();
 
-    createDialog("info", chrome.i18n.getMessage("inventory_sell_items_overview"), " \
+    createDialog("info", browser.i18n.getMessage("inventory_sell_items_overview"), " \
       <div class='modal-fifty'> \
         <label data-i18n='inventory_flex_price'></label><span data-currency='"+walletInfo[0].currencySymbol+"'><input id='flex-price' type='number' step='0.01' value='0.00' /></span>\
       </div> \
@@ -407,7 +470,7 @@ $(document).ready(function(){
     $("#nope, #dialog_close_btn").one("click", function(){
       // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
       setTimeout(function(){
-        chrome.runtime.sendMessage({greeting: 'stopGetMarketPrices'});
+        browser.runtime.sendMessage({greeting: 'stopGetMarketPrices'});
       }, 500);
     });
 
@@ -433,12 +496,12 @@ $(document).ready(function(){
 
   $('#tabcontent_inventory').on('click', '.send_cards_bulk', function(){
 
-      createDialog("info", chrome.i18n.getMessage("inventory_send_cards_to_bots"), chrome.i18n.getMessage("inventory_send_cards_to_bots_dialog"), 2);
+      createDialog("info", browser.i18n.getMessage("inventory_send_cards_to_bots"), browser.i18n.getMessage("inventory_send_cards_to_bots_dialog"), 2);
 
       $("#yoyo").one("click", function(){
         // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
         setTimeout(function(){
-          createDialog("info", chrome.i18n.getMessage("inventory_send_cards_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+          createDialog("info", browser.i18n.getMessage("inventory_send_cards_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
           // Inject the script to get available CS:GO-Cards
           injectScriptCsgoCards();
         }, 500);
@@ -448,7 +511,7 @@ $(document).ready(function(){
 
 function getAccountNames(){
 
-  chrome.runtime.sendMessage({greeting: 'getNamesForLogin'},function(response){
+  browser.runtime.sendMessage({greeting: 'getNamesForLogin'},function(response){
     var names = "";
 
     for(var i=0;i<response.names.length;i++){
@@ -485,26 +548,22 @@ function listItemsBulk(cards){
   }
 
   // everything should be done now, we can start to list items
-  createDialog("info", chrome.i18n.getMessage("inventory_dialog_msg_create_confirm"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+  createDialog("info", browser.i18n.getMessage("inventory_dialog_msg_create_confirm"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
 
   // abort the process when user clicks close-button
   $('#nope').one('click', function(){
     setTimeout(function(){
-      chrome.runtime.sendMessage({greeting: 'stopListingMarketItems'});
+      browser.runtime.sendMessage({greeting: 'stopListingMarketItems'});
     }, 500);
   });
 
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     process: 'createMarketListingOrders', 
     cards: cards, 
     sessionid: sessionid,
     country: walletInfo[0].countryCode,
     eCurrency: walletInfo[0].eCurrencyCode,
     language: walletInfo[0].language
-  },function(response){
-    if(response.success){
-      location.reload();
-    }
   });
 
 }
@@ -554,15 +613,15 @@ function giftsBulkMaster(){
     }
   }
 
-  createDialog("warn", chrome.i18n.getMessage("inventory_send_gifts_master_dialog"), chrome.i18n.getMessage("inventory_confirm_master_gifting"), 2);
+  createDialog("warn", browser.i18n.getMessage("inventory_send_gifts_master_dialog"), browser.i18n.getMessage("inventory_confirm_master_gifting"), 2);
 
   $("#yoyo").one("click", function(){
     // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
     setTimeout(function(){
       //console.log('OK was clicked so we can proceed further.');
-      chrome.runtime.sendMessage({greeting: 'sendGiftsBulkMaster', gifts: giftssum });
+      browser.runtime.sendMessage({greeting: 'sendGiftsBulkMaster', gifts: giftssum });
     }, 500);
-    createDialog("info", chrome.i18n.getMessage("inventory_send_gifts_to_master_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+    createDialog("info", browser.i18n.getMessage("inventory_send_gifts_to_master_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
   });
 
 }
@@ -579,21 +638,21 @@ function giftsClickHandler(){
 
     console.log(GiftData[[title]]);
 
-    createDialog("warn", chrome.i18n.getMessage("inventory_send_gifts_to_bots"), chrome.i18n.getMessage("inventory_confirm_bulk_gifting"), 2);
+    createDialog("warn", browser.i18n.getMessage("inventory_send_gifts_to_bots"), browser.i18n.getMessage("inventory_confirm_bulk_gifting"), 2);
 
     $("#yoyo").one("click", function(){
       // we need a timeout to wait for the WebAPI - quick and dirty error-handling for users who are clicking to fast
       setTimeout(function(){
         //console.log('OK was clicked so we can proceed further.');
-        chrome.runtime.sendMessage({greeting: 'sendGiftsBulk', gifts: GiftData[[title]]},function(response){
+        browser.runtime.sendMessage({greeting: 'sendGiftsBulk', gifts: GiftData[[title]]},function(response){
           console.log(response);
         });
       }, 500);
-      createDialog("info", chrome.i18n.getMessage("inventory_send_gifts_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
+      createDialog("info", browser.i18n.getMessage("inventory_send_gifts_to_bots_proc"), "<div id='progress-bar'><span style='width: 0%' data-value='0'></span></div><div></div>", 0);
     });
 
   } else {
-    alert(chrome.i18n.getMessage("inventory_alert_no_gift"));
+    alert(browser.i18n.getMessage("inventory_alert_no_gift"));
   }
 }
 
@@ -958,9 +1017,112 @@ function injectScriptCsgoCards(){
 }
 
 
+function turnDupesIntoGems(keepCnt, types){
+
+  var actualCode = '(' + async function(keepCnt, types) {
+
+
+    /* 
+    Item-Types
+
+    3 - Wallpaper
+    4 - Emoticon
+    10 - Items from events (spring-cleaning, ...)
+    */
+    var itemReg, result, sum=0;
+
+    await g_ActiveInventory.LoadCompleteInventory();
+
+    switch(types){
+      case 1: itemReg = "3"; result = {'3': {}}; break;
+      case 2: itemReg = "4"; result = {'4': {}}; break;
+      case 4: itemReg = "10"; result = {'10': {}}; break;
+      case 3: itemReg = "3|4"; result = {'3': {}, '4': {}}; break;
+      case 5: itemReg = "3|10"; result = {'3': {}, '10': {}}; break;
+      case 6: itemReg = "4|10"; result = {'4': {}, '10': {}}; break;
+      case 7: itemReg = "3|4|10"; result = {'3': {}, '4': {}, '10': {}}; break;
+      default: alert('This type is not set');
+    }
+
+    var itemTypes = new RegExp("item_class_("+itemReg+")"),
+    inventory = window.g_ActiveInventory.m_rgPages,
+    nodes = inventory.map(page => { return Array.from(page[0].childNodes) }),
+    childs = nodes.flat(1).reduce((r, child) => {
+
+      if(child.rgItem
+      && child.rgItem.contextid == 6
+      && child.rgItem.appid == 753
+      && child.rgItem.description
+      && child.rgItem.description.tags)
+
+      // find item_class (background, emoticon, ...)
+      child.rgItem.description.tags.find(o => {
+        if(!o.internal_name.match(itemTypes)) return;
+
+        // find item-type
+        var rg = child.rgItem;
+        var instance = o.internal_name.replace(/\D+/g, '');
+        var findLink = rg.description.owner_actions;
+        var itype = 0;
+        Object.keys(findLink).find(l => {
+            if(findLink[l].link.indexOf('GetGooValue') < 1) return;
+            itype = /(\d+),\s\d\s\)/.exec(findLink[l].link)[1];
+            return false;
+        });
+
+        // set object by classid and push assetid's to it
+        // use appid of market-hashname - since event-items are
+        // using different appids for market_fee_app and hashname
+        if(r[instance].hasOwnProperty(rg.classid)){
+            r[instance][rg.classid]['assetid'].push(rg.assetid);
+        } else {
+            r[instance][rg.classid] = {
+                assetid: [rg.assetid],
+                itype: itype,
+                appid: /(\d+)-/.exec(rg.description.market_hash_name)[1],
+                name: rg.description.name,
+                type: o.localized_tag_name,
+                goos: 0
+            };
+        }
+      })
+      return r;
+    }, result);
+
+    // remove all matches with just 1 item left and keep x items
+    Object.keys(childs).map(i => {
+      Object.keys(childs[i]).map(f => {
+        var asset = childs[i][f]['assetid'];
+        if(asset.length <= keepCnt || asset.length <= 1){
+          delete childs[i][f];
+        } else {
+          childs[i][f]['assetid'] = asset.slice(0,-keepCnt);
+          sum += (asset.length-keepCnt);
+        }
+      });
+    });
+    console.log(`Total of ${sum} items`);
+
+    // Just pass an Event including a customized dataset of gifts not already gifted
+    var evt=document.createEvent("CustomEvent");
+    evt.initCustomEvent("DupesToGems", true, true, childs);
+    document.dispatchEvent(evt);
+
+  } + ')('+keepCnt+','+types+');';
+
+  var script = document.createElement('script');
+  script.textContent = actualCode;
+  (document.head||document.documentElement).appendChild(script);
+  script.parentNode.removeChild(script);
+
+}
+
+
+
+
 function injectScriptGifts(){
 
-  // Stackoverflow to the rescue: http://stackoverflow.com/questions/9515704/building-a-chrome-extension-inject-code-in-a-page-using-a-content-script/9517879#9517879
+  // Stackoverflow to the rescue: http://stackoverflow.com/questions/9515704/building-a-browser.extension-inject-code-in-a-page-using-a-content-script/9517879#9517879
   // Wrapping the code inside of an anonymous function makes editing easier YO
   var actualCode = '(' + function() {
 

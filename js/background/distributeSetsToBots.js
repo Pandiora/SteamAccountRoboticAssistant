@@ -6,7 +6,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
       notEnoughCards = [],
       temporaryObject = obj;
 
-  chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 15, message: "Check owned badges" });
+  browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 15, message: "Check owned badges" });
 
   idb.opendb().then(function(db){
     db.transaction("r", ['steam_badges'], function(){
@@ -78,7 +78,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
         console.log(gamesNotFound);
 
         if(gamesNotFound.length > 0){
-          chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 15, message: "Get missing data" });
+          browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 15, message: "Get missing data" });
           // we need to find missing information for badges
           worker.postMessage({
             action: 'start',
@@ -100,7 +100,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
           }
 
         } else {
-          chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 20, message: "Build full sets complete" });
+          browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 20, message: "Build full sets complete" });
           console.log("Games on start: "+startGameCount+" Games on end: "+Object.keys(obj).length+"\nWe couln't find "+gamesNotFound.length+" games in database. Skip them.\n"+notEnoughCards.length+" games doesn't have enough cards for a full set.");
           processUsers(sender, obj, sessionid);
         }
@@ -117,9 +117,9 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
   function processUsers(sender, obj, sessionid){
 
     idb.opendb().then(function(db){
-      chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 25, message: "Join users badges ..." });
+      browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 25, message: "Join users badges ..." });
       joinUsersWithBadges(db).then(function(bots){
-          chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 30, message: "Map users to available sets ..." });
+          browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 30, message: "Map users to available sets ..." });
         // bots is now available here
         // console.log(bots)
         var abots = Object.keys(bots),
@@ -202,7 +202,7 @@ function sendAllCardsToBot(sender, obj, current_user, sessionid){
         }
 
         // finally prepare our array and send cards to bots
-        chrome.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 35, message: "Prepare to send trades ..." });
+        browser.tabs.sendMessage(sender.tab.id,{ msg: 'UpdateProgress', percentage: 35, message: "Prepare to send trades ..." });
         var cleaned = cleanDelArr(tempBots);
 
         sendTrades(sender, tempBots, sessionid, 35);

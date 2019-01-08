@@ -218,6 +218,7 @@ browser.runtime.onMessage.addListener(function(msg, sender){
 			$('.media[data-confid="'+msg.parameters.cid+'"][data-key="'+msg.parameters.ck+'"]')
 			.fadeOut(400, function(){
 				$(this).remove();
+				$(this).next().remove(); // also remove buttons
 				noti.updateNotiCount('#notifications');
 			});
 			return false;
@@ -230,7 +231,8 @@ browser.runtime.onMessage.addListener(function(msg, sender){
 					$("#dialog").ejDialog("close");
 					$(msg.process).removeClass('og-active');
 
-					var grid = $('#db_frontend_content').ejGrid('instance');
+					const datatable = $('#db_frontend_content').data('table');
+					const grid = $('#db_frontend_content').ejGrid('instance');
 					idb.fillGrid(datatable).done(function(data){
 						grid.dataSource(data);
 					});

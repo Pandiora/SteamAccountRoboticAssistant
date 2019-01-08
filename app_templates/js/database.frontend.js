@@ -269,7 +269,7 @@ function onToolBarClick(sender, args) {
 						// Add loading-Indicator
 						$('.'+action).addClass('og-active');
 						// Start the worker via background-script
-						chrome.runtime.sendMessage({
+						browser.runtime.sendMessage({
 							action: 'start',
 		                    status: 'activate',
 		                    sender: ['index',''],

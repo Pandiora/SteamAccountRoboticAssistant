@@ -127,8 +127,8 @@ const fun = (() => {
 
                 if (n === 0) {
                     consoleRgb('error',
-                        `Request to ${fetchUrl} failed. The process gets 
-                        aborted after ${retries} retries.`, 1);
+                    `Request to ${fetchUrl} failed. The process gets 
+                    aborted after ${retries} retries.`, 1);
 
                     return null;
                 }
