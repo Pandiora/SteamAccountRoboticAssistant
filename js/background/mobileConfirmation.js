@@ -137,7 +137,7 @@ async function processConfirmation(operation, items) {
 	    // don't forget to remove the listener
     	mod.execModConfHeader(confurl,'start');
 
-	    if(!fetchData.success){
+	    if(!fetchData || !fetchData.success){
 	    	fun.consoleRgb('error', `There was an error confirming
 	    	the item with url ${opurl}`, 1)
 	    	return;

@@ -1089,11 +1089,14 @@ function turnDupesIntoGems(keepCnt, types){
       return r;
     }, result);
 
-    // remove all matches with just 1 item left and keep x items
+    
     Object.keys(childs).map(i => {
       Object.keys(childs[i]).map(f => {
         var asset = childs[i][f]['assetid'];
-        if(asset.length <= keepCnt || asset.length <= 1){
+
+        // remove all matches with just 1 item left and keep x items
+        // IF the user wants to keep at least 1 copy
+        if(keepCnt > 0 && (asset.length <= keepCnt || asset.length <= 1)){
           delete childs[i][f];
         } else {
           childs[i][f]['assetid'] = asset.slice(0,-keepCnt);

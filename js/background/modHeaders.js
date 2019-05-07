@@ -212,8 +212,10 @@ chrome.webRequest.onHeadersReceived.addListener(
   modifyCspHeaders,
   {
     urls : [ 
-      'http*://*.steampowered.com/*', 
-      'http*://*.steamcommunity.com/*' 
+      'http://*.steampowered.com/*',
+      'https://*.steampowered.com/*',
+      'http://*.steamcommunity.com/*', 
+      'https://*.steamcommunity.com/*',
     ],
     types: [ 'main_frame' ]
   },

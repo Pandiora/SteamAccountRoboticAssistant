@@ -5,7 +5,7 @@
 getSaleCards(991980); // REPLACE APPID BY SALE-APPID
 async function getSaleCards(appid){
     await g_ActiveInventory.LoadCompleteInventory();
-    var checkTags =(a,s,p)=>{var l=a.length,r=0;for(var i=0;i<l;i++){if(a[i][p]===s){r=1;break;}}return r};
+    var checkTags = (a,s,p)=> {let r=0;a.map(t=>{if(t[p]===s)r=1});return r};
     var fullCnt =(o)=>{return Object.keys(o).reduce((r, i)=>{var l=o[i].length;return (l<r)?r=l:r},1e6)};
     var fullSets =(o,c)=>{return Object.keys(o).map(i=>{o[i].length=c;return o[i];})};
     var inventory = window.g_ActiveInventory.m_rgPages;
@@ -80,3 +80,29 @@ $.ajax({
 	console.log(data);
   }
 });
+
+// Copy all cards
+getSaleCards(991980); // REPLACE APPID BY SALE-APPID
+async function getSaleCards(appid){
+    await g_ActiveInventory.LoadCompleteInventory();
+    var checkTags = (a,s,p)=> {let r=0;a.map(t=>{if(t[p]===s)r=1});return r};
+    var fullCnt =(o)=>{return Object.keys(o).reduce((r, i)=>{var l=o[i].length;return (l<r)?r=l:r},1e6)};
+    var fullSets =(o,c)=>{return Object.keys(o).map(i=>{o[i].length=c;return o[i];})};
+    var inventory = window.g_ActiveInventory.m_rgPages;
+    var nodes = inventory.map(page => { return Array.from(page[0].childNodes) });
+    var childs = nodes.flat(1).reduce((r, child) => {
+        if(child.rgItem
+        && child.rgItem.contextid == 6
+        && child.rgItem.appid == 753
+        && checkTags(child.rgItem.description.tags,"cardborder_0","internal_name"))
+        {
+            r.push(child.rgItem.assetid);
+        }
+        return r;
+    }, []);
+    console.log('Check all card-data: ',childs);
+  var cnt = fullCnt(childs), full = fullSets(childs, cnt);
+    console.log('Complete Sets Count: '+cnt);
+  console.log('Complete Sets: ', full);
+  console.log('String to be copied: ', JSON.stringify(full.flat(1)));
+};

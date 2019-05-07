@@ -325,10 +325,10 @@ function getItemMarketPrices(snd, msg, sendResponse){
 
 
 
-function createMarketListing(snd, msg){
+function createMarketListing(snd, message){
   // if the process was stopped by user, we should reset our bit
   stop_listing_items = 0;
-  var cards = msg.cards;
+  var cards = message.cards;
   var loops = cards.length;
 
   // sendResponse to not block the port
@@ -360,7 +360,7 @@ function createMarketListing(snd, msg){
           url: 'https://steamcommunity.com/market/sellitem/',
           type: 'POST',
           data: {
-            sessionid: msg.sessionid,
+            sessionid: message.sessionid,
             appid: cards[counter-1].appid,
             contextid: cards[counter-1].contextid,
             assetid: cards[counter-1].assetid,

@@ -50,7 +50,7 @@ async function getBotGames(message){
       apparr = apparr.concat(buildAppArr(username, created, appidarr, steam_id));
 
       if(index === usercnt-1){
-        idb.bulkAdd('users_games', apparr);
+        await idb.bulkAdd('users_games', apparr);
         self.postMessage(Object.assign(message,{
           action: 'UpdateProgress',
           message: `Action completed. Entries added to database.`,

@@ -50,6 +50,7 @@ idb = {
 	        })
 	        .catch(Dexie.BulkError, (e)=>{
 	        	console.log(e);
+	        	deferred.resolve(e);
 	        });
 	      }).catch((err)=>{
 	        console.error (err.length);
