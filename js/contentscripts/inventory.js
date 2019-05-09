@@ -1044,59 +1044,57 @@ function turnDupesIntoGems(keepCnt, types){
       default: alert('This type is not set');
     }
 
-    var itemTypes = new RegExp("item_class_("+itemReg+")"),
-    inventory = window.g_ActiveInventory.m_rgPages,
-    nodes = inventory.map(page => { return Array.from(page[0].childNodes) }),
-    childs = nodes.flat(1).reduce((r, child) => {
+    var itemTypes = new RegExp("item_class_("+itemReg+")");
+    var childNode = window.g_ActiveInventory.m_rgChildInventories[6].m_rgAssets;
+    var childs = result;
 
-      if(child.rgItem
-      && child.rgItem.contextid == 6
-      && child.rgItem.appid == 753
-      && child.rgItem.description
-      && child.rgItem.description.tags)
+    for(key in childNode){
 
-      // find item_class (background, emoticon, ...)
-      child.rgItem.description.tags.find(o => {
-        if(!o.internal_name.match(itemTypes)) return;
+        if(childNode[key]
+        && childNode[key].appid == 753
+        && childNode[key].description
+        && childNode[key].description.tags)
 
-        // find item-type
-        var rg = child.rgItem;
-        var instance = o.internal_name.replace(/\D+/g, '');
-        var findLink = rg.description.owner_actions;
-        var itype = 0;
-        Object.keys(findLink).find(l => {
-            if(findLink[l].link.indexOf('GetGooValue') < 1) return;
-            itype = /(\d+),\s\d\s\)/.exec(findLink[l].link)[1];
-            return false;
+       // find item_class (background, emoticon, ...)
+        childNode[key].description.tags.find(o => { 
+            if(!o.internal_name.match(itemTypes)) return;
+
+            // find item-type
+            var rg = childNode[key];
+            var instance = o.internal_name.replace(/\D+/g, '');
+            var findLink = rg.description.owner_actions;
+            var itype = 0;
+            Object.keys(findLink).find(l => {
+                if(findLink[l].link.indexOf('GetGooValue') < 1) return;
+                itype = /(\d+),\s\d\s\)/.exec(findLink[l].link)[1];
+                return false;
+            });
+
+            // set object by classid and push assetid's to it
+            // use appid of market-hashname - since event-items are
+            // using different appids for market_fee_app and hashname
+            if(childs && childs[instance] && childs[instance].hasOwnProperty(rg.classid)){
+                childs[instance][rg.classid]['assetid'].push(rg.assetid);
+            } else {
+                childs[instance][rg.classid] = {
+                    appid: /(\d+)-/.exec(rg.description.market_hash_name)[1],
+                    name: rg.description.name,
+                    assetid: [rg.assetid],
+                    type: o.localized_tag_name,
+                    itype: itype,
+                    goos: 0
+                };
+            }
         });
+    }
 
-        // set object by classid and push assetid's to it
-        // use appid of market-hashname - since event-items are
-        // using different appids for market_fee_app and hashname
-        if(r[instance].hasOwnProperty(rg.classid)){
-            r[instance][rg.classid]['assetid'].push(rg.assetid);
-        } else {
-            r[instance][rg.classid] = {
-                assetid: [rg.assetid],
-                itype: itype,
-                appid: /(\d+)-/.exec(rg.description.market_hash_name)[1],
-                name: rg.description.name,
-                type: o.localized_tag_name,
-                goos: 0
-            };
-        }
-      })
-      return r;
-    }, result);
+    //console.log(JSON.stringify(childs, null, 2));
 
-    
+    // remove all matches with just 1 item left and keep x items
     Object.keys(childs).map(i => {
       Object.keys(childs[i]).map(f => {
         var asset = childs[i][f]['assetid'];
-
-        // remove all matches with just 1 item left and keep x items
-        // IF the user wants to keep at least 1 copy
-        if(keepCnt > 0 && (asset.length <= keepCnt || asset.length <= 1)){
+        if(asset.length <= keepCnt || asset.length <= 1){
           delete childs[i][f];
         } else {
           childs[i][f]['assetid'] = asset.slice(0,-keepCnt);
