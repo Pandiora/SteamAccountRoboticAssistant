@@ -43,7 +43,7 @@ async function startDiscovery(){
       // ((cards_remaining != '') && (cards_remaining >= 2)) for day 2 and next days of sale
 
       if(
-        (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn more cards by browsing your Discovery Queue!')
+        (jQuery('.discovery_queue_winter_sale_cards_header .subtext').text() !== 'Come back tomorrow to earn another card by browsing your Discovery Queue!')
       ){
 
         var GenerateQueue = function(queueNumber) {
@@ -63,7 +63,7 @@ async function startDiscovery(){
           }
 
           jQuery.when.apply(jQuery, requests).done(function() {
-            if (queueNumber < 3) {
+            if (queueNumber < 1) {
               GenerateQueue(queueNumber);
             } else {
               location.reload();
@@ -91,7 +91,7 @@ async function startDiscovery(){
         });
         alert('There was an error getting the left card-drops. Deactivating Discovery-Queue now!');
       } else {
-        var user = $('#account_pulldown').text();
+        var user = $('.persona.online').text();
         const s = await browser.runtime.sendMessage({
           process: 'userSkip',
           parameters: user

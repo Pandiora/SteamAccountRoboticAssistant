@@ -27,7 +27,7 @@ const buildOptions = (obj)=>{
 }
 
 
-document.arrive(".loginbox_right, .mainLoginRightPanel", { onceOnly:true }, async(e)=>{
+document.arrive(".login_right_col, .mainLoginRightPanel", { onceOnly:true }, async(e)=>{
 
   e.innerHTML = `
   <div class="heady">Autologin
