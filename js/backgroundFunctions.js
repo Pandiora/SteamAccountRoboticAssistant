@@ -22,6 +22,18 @@ const bg = (() => {
             const curcookiesteamid = cookie.name.replace('steamMachineAuth', '');
             const curcookievalue = cookie.value;
 
+            // make sure there is a value to be stored - alert!
+            if(!curcookievalue){
+	            fun.consoleRgb('error',`
+				SteamID64: ${curcookiesteamid}\n
+				SteamMachineAuth: ${cookie.name}\n
+				Message: Cookie cannot be store in database\n
+				Value: ${curcookievalue}
+	            `, 1);
+
+            	return
+            }
+
             // Update Cookies based on steamid
             await db.steam_users
             .where('steam_id')
@@ -54,6 +66,7 @@ const bg = (() => {
           if([
           	`steamMachineAuth${master['steam_id']}`,
           	`steamMachineAuth${user['steam_id']}`,
+          	'steamRememberLogin',
           	'sessionid',
           	'lastagecheckage',
           	'birthtime',
